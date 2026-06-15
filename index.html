@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>ภารกิจปฏิสนธิ: Race to Fertilization ⚔️</title>
+<style>
+  :root{
+    --sky:#7ec8f0; --sky-dk:#2f86c5; --pink:#f79ec0; --pink-dk:#e3578d;
+    --purple:#a98be0; --purple-dk:#7c54c9; --gold:#ffd35e; --gold-dk:#e0a92f;
+    --cream:#fff8f1; --ink:#33304a; --ink2:#6f6890;
+    --green:#36c281; --green-dk:#22996a; --red:#ef5d5d; --orange:#ff9d3d;
+    --shadow:0 6px 0 rgba(40,35,70,.15), 0 12px 28px rgba(40,35,70,.18);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Trebuchet MS','Segoe UI',system-ui,sans-serif; color:var(--ink);
+    min-height:100vh; min-height:100dvh; display:flex; justify-content:center; overflow-x:hidden;
+    background:
+      radial-gradient(circle at 12% 10%, rgba(126,200,240,.5), transparent 40%),
+      radial-gradient(circle at 88% 88%, rgba(247,158,192,.5), transparent 40%),
+      linear-gradient(160deg,#fdf2fa,#edf6ff);
+  }
+  .app{width:100%; max-width:480px; min-height:100dvh; padding:14px 14px calc(20px + env(safe-area-inset-bottom)); display:flex; flex-direction:column;}
+  .screen{flex:1; display:flex; flex-direction:column;}
+  .hidden{display:none !important;}
+  h1,h2,h3{margin:0; line-height:1.25;}
+  .eng{font-size:.78em; color:var(--ink2); font-weight:normal;}
+  .btn{width:100%; border:none; border-radius:18px; padding:15px; margin-top:14px; font-size:17px; font-weight:bold; color:#fff; cursor:pointer; font-family:inherit; background:linear-gradient(135deg,var(--pink),var(--pink-dk)); box-shadow:0 5px 0 #b8366c; transition:.08s;}
+  .btn:active{transform:translateY(3px); box-shadow:0 2px 0 #b8366c;}
+  .btn.blue{background:linear-gradient(135deg,var(--sky),var(--sky-dk)); box-shadow:0 5px 0 #226a9e;}
+  .btn.blue:active{box-shadow:0 2px 0 #226a9e;}
+  .btn.gold{background:linear-gradient(135deg,var(--gold),var(--gold-dk)); box-shadow:0 5px 0 #b5851f; color:#5a430a;}
+  .btn.gold:active{box-shadow:0 2px 0 #b5851f;}
+  .btn.ghost{background:#fff; color:var(--ink2); box-shadow:0 4px 0 #e6dff0;}
+  .btn.ghost:active{box-shadow:0 1px 0 #e6dff0;}
+  .btn:disabled{opacity:.45; pointer-events:none;}
+
+  /* ---------- START ---------- */
+  .hero{text-align:center; padding:24px 18px; background:linear-gradient(135deg,#fff,#fdf2f9); border:3px solid #fff; border-radius:26px; box-shadow:var(--shadow); margin-top:10px;}
+  .hero .em{font-size:50px;}
+  .hero h1{font-size:24px; color:var(--pink-dk); margin-top:4px;}
+  .hero .tag{font-size:13px; color:var(--ink2); margin-top:8px; line-height:1.55;}
+  .field{margin-top:18px; text-align:left;}
+  .field label{font-size:13px; font-weight:bold; color:var(--ink2); display:block; margin-bottom:6px;}
+  .field input{width:100%; padding:13px 14px; font-size:16px; border-radius:14px; border:2px solid #ecdff3; background:#fff; outline:none; font-family:inherit; color:var(--ink);}
+  .field input:focus{border-color:var(--purple);}
+  .howto{background:#fff; border-radius:18px; padding:15px 16px; box-shadow:var(--shadow); margin-top:14px; font-size:13.5px; line-height:1.6;}
+  .howto h3{font-size:15px; margin-bottom:8px; color:var(--purple-dk);}
+  .credit{text-align:center; font-size:11px; color:var(--ink2); margin-top:12px; opacity:.85; line-height:1.5;}
+
+  /* ---------- MAP ---------- */
+  .maphead{text-align:center; margin:6px 0 4px;}
+  .maphead h2{font-size:19px; color:var(--purple-dk);}
+  .maphead .pp{font-size:13px; color:var(--ink2); margin-top:3px;}
+  .map{display:flex; flex-direction:column; gap:12px; margin-top:10px;}
+  .node{display:flex; align-items:center; gap:13px; background:#fff; border:3px solid #fff; border-radius:20px; padding:14px; box-shadow:var(--shadow); cursor:pointer; transition:.12s; position:relative;}
+  .node:active{transform:scale(.99);}
+  .node.locked{opacity:.5; pointer-events:none;}
+  .node.done{border-color:var(--green);}
+  .node .ic{flex:0 0 52px; height:52px; border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:28px; background:#f2ecfb;}
+  .node .meta{flex:1;}
+  .node .meta .st{font-size:11px; font-weight:bold; color:var(--ink2);}
+  .node .meta .nm{font-size:16px; font-weight:bold;}
+  .node .meta .en{font-size:11.5px; color:var(--ink2);}
+  .node .go{font-size:22px; color:var(--pink-dk);}
+  .node.done .go{color:var(--green);}
+  .node .stars{font-size:13px; letter-spacing:1px;}
+
+  /* ---------- BATTLE ---------- */
+  .arena{display:flex; flex-direction:column; min-height:100%;}
+  .stage-label{font-size:12px; font-weight:bold; color:var(--ink2); text-align:center; margin-bottom:6px;}
+  .fighters{display:flex; align-items:flex-end; justify-content:space-between; gap:8px; margin-bottom:4px;}
+  .fighter{flex:1; text-align:center;}
+  .fighter .av{font-size:40px; transition:transform .12s;}
+  .fighter .nm{font-size:11px; font-weight:bold; margin-top:2px;}
+  .vs{font-size:14px; font-weight:bold; color:var(--ink2); padding-bottom:18px;}
+  .hpbar{height:14px; background:#eadff2; border-radius:99px; overflow:hidden; margin-top:5px; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,.06);}
+  .hpfill{height:100%; border-radius:99px; transition:width .4s cubic-bezier(.2,.8,.2,1);}
+  .hpfill.me{background:linear-gradient(90deg,var(--green),#7fe0ab);}
+  .hpfill.boss{background:linear-gradient(90deg,var(--red),#ff9d7a);}
+  .hp-num{font-size:10px; color:var(--ink2); margin-top:2px;}
+  .shake{animation:shk .35s;}
+  @keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+  .hit-pop{transform:scale(1.25) !important;}
+
+  .qbox{background:#fff; border-radius:22px; padding:18px; box-shadow:var(--shadow); border:3px solid #fff; margin-top:12px;}
+  .topline{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+  .qchip{font-size:11px; font-weight:bold; color:var(--ink2); background:#f2ecfb; border-radius:99px; padding:4px 10px;}
+  .timer{margin-left:auto; font-size:12px; font-weight:bold; color:var(--green-dk); display:flex; align-items:center; gap:4px;}
+  .tbar{height:7px; background:#eadff2; border-radius:99px; overflow:hidden; margin-bottom:12px;}
+  .tfill{height:100%; background:linear-gradient(90deg,var(--green),#9ddc7f); width:100%; transition:width .1s linear;}
+  .tfill.warn{background:linear-gradient(90deg,var(--orange),var(--red));}
+  .qtext{font-size:17px; font-weight:bold; line-height:1.45;}
+  .qtext .eng{display:block; margin-top:3px;}
+  .qimg{width:100%; margin:12px auto 0; background:#f7fbff; border:2px solid #eaf1fb; border-radius:14px; padding:10px;}
+  .qimg svg{width:100%; height:auto; display:block;}
+  .opts{display:flex; flex-direction:column; gap:10px; margin-top:14px;}
+  .opt{text-align:left; border:2px solid #eadff2; background:#fff; border-radius:15px; padding:12px 14px; font-size:15px; font-weight:bold; color:var(--ink); cursor:pointer; font-family:inherit; transition:.1s; line-height:1.35; display:flex; gap:9px; align-items:center;}
+  .opt .k{flex:0 0 24px; height:24px; border-radius:7px; background:#f0eaf8; color:var(--ink2); display:flex; align-items:center; justify-content:center; font-size:13px;}
+  .opt:active{transform:scale(.99);}
+  .opt.correct{border-color:var(--green); background:#e8faf0; color:var(--green-dk);} .opt.correct .k{background:var(--green); color:#fff;}
+  .opt.wrong{border-color:var(--red); background:#fdeded; color:#c43c3c;} .opt.wrong .k{background:var(--red); color:#fff;}
+  .opt.dim{pointer-events:none; opacity:.55;}
+  .explain{margin-top:13px; background:linear-gradient(135deg,#fff8ec,#fff1f6); border:2px dashed #f1d3c0; border-radius:14px; padding:12px 13px; font-size:13.5px; line-height:1.55;}
+  .explain .h{font-weight:bold; margin-bottom:3px;}
+  .explain.ok .h{color:var(--green-dk);} .explain.no .h{color:var(--red);}
+
+  /* intro / outro panels */
+  .panel{background:#fff; border-radius:22px; padding:22px 18px; box-shadow:var(--shadow); border:3px solid #fff; text-align:center; margin-top:14px;}
+  .panel .big{font-size:48px;}
+  .panel h2{font-size:20px; margin:8px 0 4px; color:var(--purple-dk);}
+  .panel .en{font-size:13px; color:var(--ink2); margin-bottom:10px;}
+  .panel p{font-size:14.5px; line-height:1.6; color:var(--ink); margin:0;}
+  .panel .boss-tag{display:inline-block; background:#fdeded; color:var(--red); font-weight:bold; font-size:13px; padding:6px 14px; border-radius:99px; margin-top:10px;}
+
+  /* ---------- FLASHCARDS ---------- */
+  .fc-topics{display:flex; flex-direction:column; gap:11px; margin-top:12px;}
+  .fc-topic{display:flex; align-items:center; gap:13px; background:#fff; border:3px solid #fff; border-radius:18px; padding:13px; box-shadow:var(--shadow); cursor:pointer; transition:.12s;}
+  .fc-topic:active{transform:scale(.99);}
+  .fc-topic .ic{flex:0 0 46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:25px; background:#eef6ff;}
+  .fc-topic .meta{flex:1;} .fc-topic .meta .nm{font-size:15.5px; font-weight:bold;} .fc-topic .meta .en{font-size:11.5px; color:var(--ink2);}
+  .fc-topic .cnt{font-size:12px; font-weight:bold; color:var(--sky-dk); background:#eef6ff; border-radius:99px; padding:5px 10px;}
+  .fc-topic.all{background:linear-gradient(135deg,#fff,#fff3f9);} .fc-topic.all .ic{background:#fdeaf3;}
+
+  .fc-bar{display:flex; align-items:center; gap:8px; margin:4px 0 6px;}
+  .fc-bar .prog{font-size:13px; font-weight:bold; color:var(--ink2);}
+  .fc-bar .know{margin-left:auto; font-size:12px; font-weight:bold; color:var(--green-dk);}
+  .fc-track{height:8px; background:#eadff2; border-radius:99px; overflow:hidden; margin-bottom:12px;}
+  .fc-track .fill{height:100%; background:linear-gradient(90deg,var(--sky),var(--purple)); width:0%; transition:width .3s;}
+
+  .card-wrap{perspective:1200px; margin-top:4px;}
+  .card{
+    position:relative; width:100%; min-height:340px; cursor:pointer;
+    transform-style:preserve-3d; transition:transform .5s cubic-bezier(.3,.8,.3,1);
+  }
+  .card.flip{transform:rotateY(180deg);}
+  .face{
+    position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    border-radius:24px; padding:22px 18px 34px; box-shadow:var(--shadow); border:3px solid #fff;
+    display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;
+    overflow-y:auto;
+  }
+  .card .qimg{max-width:240px; padding:6px; margin:10px auto 0; background:#f7fbff;}
+  .face.front{background:linear-gradient(150deg,#fff,#eef6ff);}
+  .face.back{background:linear-gradient(150deg,#fff,#fff2f8); transform:rotateY(180deg);}
+  .face .chip{font-size:11px; font-weight:bold; color:#fff; border-radius:99px; padding:4px 11px; margin-bottom:14px;}
+  .face .ql{font-size:12px; font-weight:bold; color:var(--ink2); letter-spacing:.5px; margin-bottom:8px;}
+  .face .qq{font-size:19px; font-weight:bold; line-height:1.45;}
+  .face .qq .eng{display:block; margin-top:6px;}
+  .face .ans{font-size:21px; font-weight:bold; color:var(--green-dk); line-height:1.4;}
+  .face .exx{font-size:14px; color:var(--ink); line-height:1.55; margin-top:12px; background:#fff8ec; border:2px dashed #f1d3c0; border-radius:14px; padding:11px 13px;}
+  .face .tap{position:absolute; bottom:12px; left:0; right:0; font-size:11px; color:var(--ink2); opacity:.7;}
+  .fc-actions{display:flex; gap:10px; margin-top:14px;}
+  .fc-actions .btn{margin-top:0;}
+  .fc-nav{display:flex; gap:10px; margin-top:10px;}
+  .fc-nav .btn{margin-top:0;}
+  .btn.green{background:linear-gradient(135deg,var(--green),var(--green-dk)); box-shadow:0 5px 0 #1a7d54;}
+  .btn.green:active{box-shadow:0 2px 0 #1a7d54;}
+  .btn.warn{background:linear-gradient(135deg,var(--orange),#e8842a); box-shadow:0 5px 0 #c06a1c;}
+  .btn.warn:active{box-shadow:0 2px 0 #c06a1c;}
+  .fc-done{text-align:center;}
+  .fc-done .big{font-size:54px;}
+
+  /* result */
+  .result{text-align:center;}
+  .zygote{font-size:64px; animation:beat 1.4s ease-in-out infinite;}
+  @keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+  .result h2{font-size:23px; color:var(--pink-dk); margin-top:4px;}
+  .result .scoreb{font-size:46px; font-weight:bold; margin:8px 0 0; text-shadow:0 3px 0 rgba(0,0,0,.06);}
+  .result .scoreb small{font-size:17px; color:var(--ink2);}
+  .stat-row{display:flex; gap:9px; margin:16px 0;}
+  .stat{flex:1; background:#fff; border-radius:15px; padding:11px 5px; box-shadow:0 4px 0 rgba(40,35,70,.07);}
+  .stat b{display:block; font-size:19px; color:var(--sky-dk);}
+  .stat span{font-size:11px; color:var(--ink2);}
+  .badges{display:flex; flex-wrap:wrap; gap:7px; justify-content:center; margin:8px 0 4px;}
+  .eb{background:var(--gold); color:#6a4d05; font-weight:bold; font-size:12px; padding:6px 12px; border-radius:99px; box-shadow:0 3px 0 var(--gold-dk);}
+  .lb{background:#fff; border-radius:18px; padding:14px; box-shadow:var(--shadow); margin-top:10px; text-align:left;}
+  .lb h3{font-size:15px; margin-bottom:10px; display:flex; gap:6px; align-items:center;}
+  .lb-row{display:flex; align-items:center; gap:10px; padding:8px 5px; border-bottom:1px solid #f1ebf8; font-size:14px;}
+  .lb-row:last-child{border-bottom:none;}
+  .lb-row .pos{flex:0 0 26px; height:26px; border-radius:8px; background:#f0eaf8; color:var(--ink2); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:13px;}
+  .lb-row.me{background:#fff0f6; border-radius:10px;} .lb-row.top1 .pos{background:var(--gold); color:#6a4d05;}
+  .lb-row .nm{flex:1; font-weight:bold;} .lb-row .sc{color:var(--pink-dk); font-weight:bold;}
+  .muted{color:var(--ink2); font-size:13px; text-align:center; padding:6px;}
+
+  /* fail */
+  .fail{text-align:center;}
+  .fail .big{font-size:56px;}
+
+  /* ---------- MUTE BUTTON ---------- */
+  .mutebtn{position:fixed; top:calc(10px + env(safe-area-inset-top)); right:12px; z-index:70; width:42px; height:42px; border-radius:50%; border:none; background:#fff; box-shadow:0 4px 12px rgba(40,35,70,.2); font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .mutebtn:active{transform:scale(.92);}
+
+  /* ---------- STUDY / READ-BEFORE ---------- */
+  .doc{background:#fff; border-radius:20px; padding:18px; box-shadow:var(--shadow); border:3px solid #fff; margin-top:10px; text-align:left;}
+  .doc h3{font-size:16px; color:var(--purple-dk); margin:2px 0 8px; display:flex; gap:7px; align-items:center;}
+  .doc p{font-size:14px; line-height:1.6; margin:0 0 10px;}
+  .doc .term{color:var(--pink-dk); font-weight:bold;}
+  .ctable{width:100%; border-collapse:collapse; font-size:12.5px; margin:4px 0 6px;}
+  .ctable th,.ctable td{border:1px solid #eadff2; padding:8px 7px; text-align:left; vertical-align:top; line-height:1.45;}
+  .ctable th{background:#f2ecfb; color:var(--ink); font-size:12px;}
+  .ctable thead th:nth-child(2){color:var(--sky-dk);} .ctable thead th:nth-child(3){color:var(--pink-dk);}
+  .ctable td:first-child{font-weight:bold; background:#fafaff; width:34%;}
+  .gloss{list-style:none; padding:0; margin:0;}
+  .gloss li{padding:9px 4px; border-bottom:1px solid #f1ebf8; font-size:13.5px; line-height:1.5;}
+  .gloss li:last-child{border-bottom:none;}
+  .gloss b{color:var(--sky-dk);} .gloss .th{color:var(--ink2);}
+
+  /* ---------- REVIEW WRONG ---------- */
+  .rev-item{background:#fff; border-radius:16px; padding:14px; box-shadow:0 4px 0 rgba(40,35,70,.07); margin-top:10px; text-align:left;}
+  .rev-item .chip{display:inline-block; font-size:10.5px; font-weight:bold; color:#fff; border-radius:99px; padding:3px 9px; margin-bottom:7px;}
+  .rev-item .q{font-size:14.5px; font-weight:bold; line-height:1.45;}
+  .rev-item .q .eng{display:block; font-size:11.5px; color:var(--ink2); font-weight:normal; margin-top:2px;}
+  .rev-item .yours{font-size:13px; color:#c43c3c; margin-top:8px;}
+  .rev-item .ans{font-size:13.5px; color:var(--green-dk); font-weight:bold; margin-top:4px;}
+  .rev-item .ex{font-size:12.5px; color:var(--ink); line-height:1.5; margin-top:6px; background:#fff8ec; border:1px dashed #f1d3c0; border-radius:10px; padding:9px 10px;}
+
+  /* ---------- RESULT CODE / TEACHER ---------- */
+  .rcard{background:linear-gradient(135deg,#fff,#fff3f9); border:2px dashed #e9b9d0; border-radius:16px; padding:14px; margin-top:10px; text-align:left;}
+  .rcard h3{font-size:14px; color:var(--pink-dk); margin-bottom:8px;}
+  .rcard .line{font-size:13.5px; line-height:1.7;}
+  .rcard .code{font-size:19px; font-weight:bold; letter-spacing:1px; color:var(--purple-dk); text-align:center; background:#fff; border-radius:10px; padding:10px; margin:8px 0; border:2px solid #ece4f6; word-break:break-all;}
+  .vbox{font-size:14px; font-weight:bold; border-radius:12px; padding:12px; margin-top:10px; text-align:center; line-height:1.5;}
+  .vbox.ok{background:#e8faf0; color:var(--green-dk); border:2px solid var(--green);}
+  .vbox.no{background:#fdeded; color:#c43c3c; border:2px solid var(--red);}
+
+  .flash{position:fixed; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:60;}
+  .flash .b{font-size:66px; animation:pop .45s ease;}
+  @keyframes pop{0%{transform:scale(.6);opacity:0}55%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+  .dmg{position:absolute; font-weight:bold; font-size:20px; animation:rise .8s ease forwards; pointer-events:none;}
+  @keyframes rise{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-34px)}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ START ============ -->
+  <section class="screen" id="startScreen">
+    <div class="hero">
+      <div class="em">🏊‍♂️⚔️🥚</div>
+      <h1>ภารกิจปฏิสนธิ</h1>
+      <div class="tag"><b>Race to Fertilization</b><br>เกมต่อสู้ผ่าน 5 ด่าน เรียนรู้การสร้างเซลล์สืบพันธุ์<br>จนกว่าจะ <b>ปฏิสนธิสำเร็จ!</b> · ระดับ ม.ปลาย / AP Biology</div>
+      <div class="field">
+        <label>ใส่ชื่อนักผจญภัย (Player name)</label>
+        <input id="nameInput" type="text" maxlength="14" placeholder="เช่น ทีมสเปิร์ม A, น้องไข่...">
+      </div>
+      <button class="btn" id="startBtn">เริ่มการเดินทาง ▶ Start</button>
+      <button class="btn blue" id="flashBtn">ฝึกซ้อม Flash Card 🃏</button>
+      <button class="btn ghost" id="studyBtn">อ่านก่อนเล่น 📖 สรุปเนื้อหา</button>
+      <button class="btn ghost" id="verifyBtn" style="font-size:14px;">👩‍🏫 ครูตรวจรหัสผลนักเรียน</button>
+    </div>
+    <div class="howto">
+      <h3>⚔️ วิธีเล่น (How to play)</h3>
+      ตอบคำถามชีววิทยาให้ถูกเพื่อ <b>โจมตีบอส</b> 💥 — ตอบเร็วยิ่งแรง (คริติคอล!)<br>
+      ตอบผิดหรือหมดเวลา บอสจะ <b>ตีกลับ</b> ⚡ ลด HP ของเรา<br>
+      เคลียร์ครบ 5 ด่าน = ปฏิสนธิสำเร็จ เกิด <b>ไซโกต</b> 🎉
+    </div>
+    <div class="credit">เนื้อหาอ้างอิง: OpenStax Biology for AP® Courses / Biology 2e · NCBI Bookshelf · TeachMePhysiology</div>
+  </section>
+
+  <!-- ============ MAP ============ -->
+  <section class="screen hidden" id="mapScreen">
+    <div class="maphead">
+      <h2>🗺️ แผนที่ภารกิจ</h2>
+      <div class="pp" id="mapPlayer"></div>
+    </div>
+    <div class="map" id="mapBox"></div>
+    <button class="btn ghost" id="resetBtn">เริ่มใหม่ทั้งหมด 🔁</button>
+  </section>
+
+  <!-- ============ INTRO ============ -->
+  <section class="screen hidden" id="introScreen">
+    <div class="panel">
+      <div class="big" id="introIcon">🧬</div>
+      <h2 id="introName">ด่าน</h2>
+      <div class="en" id="introEn"></div>
+      <p id="introStory"></p>
+      <div class="boss-tag" id="introBoss">บอส</div>
+    </div>
+    <button class="btn" id="beginBtn">เข้าสู่การต่อสู้ ⚔️</button>
+    <button class="btn ghost" id="backMapBtn">กลับแผนที่ 🗺️</button>
+  </section>
+
+  <!-- ============ BATTLE ============ -->
+  <section class="screen hidden" id="battleScreen">
+    <div class="arena">
+      <div class="stage-label" id="battleStage"></div>
+      <div class="fighters">
+        <div class="fighter">
+          <div class="av" id="meAv">🏊‍♂️</div>
+          <div class="nm" id="meName">เรา</div>
+        </div>
+        <div class="vs">VS</div>
+        <div class="fighter">
+          <div class="av" id="bossAv">🦠</div>
+          <div class="nm" id="bossName">บอส</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1;">
+          <div class="hpbar"><div class="hpfill me" id="meHp" style="width:100%"></div></div>
+          <div class="hp-num"><span id="meHpN">100</span>/100 HP</div>
+        </div>
+        <div style="flex:1;">
+          <div class="hpbar"><div class="hpfill boss" id="bossHp" style="width:100%"></div></div>
+          <div class="hp-num" style="text-align:right"><span id="bossHpN">100</span> HP</div>
+        </div>
+      </div>
+
+      <div class="qbox">
+        <div class="topline">
+          <span class="qchip" id="qChip">ข้อ 1</span>
+          <span class="timer">⏱ <span id="tNum">15</span>s</span>
+        </div>
+        <div class="tbar"><div class="tfill" id="tFill"></div></div>
+        <div class="qtext" id="qText"></div>
+        <div class="qimg hidden" id="qImg"></div>
+        <div class="opts" id="optBox"></div>
+        <div class="explain hidden" id="explainBox"><div class="h" id="exH"></div><div id="exB"></div></div>
+        <button class="btn blue hidden" id="contBtn" style="margin-top:13px;">ต่อไป ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STAGE CLEAR ============ -->
+  <section class="screen hidden" id="clearScreen">
+    <div class="panel">
+      <div class="big">🎉</div>
+      <h2>เคลียร์ด่านสำเร็จ!</h2>
+      <div class="en" id="clearEn">Stage Clear</div>
+      <div class="stars" style="font-size:30px; margin:6px 0;" id="clearStars">⭐⭐⭐</div>
+      <p id="clearOutro"></p>
+    </div>
+    <button class="btn gold" id="nextStageBtn">ด่านต่อไป ▶</button>
+    <button class="btn ghost" id="clearMapBtn">กลับแผนที่ 🗺️</button>
+  </section>
+
+  <!-- ============ FAIL ============ -->
+  <section class="screen hidden" id="failScreen">
+    <div class="fail panel">
+      <div class="big">💔</div>
+      <h2 style="color:var(--red)">HP หมด!</h2>
+      <p>ภารกิจล้มเหลวในด่านนี้ แต่ไม่เป็นไร — นักวิทยาศาสตร์ที่ดีลองใหม่เสมอ! ทบทวนคำอธิบายแล้วลุยอีกครั้ง</p>
+    </div>
+    <button class="btn" id="retryBtn">ลองด่านนี้อีกครั้ง 🔁</button>
+    <button class="btn ghost" id="failMapBtn">กลับแผนที่ 🗺️</button>
+  </section>
+
+  <!-- ============ FLASHCARD: TOPIC SELECT ============ -->
+  <section class="screen hidden" id="fcTopicScreen">
+    <div class="maphead">
+      <h2>🃏 โหมดฝึกซ้อม Flash Card</h2>
+      <div class="pp">เลือกหัวข้อที่อยากทบทวน · พลิกการ์ดดูเฉลยได้เลย ไม่จับเวลา</div>
+    </div>
+    <div class="fc-topics" id="fcTopicBox"></div>
+    <button class="btn ghost" id="fcHomeBtn">กลับหน้าแรก 🏠</button>
+  </section>
+
+  <!-- ============ FLASHCARD: STUDY ============ -->
+  <section class="screen hidden" id="fcStudyScreen">
+    <div class="fc-bar">
+      <span class="prog" id="fcProg">การ์ด 1/10</span>
+      <span class="know" id="fcKnow">รู้แล้ว 0</span>
+    </div>
+    <div class="fc-track"><div class="fill" id="fcFill"></div></div>
+
+    <div class="card-wrap">
+      <div class="card" id="fcCard">
+        <div class="face front">
+          <span class="chip" id="fcChip">หัวข้อ</span>
+          <div class="ql">❓ คำถาม / Question</div>
+          <div class="qq" id="fcQ"></div>
+          <div class="qimg hidden" id="fcImg"></div>
+          <div class="tap">👆 แตะการ์ดเพื่อดูเฉลย</div>
+        </div>
+        <div class="face back">
+          <div class="ql">✅ เฉลย / Answer</div>
+          <div class="ans" id="fcA"></div>
+          <div class="exx" id="fcEx"></div>
+          <div class="tap">👆 แตะเพื่อพลิกกลับ</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc-actions">
+      <button class="btn warn" id="fcAgainBtn">ยังไม่แม่น 🔁</button>
+      <button class="btn green" id="fcGotBtn">รู้แล้ว ✓</button>
+    </div>
+    <div class="fc-nav">
+      <button class="btn ghost" id="fcPrevBtn">◀ ก่อนหน้า</button>
+      <button class="btn ghost" id="fcShuffleBtn">สลับการ์ด 🔀</button>
+    </div>
+    <button class="btn ghost" id="fcQuitBtn" style="margin-top:10px;">ออกจากโหมดฝึกซ้อม 🏠</button>
+  </section>
+
+  <!-- ============ FLASHCARD: DONE ============ -->
+  <section class="screen hidden" id="fcDoneScreen">
+    <div class="fc-done panel">
+      <div class="big">🎓</div>
+      <h2>ทบทวนครบทุกการ์ดแล้ว!</h2>
+      <div class="en" id="fcDoneEn">Deck complete</div>
+      <p id="fcDoneMsg"></p>
+    </div>
+    <button class="btn green" id="fcRedoAgainBtn">ทบทวน "ยังไม่แม่น" อีกครั้ง 🔁</button>
+    <button class="btn blue" id="fcRestartBtn">เริ่มกองนี้ใหม่ทั้งหมด</button>
+    <button class="btn ghost" id="fcPickAnotherBtn">เลือกหัวข้ออื่น 🃏</button>
+  </section>
+
+  <!-- ============ FINAL RESULT ============ -->
+  <section class="screen hidden" id="resultScreen">
+    <div class="result">
+      <div class="zygote">💞</div>
+      <h2>ปฏิสนธิสำเร็จ!</h2>
+      <div class="en" style="color:var(--ink2); font-size:14px;">เกิดไซโกต (Zygote, 2n) — ชีวิตใหม่เริ่มต้น 🎉</div>
+      <div class="scoreb"><span id="finalScore">0</span> <small>คะแนน</small></div>
+      <div class="stat-row">
+        <div class="stat"><b id="sCorrect">0</b><span>ตอบถูก<br>Correct</span></div>
+        <div class="stat"><b id="sStars">0</b><span>ดาวรวม<br>Stars</span></div>
+        <div class="stat"><b id="sStreak">0</b><span>สตรีคสูงสุด<br>Best streak</span></div>
+      </div>
+      <div class="badges" id="badgeBox"></div>
+    </div>
+
+    <div class="rcard">
+      <h3>👩‍🏫 ส่งผลให้คุณครู (Result for teacher)</h3>
+      <div class="line" id="rcardInfo"></div>
+      <div style="font-size:12px; color:var(--ink2); margin-top:6px;">รหัสยืนยันผล (ครูใช้ตรวจสอบว่าไม่แก้คะแนน):</div>
+      <div class="code" id="resultCode">—</div>
+      <button class="btn blue" id="copyResultBtn" style="margin-top:4px;">📋 คัดลอกผลส่งครู (LINE/ฟอร์ม)</button>
+    </div>
+
+    <button class="btn" id="reviewBtn" style="margin-top:10px;">📋 ทบทวนข้อที่ตอบผิด</button>
+
+    <div class="lb">
+      <h3>🏅 อันดับคะแนน (Leaderboard)</h3>
+      <div id="lbBox"></div>
+    </div>
+    <button class="btn gold" id="againBtn">เล่นใหม่ทั้งหมด 🔁</button>
+    <button class="btn ghost" id="homeBtn">กลับหน้าแรก 🏠</button>
+  </section>
+
+  <!-- ============ STUDY (read before play) ============ -->
+  <section class="screen hidden" id="studyScreen">
+    <div class="maphead"><h2>📖 อ่านก่อนเล่น</h2><div class="pp">สรุปเนื้อหา · ตารางเปรียบเทียบ · อภิธานศัพท์</div></div>
+
+    <div class="doc">
+      <h3>🏊‍♂️ การสร้างสเปิร์ม · Spermatogenesis</h3>
+      <p>เกิดใน<span class="term">ท่อเซมินิเฟอรัส</span>ของอัณฑะ เริ่มจาก <b>spermatogonia</b> แบ่งไมโทซิส → <b>ไมโอซิส</b> → <b>spermiogenesis</b> ได้สเปิร์ม <b>4 ตัว</b> ต่อเซลล์ตั้งต้น โดยมี<span class="term">เซลล์เซอร์โทลี</span>เป็นพี่เลี้ยง และ<span class="term">เซลล์ลัยดิก</span>สร้างเทสโทสเตอโรน สเปิร์มไปสุกที่หลอดเก็บอสุจิ</p>
+      <h3>🥚 การสร้างไข่ · Oogenesis</h3>
+      <p><b>oogonia</b> แบ่งตัวตั้งแต่เป็นทารกในครรภ์ แล้วพักเป็น <b>primary oocyte</b> ที่ <span class="term">prophase I</span> จนวัยรุ่น เมื่อแบ่งจะได้ไข่ + <span class="term">polar body</span> (แบ่งไซโทพลาซึมไม่เท่ากัน) ไข่หยุดอีกครั้งที่ <span class="term">metaphase II</span> รอการปฏิสนธิ ได้ไข่ใช้งานเพียง <b>1 ฟอง</b> ต่อเซลล์ตั้งต้น</p>
+      <h3>💞 การปฏิสนธิ · Fertilization</h3>
+      <p>เกิดที่<span class="term">ท่อนำไข่</span> สเปิร์มผ่าน <b>capacitation</b> → เจาะ <b>corona radiata</b> → จับ <span class="term">ZP3</span> บน zona pellucida เกิด <b>acrosome reaction</b> (ใช้ Ca²⁺) เมื่อเข้าได้ 1 ตัว ไข่เกิด <b>cortical reaction</b> กัน polyspermy แล้วนิวเคลียสรวมกันเป็น <span class="term">ไซโกต (2n, 46 โครโมโซม)</span></p>
+    </div>
+
+    <div class="doc">
+      <h3>⚖️ ตารางเปรียบเทียบ (AP มักออกสอบ)</h3>
+      <table class="ctable">
+        <thead><tr><th>หัวข้อ</th><th>Spermatogenesis</th><th>Oogenesis</th></tr></thead>
+        <tbody>
+          <tr><td>เริ่มเมื่อ</td><td>วัยรุ่น เป็นต้นไป</td><td>ตั้งแต่เป็นทารกในครรภ์</td></tr>
+          <tr><td>เซลล์ใช้งานที่ได้</td><td>4 สเปิร์ม</td><td>1 ไข่ (+ polar body 3)</td></tr>
+          <tr><td>ขนาดเซลล์ลูก</td><td>เท่ากัน</td><td>ไม่เท่ากัน</td></tr>
+          <tr><td>การพักไมโอซิส</td><td>ไม่พัก ต่อเนื่อง</td><td>พัก 2 จุด (prophase I, metaphase II)</td></tr>
+          <tr><td>ผลิตตลอดชีวิต?</td><td>ใช่ ต่อเนื่อง</td><td>ไม่ (~400 ฟองทั้งชีวิต)</td></tr>
+          <tr><td>สถานที่</td><td>ท่อเซมินิเฟอรัส</td><td>รังไข่</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc">
+      <h3>📒 อภิธานศัพท์ · Glossary</h3>
+      <ul class="gloss" id="glossBox"></ul>
+    </div>
+
+    <button class="btn ghost" id="studyHomeBtn">กลับหน้าแรก 🏠</button>
+  </section>
+
+  <!-- ============ REVIEW WRONG ============ -->
+  <section class="screen hidden" id="reviewScreen">
+    <div class="maphead"><h2>📋 ทบทวนข้อที่ตอบผิด</h2><div class="pp" id="reviewSub"></div></div>
+    <div id="reviewBox"></div>
+    <button class="btn ghost" id="reviewBackBtn" style="margin-top:12px;">◀ กลับหน้าผลคะแนน</button>
+  </section>
+
+  <!-- ============ TEACHER VERIFY ============ -->
+  <section class="screen hidden" id="verifyScreen">
+    <div class="maphead"><h2>👩‍🏫 ครูตรวจรหัสผลนักเรียน</h2><div class="pp">วางชื่อและรหัสที่นักเรียนส่งมา เพื่อตรวจว่าคะแนนถูกต้อง ไม่ถูกแก้ไข</div></div>
+    <div class="doc">
+      <div class="field" style="margin-top:0;"><label>ชื่อนักเรียน (ตามที่ใช้เล่น)</label><input id="vName" type="text" placeholder="พิมพ์ชื่อให้ตรงกับที่นักเรียนกรอก"></div>
+      <div class="field"><label>รหัสยืนยันผล</label><input id="vCode" type="text" placeholder="เช่น FZ-1820-44c-13s-A7QK"></div>
+      <button class="btn" id="vCheckBtn">ตรวจสอบ ✓</button>
+      <div id="vResult"></div>
+    </div>
+    <button class="btn ghost" id="vHomeBtn">กลับหน้าแรก 🏠</button>
+  </section>
+
+  <!-- ============ HIDDEN-REMOVED placeholder ============ -->
+
+</div>
+
+<button class="mutebtn" id="muteBtn" title="ปิด/เปิดเสียง">🔊</button>
+<div class="flash hidden" id="flash"><div class="b" id="flashB">✨</div></div>
+
+<script>
+/* ============================================================
+   STAGE DATA — content grounded in OpenStax / NCBI / journals
+   ============================================================ */
+/* ============================================================
+   ORIGINAL SVG DIAGRAMS (no copyright; render offline)
+   ============================================================ */
+const IMG = {
+  sperm:`<svg viewBox="0 0 320 140" xmlns="http://www.w3.org/2000/svg" font-family="'Trebuchet MS',sans-serif">
+    <ellipse cx="64" cy="60" rx="42" ry="27" fill="#7ec8f0" stroke="#2f86c5" stroke-width="2"/>
+    <path d="M64 33 a42 27 0 0 0 -42 27" fill="none" stroke="#2f86c5" stroke-width="7" stroke-linecap="round"/>
+    <rect x="104" y="47" width="50" height="26" rx="7" fill="#a98be0" stroke="#7c54c9" stroke-width="2"/>
+    <circle cx="116" cy="60" r="4.5" fill="#fff"/><circle cx="129" cy="60" r="4.5" fill="#fff"/><circle cx="142" cy="60" r="4.5" fill="#fff"/>
+    <path d="M154 60 q18 -20 36 0 q18 20 36 0 q18 -20 36 0 q14 15 28 5" fill="none" stroke="#33304a" stroke-width="3.5" stroke-linecap="round"/>
+    <text x="34" y="22" font-size="10" fill="#2f86c5" font-weight="bold">acrosome</text>
+    <text x="64" y="118" font-size="12" fill="#33304a" text-anchor="middle" font-weight="bold">หัว · Head</text>
+    <text x="129" y="118" font-size="12" fill="#33304a" text-anchor="middle" font-weight="bold">คอ · Midpiece</text>
+    <text x="245" y="118" font-size="12" fill="#33304a" text-anchor="middle" font-weight="bold">หาง · Tail</text>
+    <text x="129" y="132" font-size="9.5" fill="#6f6890" text-anchor="middle">(ไมโตคอนเดรีย)</text>
+  </svg>`,
+
+  meiosis4:`<svg viewBox="0 0 320 130" xmlns="http://www.w3.org/2000/svg" font-family="'Trebuchet MS',sans-serif">
+    <circle cx="42" cy="55" r="26" fill="#7ec8f0" stroke="#2f86c5" stroke-width="2"/>
+    <text x="42" y="59" font-size="13" fill="#1e5e8c" text-anchor="middle" font-weight="bold">1</text>
+    <path d="M74 55 h26" stroke="#6f6890" stroke-width="2.5" marker-end="url(#ar)"/>
+    <circle cx="140" cy="35" r="18" fill="#a98be0" stroke="#7c54c9" stroke-width="2"/>
+    <circle cx="140" cy="80" r="18" fill="#a98be0" stroke="#7c54c9" stroke-width="2"/>
+    <path d="M164 45 h22" stroke="#6f6890" stroke-width="2.5" marker-end="url(#ar)"/>
+    <path d="M164 72 h22" stroke="#6f6890" stroke-width="2.5" marker-end="url(#ar)"/>
+    <g fill="#f79ec0" stroke="#e3578d" stroke-width="2">
+      <circle cx="212" cy="24" r="11"/><circle cx="212" cy="52" r="11"/><circle cx="212" cy="80" r="11"/><circle cx="212" cy="108" r="11"/>
+    </g>
+    <g stroke="#33304a" stroke-width="2" fill="none" stroke-linecap="round">
+      <path d="M223 24 q14 -6 26 0"/><path d="M223 52 q14 -6 26 0"/><path d="M223 80 q14 -6 26 0"/><path d="M223 108 q14 -6 26 0"/>
+    </g>
+    <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#6f6890"/></marker></defs>
+    <text x="42" y="100" font-size="10" fill="#6f6890" text-anchor="middle">primary</text>
+    <text x="42" y="112" font-size="10" fill="#6f6890" text-anchor="middle">spermatocyte</text>
+    <text x="280" y="62" font-size="12" fill="#e3578d" text-anchor="middle" font-weight="bold">สเปิร์ม</text>
+    <text x="280" y="76" font-size="12" fill="#e3578d" text-anchor="middle" font-weight="bold">4 ตัว</text>
+  </svg>`,
+
+  oo_unequal:`<svg viewBox="0 0 320 130" xmlns="http://www.w3.org/2000/svg" font-family="'Trebuchet MS',sans-serif">
+    <circle cx="48" cy="60" r="30" fill="#ffd35e" stroke="#e0a92f" stroke-width="2"/>
+    <text x="48" y="64" font-size="11" fill="#7a5a08" text-anchor="middle" font-weight="bold">oocyte</text>
+    <path d="M84 60 h26" stroke="#6f6890" stroke-width="2.5" marker-end="url(#ar2)"/>
+    <circle cx="170" cy="64" r="44" fill="#f79ec0" stroke="#e3578d" stroke-width="2"/>
+    <text x="170" y="60" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">ไข่</text>
+    <text x="170" y="76" font-size="10" fill="#fff" text-anchor="middle">ไซโทพลาซึมมาก</text>
+    <circle cx="252" cy="30" r="13" fill="#a98be0" stroke="#7c54c9" stroke-width="2"/>
+    <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#6f6890"/></marker></defs>
+    <text x="290" y="26" font-size="11" fill="#7c54c9" text-anchor="middle" font-weight="bold">polar</text>
+    <text x="290" y="39" font-size="11" fill="#7c54c9" text-anchor="middle" font-weight="bold">body</text>
+    <text x="265" y="60" font-size="9" fill="#6f6890" text-anchor="middle">(เล็ก/น้อย)</text>
+    <text x="160" y="122" font-size="11" fill="#33304a" text-anchor="middle" font-weight="bold">การแบ่งไซโทพลาซึมไม่เท่ากัน</text>
+  </svg>`,
+
+  hormone:`<svg viewBox="0 0 300 188" xmlns="http://www.w3.org/2000/svg" font-family="'Trebuchet MS',sans-serif">
+    <rect x="70" y="8" width="160" height="34" rx="10" fill="#a98be0" stroke="#7c54c9" stroke-width="2"/>
+    <text x="150" y="26" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">ไฮโพทาลามัส</text>
+    <text x="150" y="38" font-size="9" fill="#efe7ff" text-anchor="middle">Hypothalamus</text>
+    <path d="M150 42 v18" stroke="#6f6890" stroke-width="2.5" marker-end="url(#ar3)"/>
+    <text x="178" y="55" font-size="11" fill="#e3578d" font-weight="bold">GnRH</text>
+    <rect x="70" y="62" width="160" height="34" rx="10" fill="#7ec8f0" stroke="#2f86c5" stroke-width="2"/>
+    <text x="150" y="80" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">ต่อมใต้สมองส่วนหน้า</text>
+    <text x="150" y="92" font-size="9" fill="#e8f4ff" text-anchor="middle">Anterior pituitary</text>
+    <path d="M150 96 v18" stroke="#6f6890" stroke-width="2.5" marker-end="url(#ar3)"/>
+    <text x="172" y="109" font-size="11" fill="#e3578d" font-weight="bold">FSH / LH</text>
+    <rect x="70" y="116" width="160" height="38" rx="10" fill="#f79ec0" stroke="#e3578d" stroke-width="2"/>
+    <text x="150" y="135" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">อัณฑะ / รังไข่</text>
+    <text x="150" y="147" font-size="9" fill="#fff" text-anchor="middle">Testis / Ovary</text>
+    <path d="M68 133 q-44 -56 0 -112" fill="none" stroke="#36c281" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ar3)"/>
+    <text x="6" y="80" font-size="9.5" fill="#22996a" font-weight="bold">ป้อนกลับ</text>
+    <text x="6" y="92" font-size="9.5" fill="#22996a" font-weight="bold">เชิงลบ</text>
+    <defs><marker id="ar3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#6f6890"/></marker></defs>
+  </svg>`,
+
+  zona:`<svg viewBox="0 0 320 170" xmlns="http://www.w3.org/2000/svg" font-family="'Trebuchet MS',sans-serif">
+    <circle cx="200" cy="85" r="62" fill="none" stroke="#a98be0" stroke-width="2" stroke-dasharray="3 6"/>
+    <circle cx="200" cy="85" r="46" fill="#fff2f8" stroke="#e3578d" stroke-width="7"/>
+    <circle cx="200" cy="85" r="34" fill="#f79ec0" stroke="#e3578d" stroke-width="2"/>
+    <text x="200" y="82" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">ไข่</text>
+    <text x="200" y="96" font-size="9" fill="#fff" text-anchor="middle">egg</text>
+    <ellipse cx="48" cy="85" rx="22" ry="13" fill="#7ec8f0" stroke="#2f86c5" stroke-width="2"/>
+    <path d="M70 85 q18 -10 34 0" fill="none" stroke="#33304a" stroke-width="3" stroke-linecap="round"/>
+    <path d="M104 85 h28" stroke="#2f86c5" stroke-width="2.5" marker-end="url(#ar4)"/>
+    <text x="262" y="40" font-size="11" fill="#a98be0" font-weight="bold">corona</text>
+    <text x="262" y="52" font-size="11" fill="#a98be0" font-weight="bold">radiata</text>
+    <text x="248" y="150" font-size="11" fill="#e3578d" font-weight="bold">zona pellucida</text>
+    <text x="248" y="162" font-size="9.5" fill="#6f6890">ZP1 · ZP2 · ZP3</text>
+    <text x="40" y="120" font-size="11" fill="#2f86c5" text-anchor="middle" font-weight="bold">สเปิร์ม</text>
+    <defs><marker id="ar4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#2f86c5"/></marker></defs>
+  </svg>`,
+
+  fertsite:`<svg viewBox="0 0 320 165" xmlns="http://www.w3.org/2000/svg" font-family="'Trebuchet MS',sans-serif">
+    <path d="M150 120 q-10 -60 -70 -74 q40 -2 60 26 q12 18 10 48 z" fill="#f79ec0" stroke="#e3578d" stroke-width="2"/>
+    <path d="M150 120 q10 -60 70 -74 q-40 -2 -60 26 q-12 18 -10 48 z" fill="#f79ec0" stroke="#e3578d" stroke-width="2"/>
+    <path d="M132 120 h36 l-6 34 h-24 z" fill="#f4b8d0" stroke="#e3578d" stroke-width="2"/>
+    <ellipse cx="64" cy="52" rx="20" ry="15" fill="#ffd35e" stroke="#e0a92f" stroke-width="2"/>
+    <ellipse cx="256" cy="52" rx="20" ry="15" fill="#ffd35e" stroke="#e0a92f" stroke-width="2"/>
+    <text x="64" y="56" font-size="9" fill="#7a5a08" text-anchor="middle" font-weight="bold">รังไข่</text>
+    <text x="256" y="56" font-size="9" fill="#7a5a08" text-anchor="middle" font-weight="bold">รังไข่</text>
+    <text x="108" y="36" font-size="22" text-anchor="middle">⭐</text>
+    <text x="108" y="20" font-size="10" fill="#e0a92f" text-anchor="middle" font-weight="bold">ปฏิสนธิ</text>
+    <text x="150" y="150" font-size="11" fill="#33304a" text-anchor="middle" font-weight="bold">มดลูก</text>
+    <text x="206" y="100" font-size="10" fill="#6f6890" text-anchor="middle">ท่อนำไข่</text>
+  </svg>`
+};
+
+/* ============================================================
+   STAGE DATA — 10 questions/stage · grounded in OpenStax / NCBI
+   options contain NO parenthetical hints
+   ============================================================ */
+const STAGES = [
+  {
+    icon:'🏊‍♂️', av:'🦠', name:'การสร้างสเปิร์ม', en:'Spermatogenesis',
+    boss:{name:'Meiosis Glitch 🧬', av:'🧬'},
+    story:'เธอคือ "สเปอร์มาโทโกเนียม" เซลล์ต้นกำเนิดในท่อเซมินิเฟอรัส! ต้องผ่านการแบ่งเซลล์ให้ถูกต้องเพื่อกลายเป็นสเปิร์มสมบูรณ์ ระวังความผิดพลาดในการแบ่งเซลล์!',
+    bossTag:'บอส: ความผิดพลาดของการแบ่งเซลล์',
+    outro:'เยี่ยม! เธอผ่านไมโทซิส → ไมโอซิส → spermiogenesis กลายเป็นสเปิร์มที่มีหัว คอ และหาง พร้อมว่ายน้ำแล้ว!',
+    q:[
+      {q:'สเปิร์มถูกสร้างขึ้นที่ส่วนใดของอัณฑะ?', eng:'Where is sperm produced?',
+       o:['ท่อเซมินิเฟอรัส','หลอดเก็บอสุจิ','ต่อมลูกหมาก','ถุงน้ำเชื้อ'], a:0,
+       ex:'สเปิร์มเจริญในท่อเซมินิเฟอรัส (seminiferous tubules) ที่ขดอยู่ในอัณฑะ เซลล์อ่อนอยู่รอบนอก สเปิร์มสมบูรณ์อยู่ในลูเมน'},
+      {q:'เซลล์ใดทำหน้าที่ "พี่เลี้ยง" หล่อเลี้ยงและปกป้องเซลล์สเปิร์ม?', eng:'Which "nurse" cells nourish sperm?',
+       o:['เซลล์เซอร์โทลี','เซลล์ลัยดิก','เซลล์เม็ดเลือดขาว','เซลล์ไข่'], a:0,
+       ex:'เซลล์เซอร์โทลี (Sertoli) เป็นเซลล์พี่เลี้ยงในผนังท่อ ปกป้องและส่งเสริมการพัฒนาของเซลล์สืบพันธุ์'},
+      {q:'เซลล์ใดผลิตฮอร์โมนเทสโทสเตอโรน?', eng:'Which cells produce testosterone?',
+       o:['เซลล์เซอร์โทลี','เซลล์ลัยดิก','spermatid','polar body'], a:1,
+       ex:'เซลล์ลัยดิก (Leydig) อยู่ระหว่างท่อ ผลิตเทสโทสเตอโรนเมื่อเข้าวัยรุ่นภายใต้การกระตุ้นของ LH'},
+      {q:'เซลล์ต้นกำเนิดสเปิร์มที่อยู่รอบนอกของท่อเรียกว่าอะไร?', eng:'What are the sperm stem cells called?',
+       o:['สเปอร์มาโทโกเนีย','โอโอโกเนีย','corpus luteum','ไซโกต'], a:0,
+       ex:'spermatogonia เป็นเซลล์ดิพลอยด์ต้นกำเนิด แบ่งไมโทซิสเพิ่มจำนวนและรักษาสายพันธุ์ไว้'},
+      {q:'การแบ่งไมโอซิสจาก primary spermatocyte 1 เซลล์ ได้สเปิร์มกี่ตัว?', eng:'How many sperm from 1 primary spermatocyte?', img:'meiosis4',
+       o:['1 ตัว','2 ตัว','4 ตัว','8 ตัว'], a:2,
+       ex:'spermatogenesis ได้สเปิร์ม 4 ตัวต่อเซลล์ตั้งต้น ต่างจาก oogenesis ที่ได้ไข่เพียง 1 ฟอง'},
+      {q:'spermatids เปลี่ยนรูปร่างเป็นสเปิร์มสมบูรณ์ที่มีหัวและหาง ในขั้นใด?', eng:'Stage where spermatids reshape into sperm?', img:'sperm',
+       o:['Spermiogenesis','ไมโทซิส','Capacitation','การตกไข่'], a:0,
+       ex:'Spermiogenesis คือขั้นสุดท้าย สร้างหัวที่มี DNA, คอที่มีไมโตคอนเดรีย และหางสำหรับเคลื่อนที่'},
+      {q:'ส่วนใดของสเปิร์มอัดแน่นด้วยไมโตคอนเดรียเพื่อสร้างพลังงานให้หาง?', eng:'Which part holds mitochondria for energy?', img:'sperm',
+       o:['ส่วนหัว','ส่วนคอ/ลำตัว','อะโครโซม','ปลายหาง'], a:1,
+       ex:'ส่วนคอ (midpiece) อัดแน่นด้วยไมโตคอนเดรียที่สร้าง ATP เพื่อขับเคลื่อนหาง (flagellum)'},
+      {q:'ส่วนหัวของสเปิร์มมีถุงเอนไซม์สำหรับเจาะไข่เรียกว่าอะไร?', eng:'What enzyme-filled cap is on the sperm head?',
+       o:['อะโครโซม','ไมโตคอนเดรีย','เซนทริโอล','ไรโบโซม'], a:0,
+       ex:'อะโครโซม (acrosome) คลุมส่วนหัว บรรจุเอนไซม์ที่ใช้ย่อยและเจาะ zona pellucida ของไข่'},
+      {q:'หลังสร้างเสร็จ สเปิร์มไปสุกและเก็บที่ใดก่อนการหลั่ง?', eng:'Where do sperm mature before ejaculation?',
+       o:['ท่อนำไข่','หลอดเก็บอสุจิ','รังไข่','มดลูก'], a:1,
+       ex:'สเปิร์มเดินทางออกจากท่อไปยังหลอดเก็บอสุจิ (epididymis) เพื่อสุกและเตรียมพร้อมการหลั่ง'},
+      {q:'ลำดับขั้นตอนของ spermatogenesis ข้อใดถูกต้อง?', eng:'Correct order of spermatogenesis?',
+       o:['ไมโทซิส → ไมโอซิส → spermiogenesis','ไมโอซิส → ไมโทซิส → spermiogenesis','spermiogenesis → ไมโทซิส → ไมโอซิส','ไมโทซิส → spermiogenesis → ไมโอซิส'], a:0,
+       ex:'เริ่มจาก spermatogonia แบ่งไมโทซิส → primary spermatocyte แบ่งไมโอซิส → spermatids เปลี่ยนรูปใน spermiogenesis'}
+    ]
+  },
+  {
+    icon:'🥚', av:'⏰', name:'การสร้างไข่ & การตกไข่', en:'Oogenesis & Ovulation',
+    boss:{name:'Ovulation Clock ⏰', av:'⏰'},
+    story:'สลับมาที่รังไข่! เธอคือ "ไข่" ที่ถูกพักไว้นานหลายปี ต้องปลุกให้แบ่งเซลล์ต่อในจังหวะที่ถูกต้อง เพื่อให้สุกและตกไข่ทันเวลานัดพบสเปิร์ม!',
+    bossTag:'บอส: นาฬิกาแห่งการตกไข่',
+    outro:'ไข่สุกและตกออกมาแล้ว! ตอนนี้ secondary oocyte ค้างอยู่ที่ metaphase II รอสเปิร์มมาปลุกให้แบ่งต่อ',
+    q:[
+      {q:'oogonia แบ่งตัวแบบไมโทซิสจำนวนมากในช่วงใดของชีวิต?', eng:'When do oogonia multiply by mitosis?',
+       o:['ช่วงวัยรุ่น','ช่วงเป็นทารกในครรภ์','ทุกเดือนหลังมีประจำเดือน','หลังหมดประจำเดือน'], a:1,
+       ex:'oogonia แบ่งไมโทซิสในช่วงทารกในครรภ์ และไม่มีการสร้างเซลล์ไข่ใหม่หลังคลอด'},
+      {q:'primary oocyte ถูกพักค้างที่ระยะใดตั้งแต่ก่อนเกิดจนถึงวัยรุ่น?', eng:'Primary oocyte arrests at which phase?',
+       o:['Prophase I','Metaphase II','ระยะ S','Anaphase I'], a:0,
+       ex:'ไข่ถูกพักครั้งแรกที่ prophase I (ระยะไดโพลทีน) อาจนานหลายสิบปีจนถึงตกไข่'},
+      {q:'การแบ่งไซโทพลาซึมไม่เท่ากันใน oogenesis ทำให้ได้เซลล์เล็กที่เรียกว่าอะไร?', eng:'Small cell from unequal division?', img:'oo_unequal',
+       o:['Zygote','Polar body','Blastocyst','Spermatid'], a:1,
+       ex:'แบ่งไม่เท่ากันได้ secondary oocyte ที่มีไซโทพลาซึมมาก กับ polar body ที่เล็กและมักสลายไป'},
+      {q:'secondary oocyte ถูกพักค้างครั้งที่สองที่ระยะใด จนกว่าจะปฏิสนธิ?', eng:'Egg arrests again at which stage?',
+       o:['Prophase I','Metaphase II','Telophase I','ระยะ G1'], a:1,
+       ex:'ไข่ค้างที่ metaphase II และจะแบ่งไมโอซิส II ต่อก็ต่อเมื่อมีสเปิร์มเข้าผสมเท่านั้น'},
+      {q:'จาก oogonium 1 เซลล์ ได้ไข่สมบูรณ์กี่ฟอง?', eng:'How many functional ova from 1 oogonium?',
+       o:['1 ฟอง','2 ฟอง','4 ฟอง','8 ฟอง'], a:0,
+       ex:'ได้ไข่สมบูรณ์เพียง 1 ฟอง ส่วน polar body อีก 3 อันจะสลายไป'},
+      {q:'ตลอดชีวิตของผู้หญิงหนึ่งคน มีไข่สุกและตกไข่ประมาณกี่ฟอง?', eng:'How many eggs ovulate in a lifetime?',
+       o:['ประมาณ 7 ล้านฟอง','ประมาณ 400 ฟอง','ประมาณ 4 ฟอง','ประมาณ 1 ล้านฟอง'], a:1,
+       ex:'จาก primary oocytes หลายแสนถึงล้านเซลล์ มีเพียงราว 400 ฟองที่สุกและตกไข่ตลอดชีวิต'},
+      {q:'จำนวน primary oocytes โดยประมาณเมื่อแรกเกิดมีเท่าใด?', eng:'About how many primary oocytes at birth?',
+       o:['ประมาณ 1–2 ล้านเซลล์','ประมาณ 400 เซลล์','ประมาณ 50 เซลล์','ประมาณ 7 พันล้านเซลล์'], a:0,
+       ex:'เมื่อแรกเกิดมี primary oocytes ราว 1–2 ล้านเซลล์ และค่อย ๆ ลดจำนวนลงตลอดชีวิต'},
+      {q:'เหตุใดการแบ่งเซลล์ใน oogenesis จึงแบ่งไซโทพลาซึมไม่เท่ากัน?', eng:'Why is the cytoplasm divided unequally?', img:'oo_unequal',
+       o:['เพื่อให้ไข่เก็บไซโทพลาซึมและสารอาหารไว้มากที่สุด','เพื่อสร้างสเปิร์ม','เพื่อเพิ่มจำนวนไข่ให้มากขึ้น','เพื่อให้ไข่ไม่มีโครโมโซม'], a:0,
+       ex:'การแบ่งไม่เท่ากันทำให้ไข่เก็บสารอาหารและออร์แกเนลล์ไว้มากที่สุด เพื่อหล่อเลี้ยงตัวอ่อนหลังปฏิสนธิ'},
+      {q:'สิ่งใดกระตุ้นให้ secondary oocyte แบ่งไมโอซิส II จนจบ?', eng:'What triggers the egg to complete meiosis II?',
+       o:['การที่สเปิร์มเข้าผสม','การมีประจำเดือน','การหลั่ง FSH','การที่ไข่ฝ่อ'], a:0,
+       ex:'การปฏิสนธิ (สเปิร์มเข้าผสม) ปลดล็อกการค้างที่ metaphase II ทำให้ไข่จบไมโอซิส II'},
+      {q:'ข้อใดเป็นความแตกต่างของ oogenesis เมื่อเทียบกับ spermatogenesis?', eng:'How does oogenesis differ from spermatogenesis?',
+       o:['ได้เซลล์สืบพันธุ์ใช้งานได้เพียง 1 จากเซลล์ตั้งต้น','ได้เซลล์ใช้งานได้ 4 เท่ากัน','เกิดในอัณฑะ','ไม่ใช้ไมโอซิส'], a:0,
+       ex:'oogenesis ได้ไข่ใช้งานได้ 1 ฟอง (สเปิร์มได้ 4 ตัว) เริ่มก่อนเกิด และพักไมโอซิส 2 จุด'}
+    ]
+  },
+  {
+    icon:'⚗️', av:'🌊', name:'ฮอร์โมน & การปรับสภาพ', en:'Hormones & Capacitation',
+    boss:{name:'Cervical Gauntlet 🌊', av:'🌊'},
+    story:'สเปิร์มต้องว่ายผ่านทางเดินสืบพันธุ์เพศหญิง! ใช้ความรู้เรื่องฮอร์โมนและกระบวนการ capacitation เพื่อ "ชาร์จพลัง" ให้พร้อมเจาะไข่',
+    bossTag:'บอส: มูกปากมดลูก & วงจรฮอร์โมน',
+    outro:'สเปิร์มผ่าน capacitation เรียบร้อย เคลื่อนที่ไวขึ้นและพร้อมจะเกิด acrosome reaction แล้ว!',
+    q:[
+      {q:'ฮอร์โมนใดจากไฮโพทาลามัส กระตุ้นต่อมใต้สมองให้หลั่ง FSH และ LH?', eng:'Hypothalamic hormone triggering FSH & LH?', img:'hormone',
+       o:['GnRH','Inhibin','Estrogen','Testosterone'], a:0,
+       ex:'GnRH จากไฮโพทาลามัสกระตุ้นต่อมใต้สมองส่วนหน้าให้หลั่ง FSH และ LH'},
+      {q:'ในเพศชาย FSH กระตุ้นเซลล์ใดเพื่อส่งเสริมการสร้างสเปิร์ม?', eng:'FSH stimulates which cells in males?', img:'hormone',
+       o:['เซลล์ลัยดิก','เซลล์เซอร์โทลี','เซลล์ไข่','เซลล์กล้ามเนื้อ'], a:1,
+       ex:'FSH กระตุ้นเซลล์เซอร์โทลี และเซลล์นี้หลั่ง inhibin กลับไปยับยั้ง FSH แบบป้อนกลับเชิงลบ'},
+      {q:'การพุ่งสูงขึ้นอย่างรวดเร็วของฮอร์โมนใด เป็นสัญญาณการตกไข่?', eng:'Surge of which hormone signals ovulation?',
+       o:['FSH','LH','Inhibin','Progesterone'], a:1,
+       ex:'การพุ่งสูงของ LH (LH surge) เป็นตัวกระตุ้นให้เกิดการตกไข่'},
+      {q:'ฮอร์โมนใดที่หลั่งออกมาเพื่อยับยั้ง FSH?', eng:'Which hormone inhibits FSH?',
+       o:['Inhibin','GnRH','LH','Estrogen'], a:0,
+       ex:'Inhibin จากเซลล์เซอร์โทลีหรือฟอลลิเคิล ยับยั้งการหลั่ง FSH'},
+      {q:'กระบวนการที่สเปิร์มถูกปรับสภาพให้พร้อมเจาะไข่ เกิดขึ้นที่ใด?', eng:'Where does capacitation occur?',
+       o:['ในทางเดินสืบพันธุ์เพศหญิง','ในอัณฑะ','ในหลอดเก็บอสุจิ','ในรังไข่'], a:0,
+       ex:'capacitation เกิดในทางเดินสืบพันธุ์เพศหญิง ทำให้สเปิร์มเคลื่อนที่ไวขึ้นและเยื่อหุ้มพร้อมหลั่งเอนไซม์'},
+      {q:'ฮอร์โมนคู่ใดช่วยเตรียมเยื่อบุโพรงมดลูกและควบคุมรอบเดือน?', eng:'Which hormones prepare the endometrium?',
+       o:['GnRH และ FSH','เอสโตรเจนและโปรเจสเตอโรน','Inhibin และ LH','เทสโทสเตอโรนเดี่ยว'], a:1,
+       ex:'เอสโตรเจนและโปรเจสเตอโรนเตรียมเยื่อบุมดลูก เมื่อลดลงจะเริ่มรอบเดือนใหม่'},
+      {q:'ในเพศชาย LH กระตุ้นเซลล์ใดให้สร้างเทสโทสเตอโรน?', eng:'LH stimulates which cells in males?', img:'hormone',
+       o:['เซลล์ลัยดิก','เซลล์เซอร์โทลี','spermatid','เซลล์ไข่'], a:0,
+       ex:'LH กระตุ้นเซลล์ลัยดิกให้สร้างเทสโทสเตอโรน ซึ่งช่วยการสร้างสเปิร์มและลักษณะเพศรอง'},
+      {q:'capacitation ทำให้สเปิร์มเปลี่ยนแปลงอย่างไร?', eng:'What does capacitation change in sperm?',
+       o:['เคลื่อนที่ไวขึ้นและเยื่อหุ้มพร้อมหลั่งเอนไซม์','สร้างหางใหม่','เพิ่มจำนวนเป็น 2 เท่า','เปลี่ยนเป็นไข่'], a:0,
+       ex:'capacitation เพิ่มการเคลื่อนที่ (hyperactivation) และทำให้เยื่อหุ้มไม่เสถียร พร้อมเกิด acrosome reaction'},
+      {q:'ต่อมใดเป็นผู้หลั่งฮอร์โมน FSH และ LH โดยตรง?', eng:'Which gland secretes FSH and LH?',
+       o:['ต่อมใต้สมองส่วนหน้า','ไฮโพทาลามัส','รังไข่','อัณฑะ'], a:0,
+       ex:'ต่อมใต้สมองส่วนหน้า (anterior pituitary) หลั่ง FSH และ LH เมื่อถูกกระตุ้นด้วย GnRH'},
+      {q:'การควบคุมระดับฮอร์โมนเพศโดยรวมอาศัยกลไกแบบใดเป็นหลัก?', eng:'What is the main control mechanism?',
+       o:['การป้อนกลับเชิงลบ','ไม่มีการควบคุมใด ๆ','การแพร่แบบสุ่ม','การป้อนกลับเชิงบวกตลอดเวลา'], a:0,
+       ex:'แกนไฮโพทาลามัส-ต่อมใต้สมอง-ต่อมเพศใช้ป้อนกลับเชิงลบเป็นหลัก (ยกเว้น LH surge ที่เป็นป้อนกลับเชิงบวกชั่วคราว)'}
+    ]
+  },
+  {
+    icon:'🛡️', av:'🛡️', name:'เจาะกำแพง Zona Pellucida', en:'Acrosome Reaction (BOSS)',
+    boss:{name:'กำแพง Zona Pellucida 🛡️', av:'🛡️'},
+    story:'ด่านบอสใหญ่! สเปิร์มมาถึงไข่แล้ว แต่มี "กำแพง zona pellucida" ขวางอยู่ และสเปิร์มคู่แข่งก็แย่งกันเข้า! ใช้ acrosome reaction เจาะกำแพงให้ได้ก่อน!',
+    bossTag:'บอส: กำแพง Zona Pellucida + สเปิร์มคู่แข่ง',
+    outro:'สเปิร์มหลั่งเอนไซม์จาก acrosome เจาะทะลุ corona radiata และ zona pellucida สำเร็จ! กำลังจะหลอมรวมกับเยื่อหุ้มไข่',
+    q:[
+      {q:'การปฏิสนธิระหว่างสเปิร์มกับไข่ตามปกติเกิดขึ้นที่ส่วนใด?', eng:'Where does fertilization normally occur?', img:'fertsite',
+       o:['ในรังไข่','ในมดลูก','ในท่อนำไข่','ในช่องคลอด'], a:2,
+       ex:'การปฏิสนธิเกิดในท่อนำไข่ (oviduct) จากสเปิร์มหลายล้านตัว มีเพียงไม่กี่ร้อยที่เดินทางมาถึง'},
+      {q:'สเปิร์มต้องผ่านชั้นเซลล์ใดที่ห่อหุ้มไข่ ก่อนสัมผัส zona pellucida?', eng:'Which layer must sperm pass first?', img:'zona',
+       o:['Corona radiata','Cortical granule','ชั้นเซลล์เซอร์โทลี','เยื่อบุโพรงมดลูก'], a:0,
+       ex:'สเปิร์มต้องเจาะผ่านชั้นเซลล์ corona radiata ก่อน แล้วจึงถึงเยื่อ zona pellucida'},
+      {q:'โปรตีนใดบน zona pellucida ที่จับกับสเปิร์มและเหนี่ยวนำให้เกิด acrosome reaction?', eng:'Which protein triggers the acrosome reaction?', img:'zona',
+       o:['ZP1','ZP2','ZP3','Inhibin'], a:2,
+       ex:'ZP3 เป็นตัวรับสเปิร์มที่สำคัญ ไข่ที่ขาด ZP3 จะเป็นหมัน เมื่อสเปิร์มจับ ZP3 จะกระตุ้น acrosome reaction'},
+      {q:'acrosome reaction คือการที่สเปิร์มหลั่งสิ่งใดออกมา?', eng:'What does the acrosome reaction release?',
+       o:['เอนไซม์ย่อยเพื่อเจาะ zona pellucida','ฮอร์โมนเอสโตรเจน','คลื่นแคลเซียม','polar body'], a:0,
+       ex:'acrosome reaction หลั่งเอนไซม์ไฮโดรไลติกและโปรตีเอสย่อย zona pellucida ให้สเปิร์มเจาะเข้าไปได้'},
+      {q:'ไอออนใดที่เพิ่มขึ้นและจำเป็นต่อการเริ่ม acrosome reaction?', eng:'Which ion is needed to start the reaction?',
+       o:['Na⁺','Ca²⁺','K⁺','Cl⁻'], a:1,
+       ex:'การเพิ่มของ Ca²⁺ ในสเปิร์มจำเป็นต่อการเริ่มต้น acrosome reaction'},
+      {q:'zona pellucida ของไข่สัตว์เลี้ยงลูกด้วยนมประกอบด้วยไกลโคโปรตีนหลักกี่ชนิด?', eng:'How many main zona glycoproteins?',
+       o:['1 ชนิด','2 ชนิด','3 ชนิด','5 ชนิด'], a:2,
+       ex:'zona ประกอบด้วยไกลโคโปรตีน 3 ชนิด คือ ZP1, ZP2, ZP3'},
+      {q:'จากสเปิร์มที่หลั่งหลายร้อยล้านตัว มีจำนวนเท่าใดที่เดินทางถึงบริเวณไข่โดยประมาณ?', eng:'How many sperm reach the egg?',
+       o:['เพียงไม่กี่ร้อยตัว','ครึ่งหนึ่ง','เกือบทั้งหมด','ไม่เหลือเลย'], a:0,
+       ex:'จากสเปิร์มหลายร้อยล้านตัว มีเพียงไม่กี่ร้อยตัวที่เดินทางถึงท่อนำไข่บริเวณที่ไข่อยู่'},
+      {q:'โครงสร้างของ zona pellucida เป็นอย่างไร?', eng:'What is the structure of the zona?', img:'zona',
+       o:['ZP2 และ ZP3 สานเป็นเส้นใย ZP1 เชื่อมเป็นตาข่าย','เป็นเซลล์มีชีวิตเรียงกัน','เป็นชั้นไขมันบาง ๆ','เป็นกระดูกอ่อน'], a:0,
+       ex:'ZP2 และ ZP3 สานเป็นเส้นใยยาว และ ZP1 เชื่อมเส้นใยเป็นตาข่ายสามมิติรอบไข่'},
+      {q:'สเปิร์มกี่ตัวที่หลอมรวมและปฏิสนธิกับไข่ได้สำเร็จตามปกติ?', eng:'How many sperm fertilize the egg?',
+       o:['เพียง 1 ตัว','2 ตัว','4 ตัว','ทุกตัวที่มาถึง'], a:0,
+       ex:'แม้หลายตัวจะมาถึง แต่มีเพียงสเปิร์ม 1 ตัวที่หลอมรวมและปฏิสนธิกับไข่ได้สำเร็จ'},
+      {q:'เมื่อสเปิร์มจับกับ ZP3 เกิดอะไรขึ้นกับเยื่อหุ้มอะโครโซม?', eng:'What happens to the acrosomal membrane?',
+       o:['เยื่อหุ้มหลอมรวมและปล่อยเอนไซม์ออกมา','เยื่อหนาขึ้นและปิดสนิท','สเปิร์มตายทันที','ไข่เริ่มแบ่งตัว'], a:0,
+       ex:'การจับ ZP3 ทำให้เยื่อหุ้มเซลล์สเปิร์มหลอมรวมกับเยื่ออะโครโซม แล้วปล่อยเอนไซม์ย่อยออกมา'}
+    ]
+  },
+  {
+    icon:'💞', av:'🥚', name:'ปฏิสนธิ & กัน Polyspermy', en:'Cortical Reaction & Syngamy',
+    boss:{name:'Polyspermy Threat 🚫', av:'🚫'},
+    story:'ด่านสุดท้าย! สเปิร์มหนึ่งตัวหลอมรวมกับไข่แล้ว แต่ต้องรีบ "ปิดประตู" ไม่ให้สเปิร์มตัวอื่นเข้าได้ มิฉะนั้นจะเกิด polyspermy! แล้วรวมนิวเคลียสให้เป็นไซโกต!',
+    bossTag:'บอส: สเปิร์มส่วนเกิน (Polyspermy)',
+    outro:'สำเร็จ! cortical reaction ทำให้ zona แข็งตัวกันสเปิร์มตัวอื่น ไข่จบไมโอซิส II นิวเคลียสรวมกันเป็น zygote ดิพลอยด์ 🎉',
+    q:[
+      {q:'ปฏิกิริยาใดของไข่ช่วยป้องกันไม่ให้สเปิร์มหลายตัวเข้าผสม?', eng:'Which reaction blocks polyspermy?',
+       o:['Acrosome reaction','Cortical reaction','Capacitation','ไมโทซิส'], a:1,
+       ex:'cortical reaction ปล่อยเอนไซม์จาก cortical granules ไปปรับ zona pellucida เพื่อกันสเปิร์มตัวอื่น'},
+      {q:'cortical reaction ทำให้ zona pellucida เปลี่ยนแปลงอย่างไร?', eng:'How does the cortical reaction change the zona?',
+       o:['ทำให้ zona แข็งตัว สเปิร์มจับไม่ได้อีก','ละลายหายไปทั้งหมด','ขยายใหญ่ขึ้นเป็นสองเท่า','เปลี่ยนเป็นเซลล์ใหม่'], a:0,
+       ex:'เอนไซม์จาก cortical granules ทำให้ zona แข็งตัวและดัดแปลง ZP2/ZP3 สเปิร์มจึงจับไม่ได้อีก'},
+      {q:'สิ่งใดเป็นสัญญาณกระตุ้นให้เกิด cortical reaction และปลุกไข่ให้แบ่งต่อ?', eng:'What signal triggers the cortical reaction?',
+       o:['คลื่นและการเพิ่มของ Ca²⁺','การลดลงของ FSH','เอนไซม์จากสเปิร์ม','โปรเจสเตอโรน'], a:0,
+       ex:'คลื่น Ca²⁺ ในไซโทพลาซึมของไข่กระตุ้น cortical reaction และปลดล็อกการค้างที่ metaphase II'},
+      {q:'หลังสเปิร์มเข้าผสม ไข่จบไมโอซิส II แล้วสร้างสิ่งใดเพิ่ม?', eng:'After fertilization, the egg forms what?',
+       o:['polar body ตัวที่สอง','สเปิร์มตัวใหม่','ฟอลลิเคิล','corpus luteum'], a:0,
+       ex:'การปฏิสนธิทำให้ไข่จบไมโอซิส II และสร้าง polar body ตัวที่สอง'},
+      {q:'เมื่อนิวเคลียสของสเปิร์มและไข่รวมกัน เกิดเซลล์ใหม่ชื่ออะไร?', eng:'What cell forms when nuclei fuse?',
+       o:['ไซโกต ดิพลอยด์','เกมีต แฮพลอยด์','polar body','oocyte'], a:0,
+       ex:'เกิด zygote ที่เป็นดิพลอยด์ ครึ่งหนึ่งจากพ่อ ครึ่งจากแม่ เริ่มการพัฒนาตัวอ่อน'},
+      {q:'ไซโกตของมนุษย์มีจำนวนโครโมโซมเท่าใด?', eng:'How many chromosomes in a human zygote?',
+       o:['46 โครโมโซม','23 โครโมโซม','92 โครโมโซม','22 โครโมโซม'], a:0,
+       ex:'ไข่ (23) + สเปิร์ม (23) รวมเป็นไซโกตดิพลอยด์ 46 โครโมโซม (2n)'},
+      {q:'คำว่า syngamy ในกระบวนการปฏิสนธิหมายถึงอะไร?', eng:'What does syngamy mean?',
+       o:['การรวมกันของนิวเคลียสสเปิร์มและไข่','การแบ่งเซลล์ของตัวอ่อน','การตกไข่','การหลั่งฮอร์โมน'], a:0,
+       ex:'syngamy คือการที่นิวเคลียส (โครโมโซม) ของสเปิร์มและไข่รวมกันเป็นชุดเดียวในไซโกต'},
+      {q:'cortical granules ที่ใช้ในการกัน polyspermy พัฒนามาจากออร์แกเนลล์ใด?', eng:'Cortical granules develop from which organelle?',
+       o:['กอลจิแอปพาราตัส','ไมโตคอนเดรีย','นิวเคลียส','ไรโบโซม'], a:0,
+       ex:'cortical granules พัฒนามาจากกอลจิแอปพาราตัส (Golgi) อยู่บริเวณคอร์เทกซ์ของไข่ก่อนปฏิสนธิ'},
+      {q:'เหตุใดร่างกายจึงต้องป้องกันการเกิด polyspermy?', eng:'Why must polyspermy be prevented?',
+       o:['เพื่อให้ไซโกตมีจำนวนโครโมโซมที่ถูกต้อง','เพื่อให้ไข่มีขนาดใหญ่ขึ้น','เพื่อสร้างสเปิร์มเพิ่ม','เพื่อหยุดการหลั่งฮอร์โมน'], a:0,
+       ex:'หากหลายสเปิร์มเข้าผสม ไซโกตจะมีโครโมโซมเกิน 2n ทำให้พัฒนาผิดปกติและตายในที่สุด'},
+      {q:'หลังปฏิสนธิ ไซโกตจะเดินทางไปฝังตัว (implantation) ที่ส่วนใด?', eng:'Where does the zygote implant?', img:'fertsite',
+       o:['ผนังมดลูก','รังไข่','ค้างที่ท่อนำไข่ตลอดไป','ช่องคลอด'], a:0,
+       ex:'ไซโกตแบ่งตัวขณะเคลื่อนผ่านท่อนำไข่ แล้วไปฝังตัวที่เยื่อบุผนังมดลูกเพื่อพัฒนาต่อ'}
+    ]
+  }
+];
+
+/* ============================================================ */
+const TIME_PER_Q = 15, PLAYER_MAX = 100, BOSS_DMG = 22;
+const $ = id => document.getElementById(id);
+
+let player='', unlocked=1, starsByStage={};
+let cur=0, qi=0, meHP=100, bossHP=100, bossMax=100, streak=0, bestStreak=0;
+let totalScore=0, totalCorrect=0, stageWrong=0, answered=false, timer=null, qStart=0;
+let muted=false, wrongLog=[], stageWrongLog=[];
+
+/* ---- screens ---- */
+function show(s){ ['startScreen','mapScreen','introScreen','battleScreen','clearScreen','failScreen','resultScreen','fcTopicScreen','fcStudyScreen','fcDoneScreen','studyScreen','reviewScreen','verifyScreen'].forEach(x=>$(x).classList.toggle('hidden', x!==s)); window.scrollTo(0,0); }
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ---- start ---- */
+$('startBtn').onclick=()=>{ player=($('nameInput').value||'').trim()||'นักผจญภัย'; $('nameInput').value=player; newGame(); };
+function newGame(){ unlocked=1; starsByStage={}; totalScore=0; totalCorrect=0; bestStreak=0; wrongLog=[]; renderMap(); show('mapScreen'); }
+$('resetBtn').onclick=newGame;
+$('homeBtn').onclick=()=>show('startScreen');
+$('againBtn').onclick=newGame;
+
+/* ============================================================
+   FLASHCARD PRACTICE MODE
+   ============================================================ */
+$('flashBtn').onclick=openFcTopics;
+$('fcHomeBtn').onclick=()=>show('startScreen');
+$('fcQuitBtn').onclick=()=>show('startScreen');
+$('fcPickAnotherBtn').onclick=openFcTopics;
+
+let fcDeck=[], fcIdx=0, fcKnown=0, fcSource=[], fcLabel='';
+
+function buildCards(stageIndex){
+  // stageIndex = number (0-4) for one stage, or 'all'
+  const list=[];
+  STAGES.forEach((s,si)=>{
+    if(stageIndex!=='all' && si!==stageIndex) return;
+    s.q.forEach(q=>{
+      list.push({ icon:s.icon, chip:s.name, chipColor:['b-sperm','b-egg','b-fert','b-horm','b-fert'][si]||'b-fert',
+                  q:q.q, eng:q.eng, a:q.o[q.a], ex:q.ex, img:q.img });
+    });
+  });
+  return list;
+}
+
+function openFcTopics(){
+  const box=$('fcTopicBox'); box.innerHTML='';
+  const total=STAGES.reduce((a,s)=>a+s.q.length,0);
+  const all=document.createElement('div');
+  all.className='fc-topic all';
+  all.innerHTML='<div class="ic">🌈</div><div class="meta"><div class="nm">ทุกหัวข้อรวมกัน</div><div class="en">All topics</div></div><div class="cnt">'+total+' การ์ด</div>';
+  all.onclick=()=>startFc('all','ทุกหัวข้อ');
+  box.appendChild(all);
+  STAGES.forEach((s,i)=>{
+    const t=document.createElement('div'); t.className='fc-topic';
+    t.innerHTML='<div class="ic">'+s.icon+'</div><div class="meta"><div class="nm">'+s.name+'</div><div class="en">'+s.en+'</div></div><div class="cnt">'+s.q.length+' การ์ด</div>';
+    t.onclick=()=>startFc(i,s.name);
+    box.appendChild(t);
+  });
+  show('fcTopicScreen');
+}
+
+function startFc(stageIndex,label){
+  fcSource=buildCards(stageIndex); fcLabel=label;
+  studyDeck(shuffle(fcSource));
+}
+function studyDeck(cards){
+  fcDeck=cards.map(c=>({...c,_known:false}));
+  fcIdx=0; fcKnown=0;
+  renderCard(); show('fcStudyScreen');
+}
+
+function renderCard(){
+  if(fcDeck.length===0){ fcDone(); return; }
+  if(fcIdx>=fcDeck.length){ fcDone(); return; }
+  const c=fcDeck[fcIdx], card=$('fcCard');
+  card.classList.remove('flip');
+  const chip=$('fcChip'); chip.className='chip '+c.chipColor; chip.textContent=c.icon+' '+c.chip;
+  $('fcQ').innerHTML=c.q+'<span class="eng">'+c.eng+'</span>';
+  const fim=$('fcImg');
+  if(c.img && IMG[c.img]){ fim.innerHTML=IMG[c.img]; fim.classList.remove('hidden'); }
+  else { fim.innerHTML=''; fim.classList.add('hidden'); }
+  $('fcA').textContent=c.a;
+  $('fcEx').innerHTML='💡 '+c.ex;
+  $('fcProg').textContent='การ์ด '+(fcIdx+1)+'/'+fcDeck.length;
+  $('fcKnow').textContent='รู้แล้ว '+fcKnown;
+  $('fcFill').style.width=(fcIdx/fcDeck.length*100)+'%';
+  $('fcPrevBtn').disabled = fcIdx===0;
+}
+
+$('fcCard').onclick=()=>$('fcCard').classList.toggle('flip');
+
+$('fcGotBtn').onclick=()=>{
+  const c=fcDeck[fcIdx];
+  if(!c._known){ c._known=true; fcKnown++; }
+  fcIdx++; renderCard();
+};
+$('fcAgainBtn').onclick=()=>{
+  const c=fcDeck[fcIdx];
+  if(c._known){ c._known=false; fcKnown=Math.max(0,fcKnown-1); }
+  fcIdx++; renderCard();
+};
+$('fcPrevBtn').onclick=()=>{ if(fcIdx>0){ fcIdx--; renderCard(); } };
+$('fcShuffleBtn').onclick=()=>{ fcDeck=shuffle(fcDeck); fcIdx=0; fcKnown=fcDeck.filter(c=>c._known).length; renderCard(); };
+
+function fcDone(){
+  $('fcFill').style.width='100%';
+  $('fcDoneEn').textContent=fcLabel+' — เสร็จสิ้น';
+  const total=fcDeck.length;
+  const unknown=fcDeck.filter(c=>!c._known).length;
+  $('fcDoneMsg').textContent='เธอทบทวนหมวด "'+fcLabel+'" ครบแล้ว · รู้แล้ว '+fcKnown+'/'+total+' การ์ด'+(unknown?' · ยังไม่แม่นอีก '+unknown+' การ์ด':' · เก่งมาก ครบทุกใบ! 🎉');
+  $('fcRedoAgainBtn').disabled = unknown===0;
+  show('fcDoneScreen');
+}
+$('fcRedoAgainBtn').onclick=()=>{
+  const review=fcDeck.filter(c=>!c._known);
+  if(review.length===0){ studyDeck(shuffle(fcSource)); return; }
+  studyDeck(shuffle(review));
+};
+$('fcRestartBtn').onclick=()=>studyDeck(shuffle(fcSource));
+
+/* ---- map ---- */
+function renderMap(){
+  $('mapPlayer').textContent='ผู้เล่น: '+player+' · เคลียร์แล้ว '+(unlocked-1)+'/5 ด่าน';
+  const box=$('mapBox'); box.innerHTML='';
+  STAGES.forEach((s,i)=>{
+    const locked=i+1>unlocked, done=!!starsByStage[i];
+    const n=document.createElement('div');
+    n.className='node'+(locked?' locked':'')+(done?' done':'');
+    let right = done ? '<div class="stars">'+'⭐'.repeat(starsByStage[i])+'</div>' : (locked?'<div class="go">🔒</div>':'<div class="go">▶</div>');
+    n.innerHTML='<div class="ic">'+s.icon+'</div><div class="meta"><div class="st">ด่าน '+(i+1)+'</div><div class="nm">'+s.name+'</div><div class="en">'+s.en+'</div></div>'+right;
+    if(!locked) n.onclick=()=>openIntro(i);
+    box.appendChild(n);
+  });
+}
+
+/* ---- intro ---- */
+function openIntro(i){
+  cur=i; const s=STAGES[i];
+  $('introIcon').textContent=s.icon; $('introName').textContent='ด่าน '+(i+1)+': '+s.name;
+  $('introEn').textContent=s.en; $('introStory').textContent=s.story; $('introBoss').textContent=s.bossTag;
+  show('introScreen');
+}
+$('backMapBtn').onclick=()=>{renderMap();show('mapScreen');};
+$('clearMapBtn').onclick=()=>{renderMap();show('mapScreen');};
+$('failMapBtn').onclick=()=>{renderMap();show('mapScreen');};
+$('beginBtn').onclick=()=>startBattle();
+$('retryBtn').onclick=()=>startBattle();
+
+/* ---- battle ---- */
+let deck=[];
+function startBattle(){
+  const s=STAGES[cur];
+  deck=shuffle(s.q);
+  qi=0; meHP=PLAYER_MAX; bossMax=deck.length*25; bossHP=bossMax; stageWrong=0; streak=0; stageWrongLog=[];
+  $('battleStage').textContent='ด่าน '+(cur+1)+' / 5 · '+s.name;
+  $('meAv').textContent=s.icon; $('meName').textContent=player;
+  $('bossAv').textContent=s.boss.av; $('bossName').textContent=s.boss.name;
+  updateHP();
+  show('battleScreen'); renderQ();
+}
+function updateHP(){
+  $('meHp').style.width=Math.max(0,meHP/PLAYER_MAX*100)+'%'; $('meHpN').textContent=Math.max(0,meHP);
+  $('bossHp').style.width=Math.max(0,bossHP/bossMax*100)+'%'; $('bossHpN').textContent=Math.max(0,bossHP);
+}
+function renderQ(){
+  answered=false;
+  const s=STAGES[cur], q=deck[qi];
+  $('qChip').textContent='ข้อ '+(qi+1)+'/'+deck.length;
+  $('qText').innerHTML=q.q+'<span class="eng">'+q.eng+'</span>';
+  const im=$('qImg');
+  if(q.img && IMG[q.img]){ im.innerHTML=IMG[q.img]; im.classList.remove('hidden'); }
+  else { im.innerHTML=''; im.classList.add('hidden'); }
+  const opts=shuffle(q.o.map((t,i)=>({t,correct:i===q.a})));
+  const keys=['A','B','C','D'], box=$('optBox'); box.innerHTML='';
+  opts.forEach((op,i)=>{
+    const b=document.createElement('button'); b.className='opt';
+    b.innerHTML='<span class="k">'+keys[i]+'</span><span>'+op.t+'</span>';
+    b.onclick=()=>choose(b,op.correct); box.appendChild(b);
+  });
+  $('explainBox').classList.add('hidden'); $('contBtn').classList.add('hidden');
+  startTimer();
+}
+function startTimer(){
+  qStart=Date.now(); const f=$('tFill'); f.classList.remove('warn'); f.style.width='100%';
+  clearInterval(timer); let el=0; const tick=50;
+  timer=setInterval(()=>{
+    el+=tick; const frac=Math.max(0,1-el/(TIME_PER_Q*1000));
+    f.style.width=(frac*100)+'%'; $('tNum').textContent=Math.ceil(frac*TIME_PER_Q);
+    if(frac<.3)f.classList.add('warn');
+    if(frac<=0){clearInterval(timer); resolve(false,true);}
+  },tick);
+}
+function choose(btn,correct){
+  if(answered)return; answered=true; clearInterval(timer);
+  const chosen = btn.querySelector('span:last-child').textContent;
+  document.querySelectorAll('.opt').forEach(o=>o.classList.add('dim'));
+  if(correct){ btn.classList.add('correct'); } 
+  else { btn.classList.add('wrong'); revealCorrect(); }
+  resolve(correct,false,btn,chosen);
+}
+function revealCorrect(){
+  const q=deck[qi];
+  document.querySelectorAll('.opt').forEach(o=>{ if(o.querySelector('span:last-child').textContent===q.o[q.a]) o.classList.add('correct'); });
+}
+function resolve(correct, timedOut, btn, chosen){
+  if(!answered){answered=true;}
+  clearInterval(timer);
+  const q=deck[qi];
+  if(timedOut){ document.querySelectorAll('.opt').forEach(o=>o.classList.add('dim')); revealCorrect(); }
+  const secs=(Date.now()-qStart)/1000;
+  if(correct){
+    totalCorrect++; streak++; bestStreak=Math.max(bestStreak,streak);
+    const crit = secs < TIME_PER_Q*0.4;
+    const dmg = 25 + (crit?12:0);
+    bossHP=Math.max(0,bossHP-dmg);
+    const timeBonus=Math.max(0,Math.round((TIME_PER_Q-secs)/TIME_PER_Q*50));
+    const gained=100+timeBonus+(streak-1)*20;
+    totalScore+=gained;
+    hitFx('boss', dmg, crit);
+    showExplain(true,gained,crit,q.ex);
+    flash(crit?'💥':(streak>=3?'🔥':'⚔️'));
+    beep(crit?990:820,.12);
+  } else {
+    streak=0; stageWrong++;
+    stageWrongLog.push({ stage:cur, q:q.q, eng:q.eng, ans:q.o[q.a], chosen:(timedOut?null:chosen), ex:q.ex, timedOut:!!timedOut });
+    meHP=Math.max(0,meHP-BOSS_DMG);
+    hitFx('me', BOSS_DMG, false);
+    showExplain(false,0,false,q.ex,timedOut);
+    flash(timedOut?'⏰':'⚡');
+    beep(200,.18);
+  }
+  updateHP();
+  if(meHP<=0){ setTimeout(()=>show('failScreen'),700); return; }
+  const last = qi>=deck.length-1;
+  const cb=$('contBtn'); cb.classList.remove('hidden');
+  cb.textContent = last ? (bossHP<=0?'พิชิตบอสสำเร็จ! 🏆':'จบด่าน ▶') : 'โจมตีต่อ ▶';
+  cb.onclick=()=>{ if(last){ stageClear(); } else { qi++; renderQ(); } };
+}
+function showExplain(ok,gained,crit,ex,timedOut){
+  const b=$('explainBox'); b.classList.remove('hidden','ok','no'); b.classList.add(ok?'ok':'no');
+  let head = ok ? ('⚔️ โจมตีสำเร็จ! +'+gained+' คะแนน'+(crit?' (คริติคอล 💥)':'')) : (timedOut?'⏰ หมดเวลา! บอสตีกลับ -'+BOSS_DMG+' HP':'⚡ ตอบผิด! บอสตีกลับ -'+BOSS_DMG+' HP');
+  $('exH').textContent=head; $('exB').innerHTML='💡 '+ex;
+}
+function hitFx(who, dmg, crit){
+  const el = who==='boss'?$('bossAv'):$('meAv');
+  el.classList.add(who==='boss'?'hit-pop':'shake');
+  setTimeout(()=>el.classList.remove('hit-pop','shake'),360);
+  const d=document.createElement('div'); d.className='dmg';
+  d.style.color = who==='boss' ? (crit?'#e0a92f':'#e3578d') : '#ef5d5d';
+  d.textContent='-'+dmg+(crit?'!':''); 
+  d.style.left='50%'; d.style.top='10px'; d.style.transform='translateX(-50%)';
+  el.parentElement.style.position='relative'; el.parentElement.appendChild(d);
+  setTimeout(()=>d.remove(),820);
+}
+
+/* ---- stage clear ---- */
+function stageClear(){
+  wrongLog=wrongLog.concat(stageWrongLog);
+  let stars = stageWrong===0?3 : (stageWrong<=2?2:1);
+  if(!starsByStage[cur] || starsByStage[cur]<stars) starsByStage[cur]=stars;
+  if(unlocked<cur+2) unlocked=cur+2;
+  const s=STAGES[cur];
+  $('clearEn').textContent=s.en+' — Clear!';
+  $('clearStars').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
+  $('clearOutro').textContent=s.outro;
+  $('nextStageBtn').classList.toggle('hidden', cur>=STAGES.length-1);
+  $('nextStageBtn').textContent = cur>=STAGES.length-1 ? '' : 'ด่านต่อไป ▶';
+  if(cur>=STAGES.length-1){ setTimeout(()=>finish(),300); return; }
+  show('clearScreen');
+}
+$('nextStageBtn').onclick=()=>{ openIntro(cur+1); };
+
+/* ---- finish ---- */
+function finish(){
+  const totalStars=Object.values(starsByStage).reduce((a,b)=>a+b,0);
+  const totalQ=STAGES.reduce((a,s)=>a+s.q.length,0);
+  $('finalScore').textContent=totalScore;
+  $('sCorrect').textContent=totalCorrect+'/'+totalQ;
+  $('sStars').textContent=totalStars+'/15';
+  $('sStreak').textContent=bestStreak;
+  const bb=$('badgeBox'); bb.innerHTML='';
+  const badges=[];
+  if(totalStars===15) badges.push('👑 Perfect Run 15⭐');
+  if(totalCorrect===totalQ) badges.push('💯 ตอบถูกทุกข้อ');
+  if(bestStreak>=6) badges.push('🔥 Combo Master x'+bestStreak);
+  badges.push('💞 นักปฏิสนธิแห่งปี');
+  badges.forEach(t=>{const s=document.createElement('span');s.className='eb';s.textContent=t;bb.appendChild(s);});
+  // teacher result card + verification code
+  const dateStr=new Date().toLocaleDateString('th-TH');
+  const code=makeCode(player,totalScore,totalCorrect,totalStars);
+  lastResult={name:player,score:totalScore,correct:totalCorrect,totalQ,stars:totalStars,date:dateStr,code};
+  $('rcardInfo').innerHTML='ชื่อ: <b>'+esc(player)+'</b><br>คะแนน: <b>'+totalScore+'</b> · ตอบถูก <b>'+totalCorrect+'/'+totalQ+'</b> · ดาว <b>'+totalStars+'/15</b><br>วันที่: '+dateStr;
+  $('resultCode').textContent=code;
+  $('reviewBtn').textContent='📋 ทบทวนข้อที่ตอบผิด ('+wrongLog.length+' ข้อ)';
+  $('reviewBtn').disabled = wrongLog.length===0;
+  if(wrongLog.length===0) $('reviewBtn').textContent='🌟 ตอบถูกทุกข้อ ไม่มีข้อผิด!';
+  saveScore(player,totalScore,totalStars); renderLB();
+  show('resultScreen');
+}
+
+/* ---- verification code (deters score tampering) ---- */
+function csum(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h.toString(36).toUpperCase().slice(-4).padStart(4,'0');}
+function makeCode(name,score,correct,stars){
+  const payload=score+'.'+correct+'.'+stars;
+  const sig=csum((name||'').trim().toLowerCase()+'|'+payload);
+  return 'FZ-'+score+'-'+correct+'c-'+stars+'s-'+sig;
+}
+let lastResult=null;
+
+/* ---- copy result for teacher ---- */
+$('copyResultBtn').onclick=()=>{
+  if(!lastResult)return;
+  const r=lastResult;
+  const txt='🧬 ผลเกมภารกิจปฏิสนธิ\nชื่อ: '+r.name+'\nคะแนน: '+r.score+'\nตอบถูก: '+r.correct+'/'+r.totalQ+'\nดาว: '+r.stars+'/15\nวันที่: '+r.date+'\nรหัสยืนยัน: '+r.code;
+  const done=()=>{ const b=$('copyResultBtn'); const old=b.textContent; b.textContent='✓ คัดลอกแล้ว!'; setTimeout(()=>b.textContent=old,1600); };
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done)); }
+  else fallbackCopy(txt,done);
+};
+function fallbackCopy(txt,cb){ const t=document.createElement('textarea'); t.value=txt; t.style.position='fixed'; t.style.opacity='0'; document.body.appendChild(t); t.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(t); cb&&cb(); }
+
+/* ---- review wrong answers ---- */
+const CHIPCOLOR=['b-sperm','b-egg','b-fert','b-horm','b-fert'];
+$('reviewBtn').onclick=()=>{ if(wrongLog.length) renderReview(); };
+$('reviewBackBtn').onclick=()=>show('resultScreen');
+function renderReview(){
+  $('reviewSub').textContent='ทั้งหมด '+wrongLog.length+' ข้อ — อ่านเฉลยและคำอธิบายให้เข้าใจก่อนลองใหม่';
+  const box=$('reviewBox'); box.innerHTML='';
+  wrongLog.forEach(w=>{
+    const s=STAGES[w.stage];
+    const d=document.createElement('div'); d.className='rev-item';
+    let html='<span class="chip '+(CHIPCOLOR[w.stage]||'b-fert')+'">'+s.icon+' '+s.name+'</span>';
+    html+='<div class="q">'+esc(w.q)+'<span class="eng">'+esc(w.eng)+'</span></div>';
+    html+= w.timedOut ? '<div class="yours">⏰ หมดเวลา (ไม่ได้ตอบ)</div>' : '<div class="yours">✗ ที่ตอบ: '+esc(w.chosen||'-')+'</div>';
+    html+='<div class="ans">✓ เฉลย: '+esc(w.ans)+'</div>';
+    html+='<div class="ex">💡 '+esc(w.ex)+'</div>';
+    d.innerHTML=html; box.appendChild(d);
+  });
+  show('reviewScreen');
+}
+
+/* ---- study / glossary ---- */
+const GLOSSARY=[
+  ['Spermatogenesis','การสร้างสเปิร์ม','กระบวนการสร้างเซลล์สืบพันธุ์เพศชายในท่อเซมินิเฟอรัส'],
+  ['Oogenesis','การสร้างไข่','กระบวนการสร้างเซลล์สืบพันธุ์เพศหญิงในรังไข่'],
+  ['Sertoli cell','เซลล์เซอร์โทลี','เซลล์พี่เลี้ยงที่หล่อเลี้ยงและปกป้องสเปิร์มที่กำลังพัฒนา'],
+  ['Leydig cell','เซลล์ลัยดิก','เซลล์ที่ผลิตเทสโทสเตอโรน อยู่ระหว่างท่อสร้างสเปิร์ม'],
+  ['Spermiogenesis','การเปลี่ยนรูปสเปิร์ม','ขั้นที่ spermatid เปลี่ยนเป็นสเปิร์มที่มีหัว คอ และหาง'],
+  ['Polar body','โพลาร์บอดี','เซลล์เล็กที่ได้จากการแบ่งไซโทพลาซึมไม่เท่ากันใน oogenesis'],
+  ['Capacitation','การปรับสภาพสเปิร์ม','การที่สเปิร์มพร้อมเจาะไข่หลังอยู่ในทางเดินสืบพันธุ์หญิง'],
+  ['Acrosome reaction','ปฏิกิริยาอะโครโซม','การหลั่งเอนไซม์จากหัวสเปิร์มเพื่อเจาะ zona pellucida'],
+  ['Zona pellucida','โซนาเพลลูซิดา','เยื่อไกลโคโปรตีน (ZP1–ZP3) หุ้มไข่ ZP3 เป็นตัวรับสเปิร์ม'],
+  ['Corona radiata','โคโรนาราดิอาตา','ชั้นเซลล์รอบไข่ที่สเปิร์มต้องผ่านก่อนถึง zona'],
+  ['Cortical reaction','ปฏิกิริยาคอร์ติคัล','การที่ไข่ทำให้ zona แข็งตัวเพื่อกันสเปิร์มเกิน (polyspermy)'],
+  ['Polyspermy','พอลิสเปอร์มี','ภาวะที่สเปิร์มหลายตัวเข้าไข่ ทำให้โครโมโซมผิดปกติ'],
+  ['Zygote','ไซโกต','เซลล์ดิพลอยด์ (2n, 46 โครโมโซม) จากการรวมนิวเคลียสสเปิร์มกับไข่'],
+  ['GnRH / FSH / LH','ฮอร์โมนสืบพันธุ์','GnRH กระตุ้นการหลั่ง FSH และ LH ที่ควบคุมต่อมเพศ'],
+  ['Syngamy','การรวมนิวเคลียส','การที่นิวเคลียสสเปิร์มและไข่รวมเป็นชุดเดียวในไซโกต']
+];
+$('studyBtn').onclick=()=>{
+  const ul=$('glossBox'); ul.innerHTML='';
+  GLOSSARY.forEach(g=>{ const li=document.createElement('li'); li.innerHTML='<b>'+g[0]+'</b> <span class="th">· '+g[1]+'</span><br>'+g[2]; ul.appendChild(li); });
+  show('studyScreen');
+};
+$('studyHomeBtn').onclick=()=>show('startScreen');
+
+/* ---- teacher verify ---- */
+$('verifyBtn').onclick=()=>{ $('vName').value=''; $('vCode').value=''; $('vResult').innerHTML=''; show('verifyScreen'); };
+$('vHomeBtn').onclick=()=>show('startScreen');
+$('vCheckBtn').onclick=()=>{
+  const name=($('vName').value||'').trim();
+  const code=($('vCode').value||'').trim().toUpperCase();
+  const box=$('vResult');
+  const m=code.match(/^FZ-(\d+)-(\d+)C-(\d+)S-([0-9A-Z]{4})$/);
+  if(!name){ box.className='vbox no'; box.textContent='⚠️ กรุณาใส่ชื่อนักเรียนก่อน'; return; }
+  if(!m){ box.className='vbox no'; box.textContent='❌ รูปแบบรหัสไม่ถูกต้อง (ตัวอย่าง FZ-1820-44c-13s-A7QK)'; return; }
+  const score=+m[1], correct=+m[2], stars=+m[3], sig=m[4];
+  const expect=csum(name.toLowerCase()+'|'+score+'.'+correct+'.'+stars);
+  if(expect===sig){ box.className='vbox ok'; box.innerHTML='✅ รหัสถูกต้อง · ไม่ถูกแก้ไข<br>'+esc(name)+' ได้ <b>'+score+'</b> คะแนน · ตอบถูก <b>'+correct+'</b> ข้อ · <b>'+stars+'/15</b> ดาว'; }
+  else { box.className='vbox no'; box.innerHTML='❌ รหัสไม่ตรงกับชื่อนี้ — อาจถูกแก้คะแนนหรือพิมพ์ชื่อไม่ตรง'; }
+};
+
+/* ---- leaderboard (localStorage; works on Netlify/GitHub Pages) ---- */
+const LB='fert_battle_lb_v1';
+function loadLB(){try{return JSON.parse(localStorage.getItem(LB))||[];}catch(e){return[];}}
+function saveScore(n,sc,st){try{const l=loadLB();l.push({n,sc,st,t:Date.now()});l.sort((a,b)=>b.sc-a.sc);localStorage.setItem(LB,JSON.stringify(l.slice(0,20)));}catch(e){}}
+function renderLB(){
+  const box=$('lbBox'), l=loadLB();
+  if(!l.length){box.innerHTML='<div class="muted">ยังไม่มีคะแนนบันทึก (เมื่อขึ้นเว็บจริงจะเก็บอันดับอัตโนมัติ)</div>';return;}
+  box.innerHTML=''; let mark=false;
+  l.slice(0,8).forEach((r,i)=>{
+    const d=document.createElement('div'); d.className='lb-row'+(i===0?' top1':'');
+    if(!mark&&r.n===player&&r.sc===totalScore){d.classList.add('me');mark=true;}
+    const medal=['🥇','🥈','🥉'][i]||(i+1);
+    d.innerHTML='<span class="pos">'+medal+'</span><span class="nm">'+esc(r.n)+'</span><span class="sc">'+r.sc+' · '+r.st+'⭐</span>';
+    box.appendChild(d);
+  });
+}
+function esc(s){return(s+'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ---- fx ---- */
+function flash(e){const f=$('flash'),b=$('flashB');b.textContent=e;f.classList.remove('hidden');b.style.animation='none';void b.offsetWidth;b.style.animation='';setTimeout(()=>f.classList.add('hidden'),460);}
+let actx=null;
+function beep(freq,dur){if(muted)return;try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=freq;o.connect(g);g.connect(actx.destination);g.gain.setValueAtTime(.12,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+dur);o.start();o.stop(actx.currentTime+dur);}catch(e){}}
+
+/* ---- mute toggle (persisted) ---- */
+try{ muted = localStorage.getItem('fert_muted')==='1'; }catch(e){}
+function refreshMute(){ $('muteBtn').textContent = muted ? '🔇' : '🔊'; }
+$('muteBtn').onclick=()=>{ muted=!muted; try{localStorage.setItem('fert_muted',muted?'1':'0');}catch(e){} refreshMute(); };
+refreshMute();
+</script>
+</body>
+</html>
