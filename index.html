@@ -2,1226 +2,1465 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>ภารกิจปฏิสนธิ: Race to Fertilization ⚔️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>การสร้างเซลล์ไข่ (Oogenesis) — สื่อจำลองสำหรับ ม.ปลาย</title>
 <style>
   :root{
-    --sky:#7ec8f0; --sky-dk:#2f86c5; --pink:#f79ec0; --pink-dk:#e3578d;
-    --purple:#a98be0; --purple-dk:#7c54c9; --gold:#ffd35e; --gold-dk:#e0a92f;
-    --cream:#fff8f1; --ink:#33304a; --ink2:#6f6890;
-    --green:#36c281; --green-dk:#22996a; --red:#ef5d5d; --orange:#ff9d3d;
-    --shadow:0 6px 0 rgba(40,35,70,.15), 0 12px 28px rgba(40,35,70,.18);
+    --bg:#150f1f;
+    --panel:#231a35;
+    --panel2:#2d2147;
+    --line:#3d2f5a;
+    --text:#f5ecfb;
+    --muted:#c6b3dc;
+    --accent:#ff6b9d;       /* ชมพู */
+    --accent2:#ffb454;      /* ทอง */
+    --accent3:#b07cff;      /* ม่วงอ่อน */
+    --good:#3ddc97;
+    --warn:#ffb454;
+    --bad:#ff6b6b;
+    --chromA:#ef476f;
+    --chroma:#ff9e64;
+    --chromB:#118ab2;
+    --chromb:#4cc9f0;
+    --follicle:#ffd6e7;
+    --antrum:#7fc6ff;
+    --corpus:#ffb454;
   }
-  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;padding:0;}
+  *{box-sizing:border-box}
   body{
-    font-family:'Trebuchet MS','Segoe UI',system-ui,sans-serif; color:var(--ink);
-    min-height:100vh; min-height:100dvh; display:flex; justify-content:center; overflow-x:hidden;
-    background:
-      radial-gradient(circle at 12% 10%, rgba(126,200,240,.5), transparent 40%),
-      radial-gradient(circle at 88% 88%, rgba(247,158,192,.5), transparent 40%),
-      linear-gradient(160deg,#fdf2fa,#edf6ff);
+    margin:0;
+    font-family:"Segoe UI","Sarabun","Noto Sans Thai",system-ui,sans-serif;
+    background:radial-gradient(1200px 600px at 30% -10%,#3a1e4a 0%,var(--bg) 60%);
+    color:var(--text);
+    line-height:1.6;
+    min-height:100vh;
   }
-  .app{width:100%; max-width:480px; min-height:100dvh; padding:14px 14px calc(20px + env(safe-area-inset-bottom)); display:flex; flex-direction:column;}
-  .screen{flex:1; display:flex; flex-direction:column;}
-  .hidden{display:none !important;}
-  h1,h2,h3{margin:0; line-height:1.25;}
-  .eng{font-size:.78em; color:var(--ink2); font-weight:normal;}
-  .btn{width:100%; border:none; border-radius:18px; padding:15px; margin-top:14px; font-size:17px; font-weight:bold; color:#fff; cursor:pointer; font-family:inherit; background:linear-gradient(135deg,var(--pink),var(--pink-dk)); box-shadow:0 5px 0 #b8366c; transition:.08s;}
-  .btn:active{transform:translateY(3px); box-shadow:0 2px 0 #b8366c;}
-  .btn.blue{background:linear-gradient(135deg,var(--sky),var(--sky-dk)); box-shadow:0 5px 0 #226a9e;}
-  .btn.blue:active{box-shadow:0 2px 0 #226a9e;}
-  .btn.gold{background:linear-gradient(135deg,var(--gold),var(--gold-dk)); box-shadow:0 5px 0 #b5851f; color:#5a430a;}
-  .btn.gold:active{box-shadow:0 2px 0 #b5851f;}
-  .btn.ghost{background:#fff; color:var(--ink2); box-shadow:0 4px 0 #e6dff0;}
-  .btn.ghost:active{box-shadow:0 1px 0 #e6dff0;}
-  .btn:disabled{opacity:.45; pointer-events:none;}
+  header{
+    padding:26px 20px 14px;
+    text-align:center;
+    border-bottom:1px solid var(--line);
+  }
+  header h1{
+    margin:0 0 4px;
+    font-size:clamp(20px,3.4vw,30px);
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  header p{margin:0;color:var(--muted);font-size:14px}
 
-  /* ---------- START ---------- */
-  .hero{text-align:center; padding:24px 18px; background:linear-gradient(135deg,#fff,#fdf2f9); border:3px solid #fff; border-radius:26px; box-shadow:var(--shadow); margin-top:10px;}
-  .hero .em{font-size:50px;}
-  .hero h1{font-size:24px; color:var(--pink-dk); margin-top:4px;}
-  .hero .tag{font-size:13px; color:var(--ink2); margin-top:8px; line-height:1.55;}
-  .field{margin-top:18px; text-align:left;}
-  .field label{font-size:13px; font-weight:bold; color:var(--ink2); display:block; margin-bottom:6px;}
-  .field input{width:100%; padding:13px 14px; font-size:16px; border-radius:14px; border:2px solid #ecdff3; background:#fff; outline:none; font-family:inherit; color:var(--ink);}
-  .field input:focus{border-color:var(--purple);}
-  .howto{background:#fff; border-radius:18px; padding:15px 16px; box-shadow:var(--shadow); margin-top:14px; font-size:13.5px; line-height:1.6;}
-  .howto h3{font-size:15px; margin-bottom:8px; color:var(--purple-dk);}
-  .credit{text-align:center; font-size:11px; color:var(--ink2); margin-top:12px; opacity:.85; line-height:1.5;}
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}
 
-  /* ---------- MAP ---------- */
-  .maphead{text-align:center; margin:6px 0 4px;}
-  .maphead h2{font-size:19px; color:var(--purple-dk);}
-  .maphead .pp{font-size:13px; color:var(--ink2); margin-top:3px;}
-  .map{display:flex; flex-direction:column; gap:12px; margin-top:10px;}
-  .node{display:flex; align-items:center; gap:13px; background:#fff; border:3px solid #fff; border-radius:20px; padding:14px; box-shadow:var(--shadow); cursor:pointer; transition:.12s; position:relative;}
-  .node:active{transform:scale(.99);}
-  .node.locked{opacity:.5; pointer-events:none;}
-  .node.done{border-color:var(--green);}
-  .node .ic{flex:0 0 52px; height:52px; border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:28px; background:#f2ecfb;}
-  .node .meta{flex:1;}
-  .node .meta .st{font-size:11px; font-weight:bold; color:var(--ink2);}
-  .node .meta .nm{font-size:16px; font-weight:bold;}
-  .node .meta .en{font-size:11.5px; color:var(--ink2);}
-  .node .go{font-size:22px; color:var(--pink-dk);}
-  .node.done .go{color:var(--green);}
-  .node .stars{font-size:13px; letter-spacing:1px;}
+  .tabs{
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+    margin:18px 0;
+  }
+  .tab{
+    background:var(--panel);border:1px solid var(--line);color:var(--muted);
+    padding:10px 16px;border-radius:999px;cursor:pointer;font-size:14px;
+    transition:.2s;white-space:nowrap;
+  }
+  .tab:hover{border-color:var(--accent)}
+  .tab.active{
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    color:#1d0a18;font-weight:700;border-color:transparent;
+  }
 
-  /* ---------- BATTLE ---------- */
-  .arena{display:flex; flex-direction:column; min-height:100%;}
-  .stage-label{font-size:12px; font-weight:bold; color:var(--ink2); text-align:center; margin-bottom:6px;}
-  .fighters{display:flex; align-items:flex-end; justify-content:space-between; gap:8px; margin-bottom:4px;}
-  .fighter{flex:1; text-align:center;}
-  .fighter .av{font-size:40px; transition:transform .12s;}
-  .fighter .nm{font-size:11px; font-weight:bold; margin-top:2px;}
-  .vs{font-size:14px; font-weight:bold; color:var(--ink2); padding-bottom:18px;}
-  .hpbar{height:14px; background:#eadff2; border-radius:99px; overflow:hidden; margin-top:5px; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,.06);}
-  .hpfill{height:100%; border-radius:99px; transition:width .4s cubic-bezier(.2,.8,.2,1);}
-  .hpfill.me{background:linear-gradient(90deg,var(--green),#7fe0ab);}
-  .hpfill.boss{background:linear-gradient(90deg,var(--red),#ff9d7a);}
-  .hp-num{font-size:10px; color:var(--ink2); margin-top:2px;}
-  .shake{animation:shk .35s;}
-  @keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-  .hit-pop{transform:scale(1.25) !important;}
+  .view{display:none;animation:fade .35s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-  .qbox{background:#fff; border-radius:22px; padding:18px; box-shadow:var(--shadow); border:3px solid #fff; margin-top:12px;}
-  .topline{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
-  .qchip{font-size:11px; font-weight:bold; color:var(--ink2); background:#f2ecfb; border-radius:99px; padding:4px 10px;}
-  .timer{margin-left:auto; font-size:12px; font-weight:bold; color:var(--green-dk); display:flex; align-items:center; gap:4px;}
-  .tbar{height:7px; background:#eadff2; border-radius:99px; overflow:hidden; margin-bottom:12px;}
-  .tfill{height:100%; background:linear-gradient(90deg,var(--green),#9ddc7f); width:100%; transition:width .1s linear;}
-  .tfill.warn{background:linear-gradient(90deg,var(--orange),var(--red));}
-  .qtext{font-size:17px; font-weight:bold; line-height:1.45;}
-  .qtext .eng{display:block; margin-top:3px;}
-  .qimg{width:100%; margin:12px auto 0; background:#f7fbff; border:2px solid #eaf1fb; border-radius:14px; padding:10px;}
-  .qimg svg{width:100%; height:auto; display:block;}
-  .opts{display:flex; flex-direction:column; gap:10px; margin-top:14px;}
-  .opt{text-align:left; border:2px solid #eadff2; background:#fff; border-radius:15px; padding:12px 14px; font-size:15px; font-weight:bold; color:var(--ink); cursor:pointer; font-family:inherit; transition:.1s; line-height:1.35; display:flex; gap:9px; align-items:center;}
-  .opt .k{flex:0 0 24px; height:24px; border-radius:7px; background:#f0eaf8; color:var(--ink2); display:flex; align-items:center; justify-content:center; font-size:13px;}
-  .opt:active{transform:scale(.99);}
-  .opt.correct{border-color:var(--green); background:#e8faf0; color:var(--green-dk);} .opt.correct .k{background:var(--green); color:#fff;}
-  .opt.wrong{border-color:var(--red); background:#fdeded; color:#c43c3c;} .opt.wrong .k{background:var(--red); color:#fff;}
-  .opt.dim{pointer-events:none; opacity:.55;}
-  .explain{margin-top:13px; background:linear-gradient(135deg,#fff8ec,#fff1f6); border:2px dashed #f1d3c0; border-radius:14px; padding:12px 13px; font-size:13.5px; line-height:1.55;}
-  .explain .h{font-weight:bold; margin-bottom:3px;}
-  .explain.ok .h{color:var(--green-dk);} .explain.no .h{color:var(--red);}
-
-  /* intro / outro panels */
-  .panel{background:#fff; border-radius:22px; padding:22px 18px; box-shadow:var(--shadow); border:3px solid #fff; text-align:center; margin-top:14px;}
-  .panel .big{font-size:48px;}
-  .panel h2{font-size:20px; margin:8px 0 4px; color:var(--purple-dk);}
-  .panel .en{font-size:13px; color:var(--ink2); margin-bottom:10px;}
-  .panel p{font-size:14.5px; line-height:1.6; color:var(--ink); margin:0;}
-  .panel .boss-tag{display:inline-block; background:#fdeded; color:var(--red); font-weight:bold; font-size:13px; padding:6px 14px; border-radius:99px; margin-top:10px;}
-
-  /* ---------- FLASHCARDS ---------- */
-  .fc-topics{display:flex; flex-direction:column; gap:11px; margin-top:12px;}
-  .fc-topic{display:flex; align-items:center; gap:13px; background:#fff; border:3px solid #fff; border-radius:18px; padding:13px; box-shadow:var(--shadow); cursor:pointer; transition:.12s;}
-  .fc-topic:active{transform:scale(.99);}
-  .fc-topic .ic{flex:0 0 46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:25px; background:#eef6ff;}
-  .fc-topic .meta{flex:1;} .fc-topic .meta .nm{font-size:15.5px; font-weight:bold;} .fc-topic .meta .en{font-size:11.5px; color:var(--ink2);}
-  .fc-topic .cnt{font-size:12px; font-weight:bold; color:var(--sky-dk); background:#eef6ff; border-radius:99px; padding:5px 10px;}
-  .fc-topic.all{background:linear-gradient(135deg,#fff,#fff3f9);} .fc-topic.all .ic{background:#fdeaf3;}
-
-  .fc-bar{display:flex; align-items:center; gap:8px; margin:4px 0 6px;}
-  .fc-bar .prog{font-size:13px; font-weight:bold; color:var(--ink2);}
-  .fc-bar .know{margin-left:auto; font-size:12px; font-weight:bold; color:var(--green-dk);}
-  .fc-track{height:8px; background:#eadff2; border-radius:99px; overflow:hidden; margin-bottom:12px;}
-  .fc-track .fill{height:100%; background:linear-gradient(90deg,var(--sky),var(--purple)); width:0%; transition:width .3s;}
-
-  .card-wrap{perspective:1200px; margin-top:4px;}
   .card{
-    position:relative; width:100%; min-height:340px; cursor:pointer;
-    transform-style:preserve-3d; transition:transform .5s cubic-bezier(.3,.8,.3,1);
+    background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:18px;margin-bottom:16px;
   }
-  .card.flip{transform:rotateY(180deg);}
-  .face{
-    position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
-    border-radius:24px; padding:22px 18px 34px; box-shadow:var(--shadow); border:3px solid #fff;
-    display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;
-    overflow-y:auto;
+  .grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+
+  h2.section{font-size:18px;margin:0 0 10px;color:var(--accent)}
+  .muted{color:var(--muted)}
+  .small{font-size:13px}
+
+  .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  button.btn{
+    background:var(--panel2);border:1px solid var(--line);color:var(--text);
+    padding:9px 14px;border-radius:10px;cursor:pointer;font-size:14px;transition:.15s;
   }
-  .card .qimg{max-width:240px; padding:6px; margin:10px auto 0; background:#f7fbff;}
-  .face.front{background:linear-gradient(150deg,#fff,#eef6ff);}
-  .face.back{background:linear-gradient(150deg,#fff,#fff2f8); transform:rotateY(180deg);}
-  .face .chip{font-size:11px; font-weight:bold; color:#fff; border-radius:99px; padding:4px 11px; margin-bottom:14px;}
-  .face .ql{font-size:12px; font-weight:bold; color:var(--ink2); letter-spacing:.5px; margin-bottom:8px;}
-  .face .qq{font-size:19px; font-weight:bold; line-height:1.45;}
-  .face .qq .eng{display:block; margin-top:6px;}
-  .face .ans{font-size:21px; font-weight:bold; color:var(--green-dk); line-height:1.4;}
-  .face .exx{font-size:14px; color:var(--ink); line-height:1.55; margin-top:12px; background:#fff8ec; border:2px dashed #f1d3c0; border-radius:14px; padding:11px 13px;}
-  .face .tap{position:absolute; bottom:12px; left:0; right:0; font-size:11px; color:var(--ink2); opacity:.7;}
-  .fc-actions{display:flex; gap:10px; margin-top:14px;}
-  .fc-actions .btn{margin-top:0;}
-  .fc-nav{display:flex; gap:10px; margin-top:10px;}
-  .fc-nav .btn{margin-top:0;}
-  .btn.green{background:linear-gradient(135deg,var(--green),var(--green-dk)); box-shadow:0 5px 0 #1a7d54;}
-  .btn.green:active{box-shadow:0 2px 0 #1a7d54;}
-  .btn.warn{background:linear-gradient(135deg,var(--orange),#e8842a); box-shadow:0 5px 0 #c06a1c;}
-  .btn.warn:active{box-shadow:0 2px 0 #c06a1c;}
-  .fc-done{text-align:center;}
-  .fc-done .big{font-size:54px;}
+  button.btn:hover{border-color:var(--accent);transform:translateY(-1px)}
+  button.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#1d0a18;font-weight:700;border:none}
+  button.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
-  /* result */
-  .result{text-align:center;}
-  .zygote{font-size:64px; animation:beat 1.4s ease-in-out infinite;}
-  @keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
-  .result h2{font-size:23px; color:var(--pink-dk); margin-top:4px;}
-  .result .scoreb{font-size:46px; font-weight:bold; margin:8px 0 0; text-shadow:0 3px 0 rgba(0,0,0,.06);}
-  .result .scoreb small{font-size:17px; color:var(--ink2);}
-  .stat-row{display:flex; gap:9px; margin:16px 0;}
-  .stat{flex:1; background:#fff; border-radius:15px; padding:11px 5px; box-shadow:0 4px 0 rgba(40,35,70,.07);}
-  .stat b{display:block; font-size:19px; color:var(--sky-dk);}
-  .stat span{font-size:11px; color:var(--ink2);}
-  .badges{display:flex; flex-wrap:wrap; gap:7px; justify-content:center; margin:8px 0 4px;}
-  .eb{background:var(--gold); color:#6a4d05; font-weight:bold; font-size:12px; padding:6px 12px; border-radius:99px; box-shadow:0 3px 0 var(--gold-dk);}
-  .lb{background:#fff; border-radius:18px; padding:14px; box-shadow:var(--shadow); margin-top:10px; text-align:left;}
-  .lb h3{font-size:15px; margin-bottom:10px; display:flex; gap:6px; align-items:center;}
-  .lb-row{display:flex; align-items:center; gap:10px; padding:8px 5px; border-bottom:1px solid #f1ebf8; font-size:14px;}
-  .lb-row:last-child{border-bottom:none;}
-  .lb-row .pos{flex:0 0 26px; height:26px; border-radius:8px; background:#f0eaf8; color:var(--ink2); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:13px;}
-  .lb-row.me{background:#fff0f6; border-radius:10px;} .lb-row.top1 .pos{background:var(--gold); color:#6a4d05;}
-  .lb-row .nm{flex:1; font-weight:bold;} .lb-row .sc{color:var(--pink-dk); font-weight:bold;}
-  .muted{color:var(--ink2); font-size:13px; text-align:center; padding:6px;}
+  .info{
+    background:var(--panel2);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 14px;
+  }
+  .badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;margin-right:6px}
+  .badge.dip{background:#3e2a5e;color:#d7c4ff}
+  .badge.hap{background:#5e2a45;color:#ffc4d7}
+  .badge.arr{background:#5e4423;color:#ffd99e}
 
-  /* fail */
-  .fail{text-align:center;}
-  .fail .big{font-size:56px;}
+  /* ladder */
+  .ladder{display:flex;flex-direction:column;gap:6px}
+  .rung{
+    display:flex;align-items:center;gap:14px;
+    padding:10px;border-radius:12px;
+    opacity:.25;transform:translateY(6px) scale(.98);
+    transition:.5s cubic-bezier(.2,.8,.2,1);
+    border:1px dashed transparent;
+  }
+  .rung.on{opacity:1;transform:none;background:rgba(255,107,157,.06);border-color:var(--line)}
+  .rung.current{border:1px solid var(--accent);box-shadow:0 0 0 2px rgba(255,107,157,.18)}
+  .rung .label{flex:1;min-width:140px}
+  .rung .label b{display:block;font-size:15px}
+  .rung .label span{font-size:12px;color:var(--muted)}
+  .cells{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .cell-anim{animation:pop .5s ease}
+  @keyframes pop{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
 
-  /* ---------- MUTE BUTTON ---------- */
-  .mutebtn{position:fixed; top:calc(10px + env(safe-area-inset-top)); right:12px; z-index:70; width:42px; height:42px; border-radius:50%; border:none; background:#fff; box-shadow:0 4px 12px rgba(40,35,70,.2); font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
-  .mutebtn:active{transform:scale(.92);}
+  .stepNote{font-size:12px;color:var(--warn);font-weight:600}
+  .arrow{color:var(--muted);font-size:18px;align-self:center}
 
-  /* ---------- STUDY / READ-BEFORE ---------- */
-  .doc{background:#fff; border-radius:20px; padding:18px; box-shadow:var(--shadow); border:3px solid #fff; margin-top:10px; text-align:left;}
-  .doc h3{font-size:16px; color:var(--purple-dk); margin:2px 0 8px; display:flex; gap:7px; align-items:center;}
-  .doc p{font-size:14px; line-height:1.6; margin:0 0 10px;}
-  .doc .term{color:var(--pink-dk); font-weight:bold;}
-  .ctable{width:100%; border-collapse:collapse; font-size:12.5px; margin:4px 0 6px;}
-  .ctable th,.ctable td{border:1px solid #eadff2; padding:8px 7px; text-align:left; vertical-align:top; line-height:1.45;}
-  .ctable th{background:#f2ecfb; color:var(--ink); font-size:12px;}
-  .ctable thead th:nth-child(2){color:var(--sky-dk);} .ctable thead th:nth-child(3){color:var(--pink-dk);}
-  .ctable td:first-child{font-weight:bold; background:#fafaff; width:34%;}
-  .gloss{list-style:none; padding:0; margin:0;}
-  .gloss li{padding:9px 4px; border-bottom:1px solid #f1ebf8; font-size:13.5px; line-height:1.5;}
-  .gloss li:last-child{border-bottom:none;}
-  .gloss b{color:var(--sky-dk);} .gloss .th{color:var(--ink2);}
+  /* ovary */
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:13px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:14px;height:14px;border-radius:50%;display:inline-block}
+  .ov-cell{cursor:pointer;transition:.2s}
+  .ov-cell:hover{filter:brightness(1.25)}
 
-  /* ---------- REVIEW WRONG ---------- */
-  .rev-item{background:#fff; border-radius:16px; padding:14px; box-shadow:0 4px 0 rgba(40,35,70,.07); margin-top:10px; text-align:left;}
-  .rev-item .chip{display:inline-block; font-size:10.5px; font-weight:bold; color:#fff; border-radius:99px; padding:3px 9px; margin-bottom:7px;}
-  .rev-item .q{font-size:14.5px; font-weight:bold; line-height:1.45;}
-  .rev-item .q .eng{display:block; font-size:11.5px; color:var(--ink2); font-weight:normal; margin-top:2px;}
-  .rev-item .yours{font-size:13px; color:#c43c3c; margin-top:8px;}
-  .rev-item .ans{font-size:13.5px; color:var(--green-dk); font-weight:bold; margin-top:4px;}
-  .rev-item .ex{font-size:12.5px; color:var(--ink); line-height:1.5; margin-top:6px; background:#fff8ec; border:1px dashed #f1d3c0; border-radius:10px; padding:9px 10px;}
+  /* egg structure */
+  .struct-row{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .part{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;flex:1;min-width:160px}
+  .part h4{margin:0 0 4px;color:var(--accent)}
+  .part p{margin:0;font-size:13px;color:var(--muted)}
 
-  /* ---------- RESULT CODE / TEACHER ---------- */
-  .rcard{background:linear-gradient(135deg,#fff,#fff3f9); border:2px dashed #e9b9d0; border-radius:16px; padding:14px; margin-top:10px; text-align:left;}
-  .rcard h3{font-size:14px; color:var(--pink-dk); margin-bottom:8px;}
-  .rcard .line{font-size:13.5px; line-height:1.7;}
-  .rcard .code{font-size:19px; font-weight:bold; letter-spacing:1px; color:var(--purple-dk); text-align:center; background:#fff; border-radius:10px; padding:10px; margin:8px 0; border:2px solid #ece4f6; word-break:break-all;}
-  .vbox{font-size:14px; font-weight:bold; border-radius:12px; padding:12px; margin-top:10px; text-align:center; line-height:1.5;}
-  .vbox.ok{background:#e8faf0; color:var(--green-dk); border:2px solid var(--green);}
-  .vbox.no{background:#fdeded; color:#c43c3c; border:2px solid var(--red);}
+  /* hormone & cycle */
+  .horm-node{fill:var(--panel2);stroke:var(--line)}
+  .horm-label{fill:var(--text);font-size:13px;font-weight:600}
+  .horm-sub{fill:var(--muted);font-size:11px}
 
-  .flash{position:fixed; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:60;}
-  .flash .b{font-size:66px; animation:pop .45s ease;}
-  @keyframes pop{0%{transform:scale(.6);opacity:0}55%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
-  .dmg{position:absolute; font-weight:bold; font-size:20px; animation:rise .8s ease forwards; pointer-events:none;}
-  @keyframes rise{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-34px)}}
+  .cycle-slider{width:100%;accent-color:var(--accent);margin-top:6px}
+  .day-pill{
+    display:inline-block;padding:4px 12px;border-radius:999px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    color:#1d0a18;font-weight:700;font-size:13px;
+  }
+  .phase-pill{
+    display:inline-block;padding:3px 10px;border-radius:999px;
+    font-size:12px;font-weight:700;margin-left:6px;
+  }
+
+  /* quiz */
+  .q{margin-bottom:16px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+  .q .opts{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .opt{padding:9px 12px;border:1px solid var(--line);border-radius:9px;cursor:pointer;transition:.15s}
+  .opt:hover{border-color:var(--accent)}
+  .opt.correct{background:rgba(61,220,151,.18);border-color:var(--good)}
+  .opt.wrong{background:rgba(255,107,107,.18);border-color:var(--bad)}
+  .explain{margin-top:8px;font-size:13px;color:var(--good);display:none}
+  .explain.show{display:block}
+
+  footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+  a{color:var(--accent)}
+
+  /* fertilization stage display */
+  .fert-stage{
+    background:var(--panel2);border:1px solid var(--line);
+    border-radius:12px;padding:14px;margin-top:10px;
+  }
+  .fert-stage h4{margin:0 0 6px;color:var(--accent2);font-size:15px}
+  .fert-stage p{margin:0;font-size:13px;color:var(--muted)}
+  .step-dots{display:flex;gap:6px;justify-content:center;margin:10px 0}
+  .step-dot{
+    width:10px;height:10px;border-radius:50%;
+    background:var(--line);transition:.25s;
+  }
+  .step-dot.on{background:var(--accent);transform:scale(1.3)}
+
+  /* comparison table */
+  .cmp-table{
+    width:100%;border-collapse:separate;border-spacing:0;
+    font-size:13px;margin-top:8px;
+  }
+  .cmp-table th,.cmp-table td{
+    padding:10px 12px;text-align:left;
+    border-bottom:1px solid var(--line);vertical-align:top;
+  }
+  .cmp-table thead th{
+    background:var(--panel2);font-size:14px;
+    color:var(--text);position:sticky;top:0;
+  }
+  .cmp-table th.cat{color:var(--muted);font-weight:600;width:25%}
+  .cmp-table th.sperm{color:#4cc9f0}
+  .cmp-table th.egg{color:var(--accent)}
+  .cmp-table tr:hover td{background:rgba(255,107,157,.04)}
+  .cmp-table td.cat{font-weight:700;color:var(--muted)}
+  .cmp-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  @media(max-width:700px){.cmp-cards{grid-template-columns:1fr}}
+  .cmp-card{border-radius:12px;padding:14px;border:1px solid var(--line)}
+  .cmp-card.sperm{background:linear-gradient(135deg,rgba(76,201,240,.12),rgba(123,97,255,.08))}
+  .cmp-card.egg{background:linear-gradient(135deg,rgba(255,107,157,.12),rgba(255,180,84,.08))}
+  .cmp-card h3{margin:0 0 6px;font-size:16px}
+  .cmp-card .num{font-size:28px;font-weight:800;display:block;margin:6px 0}
 </style>
 </head>
 <body>
-<div class="app">
+<header>
+  <h1>การสร้างเซลล์ไข่ในรังไข่ • Oogenesis &amp; Ovulation</h1>
+  <p>สื่อจำลองแบบโต้ตอบ สำหรับนักเรียน ม.ปลาย สายวิทย์–คณิต</p>
+</header>
 
-  <!-- ============ START ============ -->
-  <section class="screen" id="startScreen">
-    <div class="hero">
-      <div class="em">🏊‍♂️⚔️🥚</div>
-      <h1>ภารกิจปฏิสนธิ</h1>
-      <div class="tag"><b>Race to Fertilization</b><br>เกมต่อสู้ผ่าน 5 ด่าน เรียนรู้การสร้างเซลล์สืบพันธุ์<br>จนกว่าจะ <b>ปฏิสนธิสำเร็จ!</b> · ระดับ ม.ปลาย / AP Biology</div>
-      <div class="field">
-        <label>ใส่ชื่อนักผจญภัย (Player name)</label>
-        <input id="nameInput" type="text" maxlength="14" placeholder="เช่น ทีมสเปิร์ม A, น้องไข่...">
+<div class="wrap">
+  <div class="tabs">
+    <div class="tab active" data-v="ovary">🔬 รังไข่และฟอลลิเคิล</div>
+    <div class="tab" data-v="process">🧬 กระบวนการสร้างเซลล์ไข่</div>
+    <div class="tab" data-v="egg">🥚 โครงสร้างเซลล์ไข่</div>
+    <div class="tab" data-v="cycle">📅 รอบประจำเดือน &amp; การตกไข่</div>
+    <div class="tab" data-v="fert">🤝 การปฏิสนธิ</div>
+    <div class="tab" data-v="compare">⚖️ เปรียบเทียบกับอสุจิ</div>
+    <div class="tab" data-v="quiz">📝 แบบทดสอบ</div>
+  </div>
+
+  <!-- ============ TAB 1: OVARY ============ -->
+  <section class="view active" id="ovary">
+    <div class="grid2">
+      <div class="card">
+        <h2 class="section">ภาคตัดขวางของรังไข่ (Ovary cross-section)</h2>
+        <p class="small muted">คลิกที่ฟอลลิเคิลแต่ละระยะเพื่อดูรายละเอียด — ฟอลลิเคิลค่อย ๆ เจริญจากขนาดเล็ก (primordial) จนใหญ่และพร้อมตกไข่ (Graafian) แล้วเปลี่ยนเป็น <b>corpus luteum</b> หลังการตกไข่</p>
+        <svg viewBox="0 0 440 420" width="100%" style="max-height:460px">
+          <!-- background -->
+          <rect x="0" y="0" width="440" height="420" fill="#1a1226" rx="14"/>
+          <!-- ovary outline -->
+          <ellipse cx="220" cy="210" rx="195" ry="170" fill="#2a1c40" stroke="#5d3a7a" stroke-width="2"/>
+          <ellipse cx="220" cy="210" rx="178" ry="155" fill="none" stroke="#3d2659" stroke-width="1" stroke-dasharray="4 4"/>
+          <text x="220" y="60" text-anchor="middle" fill="#c6b3dc" font-size="11" font-weight="600">เปลือกรังไข่ (Cortex)</text>
+          <ellipse cx="220" cy="220" rx="55" ry="40" fill="#2d2147" stroke="#3d2659"/>
+          <text x="220" y="223" text-anchor="middle" fill="#9d80c4" font-size="11">เมดัลลา</text>
+
+          <!-- primordial follicles (tiny dots) -->
+          <g class="ov-cell" data-info="primordial">
+            <circle cx="80" cy="120" r="5" fill="#ffd6e7"/>
+            <circle cx="80" cy="120" r="2" fill="#7a3b5c"/>
+          </g>
+          <g class="ov-cell" data-info="primordial">
+            <circle cx="105" cy="90" r="5" fill="#ffd6e7"/>
+            <circle cx="105" cy="90" r="2" fill="#7a3b5c"/>
+          </g>
+          <g class="ov-cell" data-info="primordial">
+            <circle cx="65" cy="160" r="5" fill="#ffd6e7"/>
+            <circle cx="65" cy="160" r="2" fill="#7a3b5c"/>
+          </g>
+          <g class="ov-cell" data-info="primordial">
+            <circle cx="130" cy="75" r="5" fill="#ffd6e7"/>
+            <circle cx="130" cy="75" r="2" fill="#7a3b5c"/>
+          </g>
+
+          <!-- primary follicle -->
+          <g class="ov-cell" data-info="primary" transform="translate(95,260)">
+            <circle r="14" fill="#ffd6e7" stroke="#ff6b9d" stroke-width="1.5"/>
+            <circle r="6" fill="#ef476f"/>
+            <circle r="2" fill="#fff"/>
+          </g>
+
+          <!-- secondary follicle -->
+          <g class="ov-cell" data-info="secondary" transform="translate(140,330)">
+            <circle r="22" fill="#ffd6e7" stroke="#ff6b9d" stroke-width="1.5"/>
+            <circle r="15" fill="none" stroke="#b07cff" stroke-width="1.5" stroke-dasharray="2 2"/>
+            <circle r="7" fill="#ef476f"/>
+            <circle r="2.4" fill="#fff"/>
+          </g>
+
+          <!-- tertiary/antral follicle -->
+          <g class="ov-cell" data-info="antral" transform="translate(230,340)">
+            <circle r="32" fill="#ffd6e7" stroke="#ff6b9d" stroke-width="1.5"/>
+            <circle r="22" fill="#7fc6ff" opacity=".7"/>
+            <circle cx="-6" cy="-6" r="9" fill="#ef476f"/>
+            <circle cx="-6" cy="-6" r="3" fill="#fff"/>
+            <text y="22" text-anchor="middle" fill="#1d0a18" font-size="9" font-weight="700">antrum</text>
+          </g>
+
+          <!-- Graafian follicle (largest) -->
+          <g class="ov-cell" data-info="graafian" transform="translate(345,235)">
+            <circle r="48" fill="#ffd6e7" stroke="#ff6b9d" stroke-width="2"/>
+            <circle r="36" fill="#7fc6ff" opacity=".75"/>
+            <circle cx="-18" cy="-14" r="13" fill="#ef476f"/>
+            <circle cx="-18" cy="-14" r="9" fill="#ff9e64"/>
+            <circle cx="-18" cy="-14" r="3.5" fill="#fff"/>
+            <text x="0" y="40" text-anchor="middle" fill="#1d0a18" font-size="10" font-weight="700">Graafian</text>
+          </g>
+
+          <!-- ovulation (egg leaving) -->
+          <g class="ov-cell" data-info="ovulation" transform="translate(395,140)">
+            <circle r="14" fill="#ff9e64" stroke="#ffb454" stroke-width="2"/>
+            <circle r="9" fill="#ef476f"/>
+            <circle r="3" fill="#fff"/>
+            <!-- burst sparkles -->
+            <line x1="-20" y1="-20" x2="-10" y2="-10" stroke="#ffb454" stroke-width="2"/>
+            <line x1="20" y1="-20" x2="10" y2="-10" stroke="#ffb454" stroke-width="2"/>
+            <line x1="-20" y1="20" x2="-10" y2="10" stroke="#ffb454" stroke-width="2"/>
+            <line x1="20" y1="20" x2="10" y2="10" stroke="#ffb454" stroke-width="2"/>
+            <text x="0" y="32" text-anchor="middle" fill="#ffb454" font-size="10" font-weight="700">ตกไข่!</text>
+          </g>
+
+          <!-- corpus luteum -->
+          <g class="ov-cell" data-info="corpus" transform="translate(310,360)">
+            <path d="M-30,-20 Q-35,5 -20,25 Q5,35 25,20 Q35,-5 20,-25 Q-5,-35 -30,-20 Z" fill="#ffb454" stroke="#ff8c42" stroke-width="2"/>
+            <circle cx="-8" cy="-5" r="4" fill="#ff6b35"/>
+            <circle cx="10" cy="8" r="4" fill="#ff6b35"/>
+            <circle cx="-5" cy="12" r="3" fill="#ff6b35"/>
+            <text x="0" y="48" text-anchor="middle" fill="#ffb454" font-size="10" font-weight="700">Corpus luteum</text>
+          </g>
+
+          <!-- corpus albicans -->
+          <g class="ov-cell" data-info="albicans" transform="translate(170,130)">
+            <circle r="15" fill="#5d4a6d" stroke="#7a6a8d" stroke-width="1.5"/>
+            <text y="3" text-anchor="middle" fill="#c6b3dc" font-size="9" font-weight="700">scar</text>
+          </g>
+
+          <!-- arrow flow showing progression -->
+          <defs>
+            <marker id="ovarr" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#ff6b9d"/>
+            </marker>
+          </defs>
+          <path d="M100 130 Q90 200 95 250" stroke="#ff6b9d" stroke-width="1.5" fill="none" stroke-dasharray="3 3" marker-end="url(#ovarr)" opacity=".5"/>
+          <path d="M115 280 Q125 310 135 320" stroke="#ff6b9d" stroke-width="1.5" fill="none" stroke-dasharray="3 3" marker-end="url(#ovarr)" opacity=".5"/>
+          <path d="M170 335 Q200 340 205 340" stroke="#ff6b9d" stroke-width="1.5" fill="none" stroke-dasharray="3 3" marker-end="url(#ovarr)" opacity=".5"/>
+          <path d="M270 320 Q310 290 320 260" stroke="#ff6b9d" stroke-width="1.5" fill="none" stroke-dasharray="3 3" marker-end="url(#ovarr)" opacity=".5"/>
+          <path d="M380 200 Q395 170 395 155" stroke="#ffb454" stroke-width="1.8" fill="none" stroke-dasharray="3 3" marker-end="url(#ovarr)"/>
+        </svg>
+        <div class="legend">
+          <span><i class="dot" style="background:#ffd6e7;border:1px solid #ff6b9d"></i>ฟอลลิเคิล</span>
+          <span><i class="dot" style="background:#7fc6ff"></i>antrum (ของเหลว)</span>
+          <span><i class="dot" style="background:#ef476f"></i>โอโอไซต์</span>
+          <span><i class="dot" style="background:#ffb454"></i>Corpus luteum</span>
+          <span><i class="dot" style="background:#5d4a6d"></i>Corpus albicans (รอยแผล)</span>
+        </div>
       </div>
-      <button class="btn" id="startBtn">เริ่มการเดินทาง ▶ Start</button>
-      <button class="btn blue" id="flashBtn">ฝึกซ้อม Flash Card 🃏</button>
-      <button class="btn ghost" id="studyBtn">อ่านก่อนเล่น 📖 สรุปเนื้อหา</button>
-      <button class="btn ghost" id="verifyBtn" style="font-size:14px;">👩‍🏫 ครูตรวจรหัสผลนักเรียน</button>
-    </div>
-    <div class="howto">
-      <h3>⚔️ วิธีเล่น (How to play)</h3>
-      ตอบคำถามชีววิทยาให้ถูกเพื่อ <b>โจมตีบอส</b> 💥 — ตอบเร็วยิ่งแรง (คริติคอล!)<br>
-      ตอบผิดหรือหมดเวลา บอสจะ <b>ตีกลับ</b> ⚡ ลด HP ของเรา<br>
-      เคลียร์ครบ 5 ด่าน = ปฏิสนธิสำเร็จ เกิด <b>ไซโกต</b> 🎉
-    </div>
-    <div class="credit">เนื้อหาอ้างอิง: OpenStax Biology for AP® Courses / Biology 2e · NCBI Bookshelf · TeachMePhysiology</div>
-  </section>
-
-  <!-- ============ MAP ============ -->
-  <section class="screen hidden" id="mapScreen">
-    <div class="maphead">
-      <h2>🗺️ แผนที่ภารกิจ</h2>
-      <div class="pp" id="mapPlayer"></div>
-    </div>
-    <div class="map" id="mapBox"></div>
-    <button class="btn ghost" id="resetBtn">เริ่มใหม่ทั้งหมด 🔁</button>
-  </section>
-
-  <!-- ============ INTRO ============ -->
-  <section class="screen hidden" id="introScreen">
-    <div class="panel">
-      <div class="big" id="introIcon">🧬</div>
-      <h2 id="introName">ด่าน</h2>
-      <div class="en" id="introEn"></div>
-      <p id="introStory"></p>
-      <div class="boss-tag" id="introBoss">บอส</div>
-    </div>
-    <button class="btn" id="beginBtn">เข้าสู่การต่อสู้ ⚔️</button>
-    <button class="btn ghost" id="backMapBtn">กลับแผนที่ 🗺️</button>
-  </section>
-
-  <!-- ============ BATTLE ============ -->
-  <section class="screen hidden" id="battleScreen">
-    <div class="arena">
-      <div class="stage-label" id="battleStage"></div>
-      <div class="fighters">
-        <div class="fighter">
-          <div class="av" id="meAv">🏊‍♂️</div>
-          <div class="nm" id="meName">เรา</div>
+      <div class="card">
+        <h2 class="section">รายละเอียด</h2>
+        <div class="info" id="ovaryInfo">
+          <b>👆 คลิกที่ฟอลลิเคิลในภาพ</b>
+          <p class="small muted" style="margin:6px 0 0">รังไข่มีฟอลลิเคิลหลายระยะอยู่พร้อม ๆ กัน ในแต่ละรอบเดือนจะมีเพียง <b>1 ฟอลลิเคิล</b> ที่เจริญเต็มที่และปล่อยเซลล์ไข่ออกมา (ตกไข่) ส่วนฟอลลิเคิลอื่น ๆ ที่เริ่มเจริญพร้อมกันจะ <b>ฝ่อ</b> (atresia)</p>
         </div>
-        <div class="vs">VS</div>
-        <div class="fighter">
-          <div class="av" id="bossAv">🦠</div>
-          <div class="nm" id="bossName">บอส</div>
-        </div>
-      </div>
-      <div style="display:flex; gap:10px;">
-        <div style="flex:1;">
-          <div class="hpbar"><div class="hpfill me" id="meHp" style="width:100%"></div></div>
-          <div class="hp-num"><span id="meHpN">100</span>/100 HP</div>
-        </div>
-        <div style="flex:1;">
-          <div class="hpbar"><div class="hpfill boss" id="bossHp" style="width:100%"></div></div>
-          <div class="hp-num" style="text-align:right"><span id="bossHpN">100</span> HP</div>
-        </div>
-      </div>
-
-      <div class="qbox">
-        <div class="topline">
-          <span class="qchip" id="qChip">ข้อ 1</span>
-          <span class="timer">⏱ <span id="tNum">15</span>s</span>
-        </div>
-        <div class="tbar"><div class="tfill" id="tFill"></div></div>
-        <div class="qtext" id="qText"></div>
-        <div class="qimg hidden" id="qImg"></div>
-        <div class="opts" id="optBox"></div>
-        <div class="explain hidden" id="explainBox"><div class="h" id="exH"></div><div id="exB"></div></div>
-        <button class="btn blue hidden" id="contBtn" style="margin-top:13px;">ต่อไป ▶</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ STAGE CLEAR ============ -->
-  <section class="screen hidden" id="clearScreen">
-    <div class="panel">
-      <div class="big">🎉</div>
-      <h2>เคลียร์ด่านสำเร็จ!</h2>
-      <div class="en" id="clearEn">Stage Clear</div>
-      <div class="stars" style="font-size:30px; margin:6px 0;" id="clearStars">⭐⭐⭐</div>
-      <p id="clearOutro"></p>
-    </div>
-    <button class="btn gold" id="nextStageBtn">ด่านต่อไป ▶</button>
-    <button class="btn ghost" id="clearMapBtn">กลับแผนที่ 🗺️</button>
-  </section>
-
-  <!-- ============ FAIL ============ -->
-  <section class="screen hidden" id="failScreen">
-    <div class="fail panel">
-      <div class="big">💔</div>
-      <h2 style="color:var(--red)">HP หมด!</h2>
-      <p>ภารกิจล้มเหลวในด่านนี้ แต่ไม่เป็นไร — นักวิทยาศาสตร์ที่ดีลองใหม่เสมอ! ทบทวนคำอธิบายแล้วลุยอีกครั้ง</p>
-    </div>
-    <button class="btn" id="retryBtn">ลองด่านนี้อีกครั้ง 🔁</button>
-    <button class="btn ghost" id="failMapBtn">กลับแผนที่ 🗺️</button>
-  </section>
-
-  <!-- ============ FLASHCARD: TOPIC SELECT ============ -->
-  <section class="screen hidden" id="fcTopicScreen">
-    <div class="maphead">
-      <h2>🃏 โหมดฝึกซ้อม Flash Card</h2>
-      <div class="pp">เลือกหัวข้อที่อยากทบทวน · พลิกการ์ดดูเฉลยได้เลย ไม่จับเวลา</div>
-    </div>
-    <div class="fc-topics" id="fcTopicBox"></div>
-    <button class="btn ghost" id="fcHomeBtn">กลับหน้าแรก 🏠</button>
-  </section>
-
-  <!-- ============ FLASHCARD: STUDY ============ -->
-  <section class="screen hidden" id="fcStudyScreen">
-    <div class="fc-bar">
-      <span class="prog" id="fcProg">การ์ด 1/10</span>
-      <span class="know" id="fcKnow">รู้แล้ว 0</span>
-    </div>
-    <div class="fc-track"><div class="fill" id="fcFill"></div></div>
-
-    <div class="card-wrap">
-      <div class="card" id="fcCard">
-        <div class="face front">
-          <span class="chip" id="fcChip">หัวข้อ</span>
-          <div class="ql">❓ คำถาม / Question</div>
-          <div class="qq" id="fcQ"></div>
-          <div class="qimg hidden" id="fcImg"></div>
-          <div class="tap">👆 แตะการ์ดเพื่อดูเฉลย</div>
-        </div>
-        <div class="face back">
-          <div class="ql">✅ เฉลย / Answer</div>
-          <div class="ans" id="fcA"></div>
-          <div class="exx" id="fcEx"></div>
-          <div class="tap">👆 แตะเพื่อพลิกกลับ</div>
+        <div class="card" style="margin-top:12px;background:var(--panel2)">
+          <b class="small">💡 รู้หรือไม่?</b>
+          <p class="small muted" style="margin:6px 0 0">ทารกหญิงแรกเกิดมีโอโอไซต์ระยะแรกประมาณ <b>1–2 ล้าน</b>เซลล์ พอถึงวัยเจริญพันธุ์เหลือราว <b>400,000</b> เซลล์ และตลอดชีวิตจะตกไข่จริงเพียง <b>~400</b> ครั้งเท่านั้น</p>
         </div>
       </div>
     </div>
-
-    <div class="fc-actions">
-      <button class="btn warn" id="fcAgainBtn">ยังไม่แม่น 🔁</button>
-      <button class="btn green" id="fcGotBtn">รู้แล้ว ✓</button>
-    </div>
-    <div class="fc-nav">
-      <button class="btn ghost" id="fcPrevBtn">◀ ก่อนหน้า</button>
-      <button class="btn ghost" id="fcShuffleBtn">สลับการ์ด 🔀</button>
-    </div>
-    <button class="btn ghost" id="fcQuitBtn" style="margin-top:10px;">ออกจากโหมดฝึกซ้อม 🏠</button>
   </section>
 
-  <!-- ============ FLASHCARD: DONE ============ -->
-  <section class="screen hidden" id="fcDoneScreen">
-    <div class="fc-done panel">
-      <div class="big">🎓</div>
-      <h2>ทบทวนครบทุกการ์ดแล้ว!</h2>
-      <div class="en" id="fcDoneEn">Deck complete</div>
-      <p id="fcDoneMsg"></p>
-    </div>
-    <button class="btn green" id="fcRedoAgainBtn">ทบทวน "ยังไม่แม่น" อีกครั้ง 🔁</button>
-    <button class="btn blue" id="fcRestartBtn">เริ่มกองนี้ใหม่ทั้งหมด</button>
-    <button class="btn ghost" id="fcPickAnotherBtn">เลือกหัวข้ออื่น 🃏</button>
-  </section>
-
-  <!-- ============ FINAL RESULT ============ -->
-  <section class="screen hidden" id="resultScreen">
-    <div class="result">
-      <div class="zygote">💞</div>
-      <h2>ปฏิสนธิสำเร็จ!</h2>
-      <div class="en" style="color:var(--ink2); font-size:14px;">เกิดไซโกต (Zygote, 2n) — ชีวิตใหม่เริ่มต้น 🎉</div>
-      <div class="scoreb"><span id="finalScore">0</span> <small>คะแนน</small></div>
-      <div class="stat-row">
-        <div class="stat"><b id="sCorrect">0</b><span>ตอบถูก<br>Correct</span></div>
-        <div class="stat"><b id="sStars">0</b><span>ดาวรวม<br>Stars</span></div>
-        <div class="stat"><b id="sStreak">0</b><span>สตรีคสูงสุด<br>Best streak</span></div>
+  <!-- ============ TAB 2: PROCESS ============ -->
+  <section class="view" id="process">
+    <div class="grid2">
+      <div class="card">
+        <h2 class="section">ลำดับการสร้างเซลล์ไข่ (จาก 1 เซลล์ → ovum 1 ใบ + polar body 3 ตัว)</h2>
+        <div class="ladder" id="ladder"></div>
+        <div class="controls">
+          <button class="btn primary" id="nextStep">⏭ ขั้นถัดไป</button>
+          <button class="btn" id="autoBtn">▶ เล่นอัตโนมัติ</button>
+          <button class="btn" id="resetStep">🔄 เริ่มใหม่</button>
+        </div>
       </div>
-      <div class="badges" id="badgeBox"></div>
+      <div class="card">
+        <h2 class="section">สิ่งที่เกิดขึ้น</h2>
+        <div class="info" id="stepInfo"></div>
+        <div class="card" style="margin-top:12px;background:var(--panel2)">
+          <b class="small">🧬 สัญลักษณ์โครโมโซม (ตัวอย่างใช้ 2n = 4)</b>
+          <p class="small muted" style="margin:6px 0 0">แต่ละสีคือโครโมโซมต่างคู่กัน • สีอ่อน/เข้มของคู่เดียวกัน = โครโมโซมคู่เหมือน (homologous) • รูป X = โครโมโซมจำลองตัวแล้ว (2 โครมาทิด)</p>
+          <p class="small muted" style="margin:6px 0 0"><b>การแบ่งไซโตพลาซึมไม่เท่ากัน:</b> เซลล์ใหญ่ได้ไซโตพลาซึมเกือบทั้งหมด → กลายเป็นเซลล์ไข่ • เซลล์เล็ก = <b>polar body</b> ที่จะสลายไป</p>
+          <p class="small muted" style="margin:6px 0 0">หมายเหตุ: เซลล์ร่างกายมนุษย์จริงมี <b>2n = 46</b> ไข่มี <b>n = 23</b></p>
+        </div>
+      </div>
     </div>
-
-    <div class="rcard">
-      <h3>👩‍🏫 ส่งผลให้คุณครู (Result for teacher)</h3>
-      <div class="line" id="rcardInfo"></div>
-      <div style="font-size:12px; color:var(--ink2); margin-top:6px;">รหัสยืนยันผล (ครูใช้ตรวจสอบว่าไม่แก้คะแนน):</div>
-      <div class="code" id="resultCode">—</div>
-      <button class="btn blue" id="copyResultBtn" style="margin-top:4px;">📋 คัดลอกผลส่งครู (LINE/ฟอร์ม)</button>
-    </div>
-
-    <button class="btn" id="reviewBtn" style="margin-top:10px;">📋 ทบทวนข้อที่ตอบผิด</button>
-
-    <div class="lb">
-      <h3>🏅 อันดับคะแนน (Leaderboard)</h3>
-      <div id="lbBox"></div>
-    </div>
-    <button class="btn gold" id="againBtn">เล่นใหม่ทั้งหมด 🔁</button>
-    <button class="btn ghost" id="homeBtn">กลับหน้าแรก 🏠</button>
   </section>
 
-  <!-- ============ STUDY (read before play) ============ -->
-  <section class="screen hidden" id="studyScreen">
-    <div class="maphead"><h2>📖 อ่านก่อนเล่น</h2><div class="pp">สรุปเนื้อหา · ตารางเปรียบเทียบ · อภิธานศัพท์</div></div>
+  <!-- ============ TAB 3: EGG STRUCTURE ============ -->
+  <section class="view" id="egg">
+    <div class="card">
+      <h2 class="section">โครงสร้างของเซลล์ไข่ที่พร้อมผสมพันธุ์ (Secondary oocyte ขณะตกไข่)</h2>
+      <svg viewBox="0 0 600 360" width="100%" style="max-height:380px">
+        <!-- corona radiata (outermost cells) -->
+        <g id="corona"></g>
+        <!-- zona pellucida -->
+        <circle cx="300" cy="180" r="125" fill="none" stroke="#b07cff" stroke-width="10" opacity=".55"/>
+        <circle cx="300" cy="180" r="125" fill="none" stroke="#b07cff" stroke-width="2"/>
+        <!-- plasma membrane -->
+        <circle cx="300" cy="180" r="115" fill="#ffe1ec" stroke="#ff6b9d" stroke-width="2"/>
+        <!-- cytoplasm/cortical granules -->
+        <g id="granules"></g>
+        <!-- nucleus -->
+        <circle cx="305" cy="165" r="38" fill="#b07cff" opacity=".25" stroke="#b07cff" stroke-width="1.5"/>
+        <circle cx="305" cy="165" r="20" fill="#7b3fce"/>
+        <text x="305" y="170" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">นิวเคลียส</text>
+        <text x="305" y="200" text-anchor="middle" fill="#7b3fce" font-size="10">(n = 23)</text>
+        <!-- first polar body inside zona -->
+        <circle cx="240" cy="100" r="14" fill="#ef476f" opacity=".85"/>
+        <circle cx="240" cy="100" r="9" fill="#7a1d3b"/>
+        <text x="240" y="78" text-anchor="middle" fill="#ef476f" font-size="11" font-weight="700">1st polar body</text>
 
-    <div class="doc">
-      <h3>🏊‍♂️ การสร้างสเปิร์ม · Spermatogenesis</h3>
-      <p>เกิดใน<span class="term">ท่อเซมินิเฟอรัส</span>ของอัณฑะ เริ่มจาก <b>spermatogonia</b> แบ่งไมโทซิส → <b>ไมโอซิส</b> → <b>spermiogenesis</b> ได้สเปิร์ม <b>4 ตัว</b> ต่อเซลล์ตั้งต้น โดยมี<span class="term">เซลล์เซอร์โทลี</span>เป็นพี่เลี้ยง และ<span class="term">เซลล์ลัยดิก</span>สร้างเทสโทสเตอโรน สเปิร์มไปสุกที่หลอดเก็บอสุจิ</p>
-      <h3>🥚 การสร้างไข่ · Oogenesis</h3>
-      <p><b>oogonia</b> แบ่งตัวตั้งแต่เป็นทารกในครรภ์ แล้วพักเป็น <b>primary oocyte</b> ที่ <span class="term">prophase I</span> จนวัยรุ่น เมื่อแบ่งจะได้ไข่ + <span class="term">polar body</span> (แบ่งไซโทพลาซึมไม่เท่ากัน) ไข่หยุดอีกครั้งที่ <span class="term">metaphase II</span> รอการปฏิสนธิ ได้ไข่ใช้งานเพียง <b>1 ฟอง</b> ต่อเซลล์ตั้งต้น</p>
-      <h3>💞 การปฏิสนธิ · Fertilization</h3>
-      <p>เกิดที่<span class="term">ท่อนำไข่</span> สเปิร์มผ่าน <b>capacitation</b> → เจาะ <b>corona radiata</b> → จับ <span class="term">ZP3</span> บน zona pellucida เกิด <b>acrosome reaction</b> (ใช้ Ca²⁺) เมื่อเข้าได้ 1 ตัว ไข่เกิด <b>cortical reaction</b> กัน polyspermy แล้วนิวเคลียสรวมกันเป็น <span class="term">ไซโกต (2n, 46 โครโมโซม)</span></p>
+        <!-- labels -->
+        <line x1="425" y1="180" x2="475" y2="180" stroke="#b07cff"/>
+        <text x="480" y="178" fill="#b07cff" font-size="13" font-weight="700">Zona pellucida</text>
+        <text x="480" y="194" fill="#b07cff" font-size="10">ชั้นไกลโคโปรตีน</text>
+
+        <line x1="170" y1="180" x2="120" y2="180" stroke="#ff6b9d"/>
+        <text x="20" y="178" fill="#ff6b9d" font-size="13" font-weight="700">Corona radiata</text>
+        <text x="20" y="194" fill="#ff6b9d" font-size="10">เซลล์ฟอลลิเคิล</text>
+
+        <line x1="300" y1="295" x2="300" y2="335" stroke="#ffb454"/>
+        <text x="300" y="350" text-anchor="middle" fill="#ffb454" font-size="13" font-weight="700">ไซโทพลาซึม + cortical granules</text>
+      </svg>
+      <div class="struct-row" style="margin-top:10px">
+        <div class="part"><h4>นิวเคลียส</h4><p>บรรจุสารพันธุกรรม <b>n = 23 โครโมโซม</b> ขณะตกไข่ <b>หยุดที่ metaphase II</b> รอจนกว่าจะถูกอสุจิผสมจึงจะแบ่งเสร็จ</p></div>
+        <div class="part"><h4>Zona pellucida</h4><p>ชั้นไกลโคโปรตีนที่อสุจิต้องเจาะผ่าน มีโปรตีน <b>ZP3</b> ที่จับกับอสุจิเฉพาะสปีชีส์ และป้องกัน <b>การผสมจากอสุจิหลายตัว</b> (polyspermy)</p></div>
+        <div class="part"><h4>Corona radiata</h4><p>ชั้นของ <b>เซลล์ฟอลลิเคิล (granulosa cells)</b> ที่ติดมากับไข่หลังตกไข่ ทำหน้าที่ปกป้องและช่วยเลี้ยงไข่</p></div>
+        <div class="part"><h4>Cortical granules</h4><p>เม็ดเล็ก ๆ ใต้เยื่อหุ้มเซลล์ เมื่อมีอสุจิเจาะเข้าได้ 1 ตัว เม็ดเหล่านี้จะปล่อยเอนไซม์ทำให้ zona pellucida แข็งขึ้น <b>กันอสุจิตัวอื่น</b></p></div>
+        <div class="part"><h4>Polar body</h4><p>เซลล์เล็ก ๆ ที่ได้จากการ <b>แบ่งไซโตพลาซึมไม่เท่ากัน</b> ไม่ทำหน้าที่ ไม่นานก็จะสลายไป</p></div>
+        <div class="part"><h4>ขนาด</h4><p>เซลล์ไข่มนุษย์มีเส้นผ่านศูนย์กลางราว <b>100–120 µm</b> เป็น <b>เซลล์ที่ใหญ่ที่สุด</b> ในร่างกายและมองเห็นได้ด้วยตาเปล่า</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 4: CYCLE & HORMONE ============ -->
+  <section class="view" id="cycle">
+    <div class="card">
+      <h2 class="section">รอบประจำเดือน — ปรับความยาวรอบและฝึกนับวันตกไข่</h2>
+
+      <!-- cycle length adjust -->
+      <div style="background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <label class="small" style="display:flex;align-items:center;gap:8px">
+            <b>ความยาวรอบเดือน:</b>
+            <input type="number" id="cycleLen" min="21" max="40" value="28" style="width:64px;padding:5px 8px;border-radius:8px;background:var(--panel);border:1px solid var(--line);color:var(--text);font-weight:700;text-align:center">
+            วัน
+          </label>
+          <button class="btn" data-clen="21" style="padding:5px 12px;font-size:12px">21</button>
+          <button class="btn" data-clen="28" style="padding:5px 12px;font-size:12px">28</button>
+          <button class="btn" data-clen="32" style="padding:5px 12px;font-size:12px">32</button>
+          <button class="btn" data-clen="35" style="padding:5px 12px;font-size:12px">35</button>
+        </div>
+        <div class="small" style="margin-top:8px;color:var(--muted)">
+          📐 <b>สูตรนับวันตกไข่:</b>  <span style="color:var(--accent2);font-weight:700">วันตกไข่ ≈ ความยาวรอบ − 14</span>
+          (ระยะ luteal คงที่ ~14 วัน ระยะ follicular ยืดหดได้)
+        </div>
+        <div class="small" style="margin-top:6px">
+          ➡️ ในรอบ <b id="curLenLbl">28</b> วัน: ไข่ตกประมาณวันที่ <span class="day-pill" style="padding:2px 10px"><b id="ovulDayLbl">14</b></span>
+          • ระยะมีโอกาสตั้งครรภ์: วันที่ <b id="fertWin">9–15</b>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span class="day-pill">วันที่ <span id="dayNum">1</span></span>
+        <span class="phase-pill" id="phasePill">—</span>
+        <span class="muted small" id="dayDesc">—</span>
+      </div>
+      <input type="range" min="1" max="28" value="1" class="cycle-slider" id="daySlider">
+      <div class="controls">
+        <button class="btn primary" id="cyclePlay">▶ เล่นทั้งรอบ</button>
+        <button class="btn" id="cycleReset">🔄 กลับวันที่ 1</button>
+        <button class="btn" id="jumpOvul">🥚 ไปวันตกไข่</button>
+      </div>
+
+      <svg viewBox="0 0 720 360" width="100%" style="max-height:400px;margin-top:10px">
+        <g id="cyclePhases"></g>
+        <!-- axes -->
+        <line x1="40" y1="320" x2="660" y2="320" stroke="#5d3a7a"/>
+        <line x1="40" y1="60" x2="40" y2="320" stroke="#5d3a7a"/>
+        <text x="350" y="350" text-anchor="middle" fill="#c6b3dc" font-size="11">วันที่ของรอบเดือน (Day)</text>
+        <g id="cycleMarkers"></g>
+
+        <path id="curveFSH" d="" fill="none" stroke="#4cc9f0" stroke-width="2.5"/>
+        <path id="curveLH" d="" fill="none" stroke="#ff6b9d" stroke-width="2.5"/>
+        <path id="curveE" d="" fill="none" stroke="#3ddc97" stroke-width="2.5"/>
+        <path id="curveP" d="" fill="none" stroke="#ffb454" stroke-width="2.5"/>
+
+        <!-- ovulation marker -->
+        <line id="ovulMark" x1="40" y1="60" x2="40" y2="320" stroke="#3ddc97" stroke-width="2" stroke-dasharray="6 4" opacity=".7"/>
+        <text id="ovulMarkLbl" x="40" y="75" text-anchor="middle" fill="#3ddc97" font-size="11" font-weight="700">🥚 ตกไข่</text>
+
+        <!-- vertical day cursor -->
+        <line id="dayCursor" x1="40" y1="20" x2="40" y2="320" stroke="#fff" stroke-width="1.5" stroke-dasharray="3 3" opacity=".7"/>
+
+        <!-- legend -->
+        <g font-size="11" font-weight="700">
+          <circle cx="500" cy="68" r="5" fill="#4cc9f0"/><text x="510" y="72" fill="#4cc9f0">FSH</text>
+          <circle cx="545" cy="68" r="5" fill="#ff6b9d"/><text x="555" y="72" fill="#ff6b9d">LH</text>
+          <circle cx="585" cy="68" r="5" fill="#3ddc97"/><text x="595" y="72" fill="#3ddc97">Estrogen</text>
+          <circle cx="500" cy="86" r="5" fill="#ffb454"/><text x="510" y="90" fill="#ffb454">Progesterone</text>
+        </g>
+      </svg>
+
+      <!-- Practice quick problems -->
+      <div style="margin-top:12px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px">
+        <b class="small" style="color:var(--accent2)">🧮 ลองคำนวณ</b>
+        <p class="small muted" style="margin:4px 0">ถ้าประจำเดือนรอบนี้มาวันที่ <b>5 มิ.ย.</b> และมีรอบ <span id="exLen">28</span> วัน → คาดว่าไข่จะตกวันที่ <span class="day-pill" style="padding:2px 10px"><b id="exOvul">19 มิ.ย.</b></span> (= 5 + <span id="exOffset">13</span>)</p>
+        <p class="small muted" style="margin:4px 0">รอบเดือนถัดไปจะมาประมาณวันที่ <b id="exNextPeriod">3 ก.ค.</b></p>
+      </div>
     </div>
 
-    <div class="doc">
-      <h3>⚖️ ตารางเปรียบเทียบ (AP มักออกสอบ)</h3>
-      <table class="ctable">
-        <thead><tr><th>หัวข้อ</th><th>Spermatogenesis</th><th>Oogenesis</th></tr></thead>
+    <div class="grid2">
+      <div class="card">
+        <h2 class="section">สิ่งที่เกิดขึ้นกับฟอลลิเคิล / มดลูก</h2>
+        <svg viewBox="0 0 360 220" width="100%" style="max-height:240px">
+          <!-- follicle development on left -->
+          <text x="90" y="20" text-anchor="middle" fill="#c6b3dc" font-size="11" font-weight="700">ภายในรังไข่</text>
+          <g id="follicleAnim" transform="translate(90,110)">
+            <circle id="follicleCircle" r="20" fill="#ffd6e7" stroke="#ff6b9d" stroke-width="2"/>
+            <circle id="antrumCircle" r="0" fill="#7fc6ff" opacity=".75"/>
+            <circle id="oocyteCircle" cx="0" cy="0" r="8" fill="#ef476f"/>
+            <circle cx="0" cy="0" r="3" fill="#fff"/>
+          </g>
+          <text id="follicleLabel" x="90" y="185" text-anchor="middle" fill="#ff6b9d" font-size="11" font-weight="700">Primordial</text>
+
+          <!-- uterine lining on right -->
+          <text x="260" y="20" text-anchor="middle" fill="#c6b3dc" font-size="11" font-weight="700">เยื่อบุมดลูก</text>
+          <rect x="200" y="35" width="120" height="135" fill="#2d2147" stroke="#5d3a7a"/>
+          <rect id="endoLayer" x="200" y="135" width="120" height="35" fill="#ff6b9d" opacity=".7"/>
+          <text x="260" y="185" text-anchor="middle" fill="#ff6b9d" font-size="11" font-weight="700" id="endoLabel">หลุดลอก (menstruation)</text>
+        </svg>
+      </div>
+      <div class="card">
+        <h2 class="section">เหตุการณ์ในวันนี้</h2>
+        <div class="info" id="dayInfo">เลื่อนเพื่อดูรายละเอียด</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section">การควบคุมด้วยฮอร์โมน (แกน Hypothalamus–Pituitary–Ovary)</h2>
+      <div class="grid2">
+        <svg viewBox="0 0 360 460" width="100%" style="max-height:480px">
+          <rect class="horm-node" x="90" y="10" width="180" height="48" rx="10"/>
+          <text class="horm-label" x="180" y="32" text-anchor="middle">ไฮโพทาลามัส</text>
+          <text class="horm-sub" x="180" y="48" text-anchor="middle">Hypothalamus</text>
+
+          <rect class="horm-node" x="90" y="110" width="180" height="48" rx="10"/>
+          <text class="horm-label" x="180" y="132" text-anchor="middle">ต่อมใต้สมองส่วนหน้า</text>
+          <text class="horm-sub" x="180" y="148" text-anchor="middle">Anterior pituitary</text>
+
+          <rect class="horm-node" x="20" y="240" width="140" height="48" rx="10"/>
+          <text class="horm-label" x="90" y="262" text-anchor="middle">ฟอลลิเคิล</text>
+          <text class="horm-sub" x="90" y="278" text-anchor="middle">Granulosa / Theca</text>
+
+          <rect class="horm-node" x="200" y="240" width="140" height="48" rx="10"/>
+          <text class="horm-label" x="270" y="262" text-anchor="middle">Corpus luteum</text>
+          <text class="horm-sub" x="270" y="278" text-anchor="middle">หลังตกไข่</text>
+
+          <rect class="horm-node" x="20" y="370" width="140" height="54" rx="10" stroke="#3ddc97"/>
+          <text class="horm-label" x="90" y="392" text-anchor="middle" fill="#3ddc97">เอสโทรเจน</text>
+          <text class="horm-sub" x="90" y="408" text-anchor="middle">Estrogen</text>
+
+          <rect class="horm-node" x="200" y="370" width="140" height="54" rx="10" stroke="#ffb454"/>
+          <text class="horm-label" x="270" y="392" text-anchor="middle" fill="#ffb454">โพรเจสเทอโรน</text>
+          <text class="horm-sub" x="270" y="408" text-anchor="middle">Progesterone</text>
+
+          <defs>
+            <marker id="arr2" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#c6b3dc"/></marker>
+            <marker id="arrR2" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff6b6b"/></marker>
+            <marker id="arrG" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+          </defs>
+
+          <line x1="180" y1="58" x2="180" y2="108" stroke="#c6b3dc" marker-end="url(#arr2)"/>
+          <text x="190" y="88" fill="#c6b3dc" font-size="11">GnRH</text>
+
+          <line x1="150" y1="158" x2="95" y2="238" stroke="#4cc9f0" marker-end="url(#arr2)"/>
+          <text x="60" y="205" fill="#4cc9f0" font-size="11" font-weight="700">FSH</text>
+          <line x1="215" y1="158" x2="270" y2="238" stroke="#ff6b9d" marker-end="url(#arr2)"/>
+          <text x="265" y="205" fill="#ff6b9d" font-size="11" font-weight="700">LH</text>
+
+          <line x1="90" y1="288" x2="90" y2="368" stroke="#3ddc97" marker-end="url(#arrG)"/>
+          <line x1="270" y1="288" x2="270" y2="368" stroke="#ffb454" marker-end="url(#arr2)"/>
+
+          <!-- negative feedback (estrogen low) and positive (estrogen high pre-ovulation) -->
+          <path d="M40 380 Q-10 200 88 132" fill="none" stroke="#ff6b6b" stroke-dasharray="4 4" marker-end="url(#arrR2)"/>
+          <text x="0" y="280" fill="#ff6b6b" font-size="10">(−) Feedback</text>
+          <path d="M320 380 Q360 200 272 132" fill="none" stroke="#3ddc97" stroke-dasharray="4 4" marker-end="url(#arrG)"/>
+          <text x="320" y="200" fill="#3ddc97" font-size="10">(+) ก่อนตกไข่</text>
+        </svg>
+        <div>
+          <div class="info" style="margin-bottom:10px;border-color:#4cc9f0"><b>FSH</b> → กระตุ้นฟอลลิเคิลให้เจริญ และกระตุ้น <b>granulosa cells</b> สร้างเอสโทรเจน</div>
+          <div class="info" style="margin-bottom:10px;border-color:var(--accent)"><b>LH</b> → กระตุ้น <b>theca cells</b> สร้าง androgen และที่สำคัญ <b>LH surge</b> ในวันที่ ~13–14 เป็นสัญญาณให้เกิด <b>การตกไข่</b></div>
+          <div class="info" style="margin-bottom:10px;border-color:var(--good)"><b>เอสโทรเจน</b> → ทำให้เยื่อบุมดลูกหนาขึ้น (proliferative phase) • ระดับสูงก่อนตกไข่จะให้ <b>positive feedback</b> กระตุ้น LH surge</div>
+          <div class="info" style="margin-bottom:10px;border-color:var(--warn)"><b>โพรเจสเทอโรน</b> → จาก corpus luteum ทำให้เยื่อบุมดลูกพร้อมรับการฝังตัว (secretory phase) ถ้าไม่ตั้งครรภ์ corpus luteum ฝ่อ ระดับลดลง → ประจำเดือนมา</div>
+          <div class="info" style="border-color:var(--bad)"><b>ถ้าตั้งครรภ์</b> → ตัวอ่อนสร้างฮอร์โมน <b>hCG</b> ไปรักษา corpus luteum ไว้ ไม่ให้ฝ่อ จึงไม่มีประจำเดือน</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 5: FERTILIZATION ============ -->
+  <section class="view" id="fert">
+    <div class="card">
+      <h2 class="section">การปฏิสนธิ (Fertilization) — เมื่ออสุจิพบกับเซลล์ไข่ในท่อนำไข่</h2>
+      <p class="small muted">เกิดขึ้นในท่อนำไข่ส่วน <b>ampulla</b> ภายใน ~24 ชม. หลังตกไข่ • อสุจิหลายล้านตัวเดินทางมา แต่มีเพียง <b>1 ตัว</b> ที่เข้าไปได้สำเร็จ</p>
+
+      <svg viewBox="0 0 820 420" width="100%" style="max-height:520px;background:linear-gradient(180deg,#1a1226 0%,#2a1a3a 100%);border-radius:12px">
+        <defs>
+          <radialGradient id="zygoteGrad"><stop offset="0%" stop-color="#ffb454"/><stop offset="100%" stop-color="#ff6b9d"/></radialGradient>
+          <radialGradient id="eggGrad"><stop offset="0%" stop-color="#fff0f6"/><stop offset="100%" stop-color="#ffd3e3"/></radialGradient>
+        </defs>
+
+        <!-- ampulla wall textures -->
+        <path d="M0 50 Q200 30 410 40 T820 50 L820 0 L0 0 Z" fill="#1f1538" opacity=".7"/>
+        <path d="M0 380 Q200 400 410 390 T820 380 L820 420 L0 420 Z" fill="#1f1538" opacity=".7"/>
+        <text x="410" y="28" text-anchor="middle" fill="#c6b3dc" font-size="14" font-weight="700">ท่อนำไข่ส่วน ampulla (มองจากด้านข้าง)</text>
+        <text x="410" y="412" text-anchor="middle" fill="#c6b3dc" font-size="11">ทิศทางการว่ายของอสุจิ →</text>
+
+        <!-- Egg -->
+        <g id="fertEgg" transform="translate(560,215)">
+          <g id="fertCorona"></g>
+          <circle id="fertZonaOuter" r="115" fill="none" stroke="#b07cff" stroke-width="14" opacity=".5"/>
+          <circle id="fertZona" r="115" fill="none" stroke="#b07cff" stroke-width="2.5"/>
+          <circle r="103" fill="url(#eggGrad)" stroke="#ff6b9d" stroke-width="2"/>
+          <g id="fertGranules"></g>
+          <g id="fertFemale">
+            <circle cx="22" cy="-18" r="30" fill="#b07cff" opacity=".3"/>
+            <text x="22" y="-15" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">2° oocyte</text>
+            <text x="22" y="2" text-anchor="middle" fill="#fff" font-size="10">(Metaphase II)</text>
+          </g>
+          <g id="fertMale" style="display:none">
+            <circle cx="-32" cy="14" r="22" fill="#4cc9f0" opacity=".55"/>
+            <text x="-32" y="18" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">♂ pronucleus</text>
+          </g>
+          <g id="fertPB" style="display:none">
+            <circle cx="62" cy="-78" r="14" fill="#ef476f"/>
+            <circle cx="62" cy="-78" r="6" fill="#7a1d3b"/>
+            <text x="62" y="-100" text-anchor="middle" fill="#ef476f" font-size="11" font-weight="700">2nd polar body</text>
+          </g>
+        </g>
+
+        <!-- Background sperms -->
+        <g id="fertSperms"></g>
+
+        <!-- Hero sperm: head on right (leading), tail trails to left -->
+        <g id="fertHeroSperm" style="transform:translate(110px,215px);transition:transform 1.2s cubic-bezier(.4,0,.4,1)">
+          <!-- tail -->
+          <path d="M-18 0 Q-38 -14 -58 0 T-100 0 T-142 0" fill="none" stroke="#ffb454" stroke-width="3.8" stroke-linecap="round"/>
+          <!-- midpiece -->
+          <rect x="-18" y="-6" width="14" height="12" rx="3" fill="#3ddc97"/>
+          <!-- head -->
+          <ellipse cx="0" cy="0" rx="17" ry="12" fill="#4cc9f0"/>
+          <!-- acrosome cap (leading edge, right side) -->
+          <path d="M17 0 A17 12 0 0 0 0 -12 A8 10 0 0 1 17 -4 Z" fill="#7b61ff"/>
+          <text x="0" y="32" text-anchor="middle" fill="#4cc9f0" font-size="11" font-weight="700">อสุจิ 1 ตัว</text>
+        </g>
+
+        <!-- fertilization flash -->
+        <g id="fertFlash" style="display:none">
+          <circle cx="560" cy="215" r="130" fill="none" stroke="#ffb454" stroke-width="4" opacity=".9">
+            <animate attributeName="r" values="115;145;130" dur="1.2s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".9;.3;.9" dur="1.2s" repeatCount="indefinite"/>
+          </circle>
+          <text x="560" y="80" text-anchor="middle" fill="#ffb454" font-size="13" font-weight="700">⚡ Cortical reaction</text>
+        </g>
+
+        <!-- Action callout (varies per step) -->
+        <g id="fertCallout" style="display:none">
+          <rect id="calloutBg" x="20" y="350" width="780" height="30" rx="8" fill="#3d2659" opacity=".85"/>
+          <text id="calloutText" x="410" y="370" text-anchor="middle" fill="#ffd6e7" font-size="13" font-weight="700"></text>
+        </g>
+      </svg>
+
+      <div class="step-dots" id="fertDots"></div>
+      <div class="controls">
+        <button class="btn" id="fertPrev">⏮ ย้อน</button>
+        <button class="btn primary" id="fertNext">⏭ ขั้นถัดไป</button>
+        <button class="btn" id="fertPlay">▶ เล่นทั้งหมด</button>
+        <button class="btn" id="fertReset">🔄 เริ่มใหม่</button>
+      </div>
+
+      <div class="fert-stage" id="fertInfo">
+        <h4>👆 กดปุ่ม "ขั้นถัดไป" เพื่อเริ่ม</h4>
+        <p>ติดตามขั้นตอนการปฏิสนธิตั้งแต่อสุจิว่ายเข้าหาไข่จนกลายเป็นเซลล์ตัวอ่อนเริ่มต้น (zygote)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 6: COMPARISON ============ -->
+  <section class="view" id="compare">
+    <div class="card">
+      <h2 class="section">เปรียบเทียบ Spermatogenesis vs Oogenesis</h2>
+
+      <div class="cmp-cards">
+        <div class="cmp-card sperm">
+          <h3 style="color:#4cc9f0">🏊 Spermatogenesis</h3>
+          <p class="small muted">การสร้างอสุจิในอัณฑะ</p>
+          <span class="num" style="color:#4cc9f0">4</span>
+          <p class="small">อสุจิที่ใช้งานได้ ต่อ 1 primary spermatocyte</p>
+          <p class="small muted" style="margin-top:6px">~200–300 ล้านตัวต่อการหลั่งหนึ่งครั้ง • เริ่มสร้างที่วัยเจริญพันธุ์และดำเนินต่อเนื่อง <b>ตลอดชีวิต</b></p>
+        </div>
+        <div class="cmp-card egg">
+          <h3 style="color:var(--accent)">🥚 Oogenesis</h3>
+          <p class="small muted">การสร้างเซลล์ไข่ในรังไข่</p>
+          <span class="num" style="color:var(--accent)">1</span>
+          <p class="small">ovum ที่ใช้งานได้ ต่อ 1 primary oocyte (+ polar body 3 ตัว)</p>
+          <p class="small muted" style="margin-top:6px">เริ่มในตัวอ่อนหญิง • ตลอดชีวิตตกไข่จริงเพียง <b>~400 ครั้ง</b> และหยุดเมื่อเข้าสู่วัยหมดประจำเดือน</p>
+        </div>
+      </div>
+
+      <div style="overflow-x:auto">
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th class="cat">หัวข้อเปรียบเทียบ</th>
+            <th class="sperm">🏊 Spermatogenesis</th>
+            <th class="egg">🥚 Oogenesis</th>
+          </tr>
+        </thead>
         <tbody>
-          <tr><td>เริ่มเมื่อ</td><td>วัยรุ่น เป็นต้นไป</td><td>ตั้งแต่เป็นทารกในครรภ์</td></tr>
-          <tr><td>เซลล์ใช้งานที่ได้</td><td>4 สเปิร์ม</td><td>1 ไข่ (+ polar body 3)</td></tr>
-          <tr><td>ขนาดเซลล์ลูก</td><td>เท่ากัน</td><td>ไม่เท่ากัน</td></tr>
-          <tr><td>การพักไมโอซิส</td><td>ไม่พัก ต่อเนื่อง</td><td>พัก 2 จุด (prophase I, metaphase II)</td></tr>
-          <tr><td>ผลิตตลอดชีวิต?</td><td>ใช่ ต่อเนื่อง</td><td>ไม่ (~400 ฟองทั้งชีวิต)</td></tr>
-          <tr><td>สถานที่</td><td>ท่อเซมินิเฟอรัส</td><td>รังไข่</td></tr>
+          <tr>
+            <td class="cat">สถานที่</td>
+            <td>หลอดสร้างอสุจิ (seminiferous tubule) ในอัณฑะ</td>
+            <td>ฟอลลิเคิลในรังไข่ • ปฏิสนธิที่ท่อนำไข่</td>
+          </tr>
+          <tr>
+            <td class="cat">เริ่มเมื่อใด</td>
+            <td>เมื่อเข้าสู่วัยเจริญพันธุ์ (~12–14 ปี)</td>
+            <td>เริ่มในตัวอ่อนเพศหญิงตั้งแต่ในครรภ์</td>
+          </tr>
+          <tr>
+            <td class="cat">ระยะเวลาทั้งกระบวนการ</td>
+            <td>~64–74 วันต่อรอบ (ต่อเนื่อง)</td>
+            <td>10–50 ปี (หยุดที่ prophase I) • บางวงจรเร่งให้เสร็จในรอบเดือน</td>
+          </tr>
+          <tr>
+            <td class="cat">ผลผลิตต่อ 1 primary cell</td>
+            <td><b>อสุจิ 4 ตัว</b> ใช้งานได้ทั้งหมด</td>
+            <td><b>ovum 1 ใบ</b> + polar body 3 ตัว (สลายไป)</td>
+          </tr>
+          <tr>
+            <td class="cat">การแบ่งไซโตพลาซึม</td>
+            <td><b>เท่ากัน</b> ทั้ง 4 เซลล์ขนาดเท่ากัน</td>
+            <td><b>ไม่เท่ากัน</b> เซลล์ใหญ่กักไซโตพลาซึมไว้เป็นไข่</td>
+          </tr>
+          <tr>
+            <td class="cat">การหยุดของไมโอซิส</td>
+            <td>ไม่หยุด — เดินหน้าจนเสร็จในไม่กี่สัปดาห์</td>
+            <td><b>หยุด 2 ครั้ง</b>: prophase I (จากในครรภ์) และ metaphase II (รออสุจิ)</td>
+          </tr>
+          <tr>
+            <td class="cat">ไมโอซิส II เสร็จเมื่อใด</td>
+            <td>เกิดขึ้นต่อเนื่องในอัณฑะ</td>
+            <td>เกิดขึ้น <b>ก็ต่อเมื่ออสุจิเข้าผสม</b>เท่านั้น</td>
+          </tr>
+          <tr>
+            <td class="cat">รูปแบบการผลิต</td>
+            <td><b>ต่อเนื่อง</b>หลายล้านตัวต่อวัน</td>
+            <td><b>เป็นรอบ</b> ~ทุก 28 วัน ครั้งละ 1 ใบ</td>
+          </tr>
+          <tr>
+            <td class="cat">ขนาดเซลล์สืบพันธุ์</td>
+            <td>เล็กมาก ~5 µm เคลื่อนที่ได้ (มีหาง)</td>
+            <td>ใหญ่มาก ~100–120 µm เคลื่อนที่เองไม่ได้</td>
+          </tr>
+          <tr>
+            <td class="cat">ปริมาณตลอดชีวิต</td>
+            <td>~ล้านล้านตัว</td>
+            <td><b>~400 ใบ</b>เท่านั้น</td>
+          </tr>
+          <tr>
+            <td class="cat">หยุดเมื่อใด</td>
+            <td>ผลิตได้จนแก่ (ปริมาณลดลง)</td>
+            <td>หยุดเมื่อเข้าสู่วัยหมดประจำเดือน (~45–55 ปี)</td>
+          </tr>
+          <tr>
+            <td class="cat">ฮอร์โมนหลักที่กระตุ้น</td>
+            <td>FSH (→ Sertoli), LH (→ Leydig → testosterone)</td>
+            <td>FSH (→ ฟอลลิเคิลเจริญ), LH (→ ตกไข่ + corpus luteum)</td>
+          </tr>
+          <tr>
+            <td class="cat">ลักษณะการควบคุม</td>
+            <td>Negative feedback อย่างเดียว (สมดุลคงที่)</td>
+            <td>มีทั้ง <b>negative + positive feedback</b> (LH surge ก่อนตกไข่)</td>
+          </tr>
         </tbody>
       </table>
-    </div>
+      </div>
 
-    <div class="doc">
-      <h3>📒 อภิธานศัพท์ · Glossary</h3>
-      <ul class="gloss" id="glossBox"></ul>
+      <div class="info" style="margin-top:14px">
+        <b>🎯 จุดที่ออกข้อสอบบ่อย</b>
+        <ul class="small" style="margin:6px 0 0;padding-left:20px;color:var(--muted)">
+          <li>1 primary spermatocyte → อสุจิ <b>4 ตัว</b> • 1 primary oocyte → ovum <b>1 ใบ</b> + polar body 3 ตัว</li>
+          <li>oogenesis มีการ <b>หยุด 2 ครั้ง</b> (prophase I และ metaphase II) — spermatogenesis ไม่หยุด</li>
+          <li>การแบ่งไซโตพลาซึม <b>ไม่เท่ากัน</b>ใน oogenesis เพื่อสะสมสารอาหารและออร์แกเนลล์ให้ลูก</li>
+          <li>LH ทำหน้าที่ต่างกัน: ในเพศชายกระตุ้น Leydig สร้าง testosterone • ในเพศหญิงเป็น <b>surge</b> กระตุ้นการตกไข่</li>
+        </ul>
+      </div>
     </div>
-
-    <button class="btn ghost" id="studyHomeBtn">กลับหน้าแรก 🏠</button>
   </section>
 
-  <!-- ============ REVIEW WRONG ============ -->
-  <section class="screen hidden" id="reviewScreen">
-    <div class="maphead"><h2>📋 ทบทวนข้อที่ตอบผิด</h2><div class="pp" id="reviewSub"></div></div>
-    <div id="reviewBox"></div>
-    <button class="btn ghost" id="reviewBackBtn" style="margin-top:12px;">◀ กลับหน้าผลคะแนน</button>
-  </section>
-
-  <!-- ============ TEACHER VERIFY ============ -->
-  <section class="screen hidden" id="verifyScreen">
-    <div class="maphead"><h2>👩‍🏫 ครูตรวจรหัสผลนักเรียน</h2><div class="pp">วางชื่อและรหัสที่นักเรียนส่งมา เพื่อตรวจว่าคะแนนถูกต้อง ไม่ถูกแก้ไข</div></div>
-    <div class="doc">
-      <div class="field" style="margin-top:0;"><label>ชื่อนักเรียน (ตามที่ใช้เล่น)</label><input id="vName" type="text" placeholder="พิมพ์ชื่อให้ตรงกับที่นักเรียนกรอก"></div>
-      <div class="field"><label>รหัสยืนยันผล</label><input id="vCode" type="text" placeholder="เช่น FZ-1820-44c-13s-A7QK"></div>
-      <button class="btn" id="vCheckBtn">ตรวจสอบ ✓</button>
-      <div id="vResult"></div>
+  <!-- ============ TAB 7: QUIZ ============ -->
+  <section class="view" id="quiz">
+    <div class="card">
+      <h2 class="section">📝 แบบทดสอบความเข้าใจ</h2>
+      <div id="quizArea"></div>
+      <div class="controls"><button class="btn primary" id="checkQuiz">ตรวจคำตอบ</button>
+      <span id="score" class="muted small"></span></div>
     </div>
-    <button class="btn ghost" id="vHomeBtn">กลับหน้าแรก 🏠</button>
   </section>
-
-  <!-- ============ HIDDEN-REMOVED placeholder ============ -->
-
 </div>
 
-<button class="mutebtn" id="muteBtn" title="ปิด/เปิดเสียง">🔊</button>
-<div class="flash hidden" id="flash"><div class="b" id="flashB">✨</div></div>
+<footer>
+  สื่อการเรียนรู้ชีววิทยา • การสร้างเซลล์ไข่ (Oogenesis &amp; Ovulation) • ปรับใช้กับ ม.ปลาย สายวิทย์–คณิต
+</footer>
 
 <script>
-/* ============================================================
-   STAGE DATA — content grounded in OpenStax / NCBI / journals
-   ============================================================ */
-/* ============================================================
-   ORIGINAL SVG DIAGRAMS (no copyright; render offline)
-   ============================================================ */
-const IMG = {
-  sperm:`<svg viewBox="0 0 320 140" xmlns="http://www.w3.org/2000/svg" font-family="'Trebuchet MS',sans-serif">
-    <ellipse cx="64" cy="60" rx="42" ry="27" fill="#7ec8f0" stroke="#2f86c5" stroke-width="2"/>
-    <path d="M64 33 a42 27 0 0 0 -42 27" fill="none" stroke="#2f86c5" stroke-width="7" stroke-linecap="round"/>
-    <rect x="104" y="47" width="50" height="26" rx="7" fill="#a98be0" stroke="#7c54c9" stroke-width="2"/>
-    <circle cx="116" cy="60" r="4.5" fill="#fff"/><circle cx="129" cy="60" r="4.5" fill="#fff"/><circle cx="142" cy="60" r="4.5" fill="#fff"/>
-    <path d="M154 60 q18 -20 36 0 q18 20 36 0 q18 -20 36 0 q14 15 28 5" fill="none" stroke="#33304a" stroke-width="3.5" stroke-linecap="round"/>
-    <text x="34" y="22" font-size="10" fill="#2f86c5" font-weight="bold">acrosome</text>
-    <text x="64" y="118" font-size="12" fill="#33304a" text-anchor="middle" font-weight="bold">หัว · Head</text>
-    <text x="129" y="118" font-size="12" fill="#33304a" text-anchor="middle" font-weight="bold">คอ · Midpiece</text>
-    <text x="245" y="118" font-size="12" fill="#33304a" text-anchor="middle" font-weight="bold">หาง · Tail</text>
-    <text x="129" y="132" font-size="9.5" fill="#6f6890" text-anchor="middle">(ไมโตคอนเดรีย)</text>
-  </svg>`,
-
-  meiosis4:`<svg viewBox="0 0 320 130" xmlns="http://www.w3.org/2000/svg" font-family="'Trebuchet MS',sans-serif">
-    <circle cx="42" cy="55" r="26" fill="#7ec8f0" stroke="#2f86c5" stroke-width="2"/>
-    <text x="42" y="59" font-size="13" fill="#1e5e8c" text-anchor="middle" font-weight="bold">1</text>
-    <path d="M74 55 h26" stroke="#6f6890" stroke-width="2.5" marker-end="url(#ar)"/>
-    <circle cx="140" cy="35" r="18" fill="#a98be0" stroke="#7c54c9" stroke-width="2"/>
-    <circle cx="140" cy="80" r="18" fill="#a98be0" stroke="#7c54c9" stroke-width="2"/>
-    <path d="M164 45 h22" stroke="#6f6890" stroke-width="2.5" marker-end="url(#ar)"/>
-    <path d="M164 72 h22" stroke="#6f6890" stroke-width="2.5" marker-end="url(#ar)"/>
-    <g fill="#f79ec0" stroke="#e3578d" stroke-width="2">
-      <circle cx="212" cy="24" r="11"/><circle cx="212" cy="52" r="11"/><circle cx="212" cy="80" r="11"/><circle cx="212" cy="108" r="11"/>
-    </g>
-    <g stroke="#33304a" stroke-width="2" fill="none" stroke-linecap="round">
-      <path d="M223 24 q14 -6 26 0"/><path d="M223 52 q14 -6 26 0"/><path d="M223 80 q14 -6 26 0"/><path d="M223 108 q14 -6 26 0"/>
-    </g>
-    <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#6f6890"/></marker></defs>
-    <text x="42" y="100" font-size="10" fill="#6f6890" text-anchor="middle">primary</text>
-    <text x="42" y="112" font-size="10" fill="#6f6890" text-anchor="middle">spermatocyte</text>
-    <text x="280" y="62" font-size="12" fill="#e3578d" text-anchor="middle" font-weight="bold">สเปิร์ม</text>
-    <text x="280" y="76" font-size="12" fill="#e3578d" text-anchor="middle" font-weight="bold">4 ตัว</text>
-  </svg>`,
-
-  oo_unequal:`<svg viewBox="0 0 320 130" xmlns="http://www.w3.org/2000/svg" font-family="'Trebuchet MS',sans-serif">
-    <circle cx="48" cy="60" r="30" fill="#ffd35e" stroke="#e0a92f" stroke-width="2"/>
-    <text x="48" y="64" font-size="11" fill="#7a5a08" text-anchor="middle" font-weight="bold">oocyte</text>
-    <path d="M84 60 h26" stroke="#6f6890" stroke-width="2.5" marker-end="url(#ar2)"/>
-    <circle cx="170" cy="64" r="44" fill="#f79ec0" stroke="#e3578d" stroke-width="2"/>
-    <text x="170" y="60" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">ไข่</text>
-    <text x="170" y="76" font-size="10" fill="#fff" text-anchor="middle">ไซโทพลาซึมมาก</text>
-    <circle cx="252" cy="30" r="13" fill="#a98be0" stroke="#7c54c9" stroke-width="2"/>
-    <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#6f6890"/></marker></defs>
-    <text x="290" y="26" font-size="11" fill="#7c54c9" text-anchor="middle" font-weight="bold">polar</text>
-    <text x="290" y="39" font-size="11" fill="#7c54c9" text-anchor="middle" font-weight="bold">body</text>
-    <text x="265" y="60" font-size="9" fill="#6f6890" text-anchor="middle">(เล็ก/น้อย)</text>
-    <text x="160" y="122" font-size="11" fill="#33304a" text-anchor="middle" font-weight="bold">การแบ่งไซโทพลาซึมไม่เท่ากัน</text>
-  </svg>`,
-
-  hormone:`<svg viewBox="0 0 300 188" xmlns="http://www.w3.org/2000/svg" font-family="'Trebuchet MS',sans-serif">
-    <rect x="70" y="8" width="160" height="34" rx="10" fill="#a98be0" stroke="#7c54c9" stroke-width="2"/>
-    <text x="150" y="26" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">ไฮโพทาลามัส</text>
-    <text x="150" y="38" font-size="9" fill="#efe7ff" text-anchor="middle">Hypothalamus</text>
-    <path d="M150 42 v18" stroke="#6f6890" stroke-width="2.5" marker-end="url(#ar3)"/>
-    <text x="178" y="55" font-size="11" fill="#e3578d" font-weight="bold">GnRH</text>
-    <rect x="70" y="62" width="160" height="34" rx="10" fill="#7ec8f0" stroke="#2f86c5" stroke-width="2"/>
-    <text x="150" y="80" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">ต่อมใต้สมองส่วนหน้า</text>
-    <text x="150" y="92" font-size="9" fill="#e8f4ff" text-anchor="middle">Anterior pituitary</text>
-    <path d="M150 96 v18" stroke="#6f6890" stroke-width="2.5" marker-end="url(#ar3)"/>
-    <text x="172" y="109" font-size="11" fill="#e3578d" font-weight="bold">FSH / LH</text>
-    <rect x="70" y="116" width="160" height="38" rx="10" fill="#f79ec0" stroke="#e3578d" stroke-width="2"/>
-    <text x="150" y="135" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">อัณฑะ / รังไข่</text>
-    <text x="150" y="147" font-size="9" fill="#fff" text-anchor="middle">Testis / Ovary</text>
-    <path d="M68 133 q-44 -56 0 -112" fill="none" stroke="#36c281" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ar3)"/>
-    <text x="6" y="80" font-size="9.5" fill="#22996a" font-weight="bold">ป้อนกลับ</text>
-    <text x="6" y="92" font-size="9.5" fill="#22996a" font-weight="bold">เชิงลบ</text>
-    <defs><marker id="ar3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#6f6890"/></marker></defs>
-  </svg>`,
-
-  zona:`<svg viewBox="0 0 320 170" xmlns="http://www.w3.org/2000/svg" font-family="'Trebuchet MS',sans-serif">
-    <circle cx="200" cy="85" r="62" fill="none" stroke="#a98be0" stroke-width="2" stroke-dasharray="3 6"/>
-    <circle cx="200" cy="85" r="46" fill="#fff2f8" stroke="#e3578d" stroke-width="7"/>
-    <circle cx="200" cy="85" r="34" fill="#f79ec0" stroke="#e3578d" stroke-width="2"/>
-    <text x="200" y="82" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">ไข่</text>
-    <text x="200" y="96" font-size="9" fill="#fff" text-anchor="middle">egg</text>
-    <ellipse cx="48" cy="85" rx="22" ry="13" fill="#7ec8f0" stroke="#2f86c5" stroke-width="2"/>
-    <path d="M70 85 q18 -10 34 0" fill="none" stroke="#33304a" stroke-width="3" stroke-linecap="round"/>
-    <path d="M104 85 h28" stroke="#2f86c5" stroke-width="2.5" marker-end="url(#ar4)"/>
-    <text x="262" y="40" font-size="11" fill="#a98be0" font-weight="bold">corona</text>
-    <text x="262" y="52" font-size="11" fill="#a98be0" font-weight="bold">radiata</text>
-    <text x="248" y="150" font-size="11" fill="#e3578d" font-weight="bold">zona pellucida</text>
-    <text x="248" y="162" font-size="9.5" fill="#6f6890">ZP1 · ZP2 · ZP3</text>
-    <text x="40" y="120" font-size="11" fill="#2f86c5" text-anchor="middle" font-weight="bold">สเปิร์ม</text>
-    <defs><marker id="ar4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#2f86c5"/></marker></defs>
-  </svg>`,
-
-  fertsite:`<svg viewBox="0 0 320 165" xmlns="http://www.w3.org/2000/svg" font-family="'Trebuchet MS',sans-serif">
-    <path d="M150 120 q-10 -60 -70 -74 q40 -2 60 26 q12 18 10 48 z" fill="#f79ec0" stroke="#e3578d" stroke-width="2"/>
-    <path d="M150 120 q10 -60 70 -74 q-40 -2 -60 26 q-12 18 -10 48 z" fill="#f79ec0" stroke="#e3578d" stroke-width="2"/>
-    <path d="M132 120 h36 l-6 34 h-24 z" fill="#f4b8d0" stroke="#e3578d" stroke-width="2"/>
-    <ellipse cx="64" cy="52" rx="20" ry="15" fill="#ffd35e" stroke="#e0a92f" stroke-width="2"/>
-    <ellipse cx="256" cy="52" rx="20" ry="15" fill="#ffd35e" stroke="#e0a92f" stroke-width="2"/>
-    <text x="64" y="56" font-size="9" fill="#7a5a08" text-anchor="middle" font-weight="bold">รังไข่</text>
-    <text x="256" y="56" font-size="9" fill="#7a5a08" text-anchor="middle" font-weight="bold">รังไข่</text>
-    <text x="108" y="36" font-size="22" text-anchor="middle">⭐</text>
-    <text x="108" y="20" font-size="10" fill="#e0a92f" text-anchor="middle" font-weight="bold">ปฏิสนธิ</text>
-    <text x="150" y="150" font-size="11" fill="#33304a" text-anchor="middle" font-weight="bold">มดลูก</text>
-    <text x="206" y="100" font-size="10" fill="#6f6890" text-anchor="middle">ท่อนำไข่</text>
-  </svg>`
-};
-
-/* ============================================================
-   STAGE DATA — 10 questions/stage · grounded in OpenStax / NCBI
-   options contain NO parenthetical hints
-   ============================================================ */
-const STAGES = [
-  {
-    icon:'🏊‍♂️', av:'🦠', name:'การสร้างสเปิร์ม', en:'Spermatogenesis',
-    boss:{name:'Meiosis Glitch 🧬', av:'🧬'},
-    story:'เธอคือ "สเปอร์มาโทโกเนียม" เซลล์ต้นกำเนิดในท่อเซมินิเฟอรัส! ต้องผ่านการแบ่งเซลล์ให้ถูกต้องเพื่อกลายเป็นสเปิร์มสมบูรณ์ ระวังความผิดพลาดในการแบ่งเซลล์!',
-    bossTag:'บอส: ความผิดพลาดของการแบ่งเซลล์',
-    outro:'เยี่ยม! เธอผ่านไมโทซิส → ไมโอซิส → spermiogenesis กลายเป็นสเปิร์มที่มีหัว คอ และหาง พร้อมว่ายน้ำแล้ว!',
-    q:[
-      {q:'สเปิร์มถูกสร้างขึ้นที่ส่วนใดของอัณฑะ?', eng:'Where is sperm produced?',
-       o:['ท่อเซมินิเฟอรัส','หลอดเก็บอสุจิ','ต่อมลูกหมาก','ถุงน้ำเชื้อ'], a:0,
-       ex:'สเปิร์มเจริญในท่อเซมินิเฟอรัส (seminiferous tubules) ที่ขดอยู่ในอัณฑะ เซลล์อ่อนอยู่รอบนอก สเปิร์มสมบูรณ์อยู่ในลูเมน'},
-      {q:'เซลล์ใดทำหน้าที่ "พี่เลี้ยง" หล่อเลี้ยงและปกป้องเซลล์สเปิร์ม?', eng:'Which "nurse" cells nourish sperm?',
-       o:['เซลล์เซอร์โทลี','เซลล์ลัยดิก','เซลล์เม็ดเลือดขาว','เซลล์ไข่'], a:0,
-       ex:'เซลล์เซอร์โทลี (Sertoli) เป็นเซลล์พี่เลี้ยงในผนังท่อ ปกป้องและส่งเสริมการพัฒนาของเซลล์สืบพันธุ์'},
-      {q:'เซลล์ใดผลิตฮอร์โมนเทสโทสเตอโรน?', eng:'Which cells produce testosterone?',
-       o:['เซลล์เซอร์โทลี','เซลล์ลัยดิก','spermatid','polar body'], a:1,
-       ex:'เซลล์ลัยดิก (Leydig) อยู่ระหว่างท่อ ผลิตเทสโทสเตอโรนเมื่อเข้าวัยรุ่นภายใต้การกระตุ้นของ LH'},
-      {q:'เซลล์ต้นกำเนิดสเปิร์มที่อยู่รอบนอกของท่อเรียกว่าอะไร?', eng:'What are the sperm stem cells called?',
-       o:['สเปอร์มาโทโกเนีย','โอโอโกเนีย','corpus luteum','ไซโกต'], a:0,
-       ex:'spermatogonia เป็นเซลล์ดิพลอยด์ต้นกำเนิด แบ่งไมโทซิสเพิ่มจำนวนและรักษาสายพันธุ์ไว้'},
-      {q:'การแบ่งไมโอซิสจาก primary spermatocyte 1 เซลล์ ได้สเปิร์มกี่ตัว?', eng:'How many sperm from 1 primary spermatocyte?', img:'meiosis4',
-       o:['1 ตัว','2 ตัว','4 ตัว','8 ตัว'], a:2,
-       ex:'spermatogenesis ได้สเปิร์ม 4 ตัวต่อเซลล์ตั้งต้น ต่างจาก oogenesis ที่ได้ไข่เพียง 1 ฟอง'},
-      {q:'spermatids เปลี่ยนรูปร่างเป็นสเปิร์มสมบูรณ์ที่มีหัวและหาง ในขั้นใด?', eng:'Stage where spermatids reshape into sperm?', img:'sperm',
-       o:['Spermiogenesis','ไมโทซิส','Capacitation','การตกไข่'], a:0,
-       ex:'Spermiogenesis คือขั้นสุดท้าย สร้างหัวที่มี DNA, คอที่มีไมโตคอนเดรีย และหางสำหรับเคลื่อนที่'},
-      {q:'ส่วนใดของสเปิร์มอัดแน่นด้วยไมโตคอนเดรียเพื่อสร้างพลังงานให้หาง?', eng:'Which part holds mitochondria for energy?', img:'sperm',
-       o:['ส่วนหัว','ส่วนคอ/ลำตัว','อะโครโซม','ปลายหาง'], a:1,
-       ex:'ส่วนคอ (midpiece) อัดแน่นด้วยไมโตคอนเดรียที่สร้าง ATP เพื่อขับเคลื่อนหาง (flagellum)'},
-      {q:'ส่วนหัวของสเปิร์มมีถุงเอนไซม์สำหรับเจาะไข่เรียกว่าอะไร?', eng:'What enzyme-filled cap is on the sperm head?',
-       o:['อะโครโซม','ไมโตคอนเดรีย','เซนทริโอล','ไรโบโซม'], a:0,
-       ex:'อะโครโซม (acrosome) คลุมส่วนหัว บรรจุเอนไซม์ที่ใช้ย่อยและเจาะ zona pellucida ของไข่'},
-      {q:'หลังสร้างเสร็จ สเปิร์มไปสุกและเก็บที่ใดก่อนการหลั่ง?', eng:'Where do sperm mature before ejaculation?',
-       o:['ท่อนำไข่','หลอดเก็บอสุจิ','รังไข่','มดลูก'], a:1,
-       ex:'สเปิร์มเดินทางออกจากท่อไปยังหลอดเก็บอสุจิ (epididymis) เพื่อสุกและเตรียมพร้อมการหลั่ง'},
-      {q:'ลำดับขั้นตอนของ spermatogenesis ข้อใดถูกต้อง?', eng:'Correct order of spermatogenesis?',
-       o:['ไมโทซิส → ไมโอซิส → spermiogenesis','ไมโอซิส → ไมโทซิส → spermiogenesis','spermiogenesis → ไมโทซิส → ไมโอซิส','ไมโทซิส → spermiogenesis → ไมโอซิส'], a:0,
-       ex:'เริ่มจาก spermatogonia แบ่งไมโทซิส → primary spermatocyte แบ่งไมโอซิส → spermatids เปลี่ยนรูปใน spermiogenesis'}
-    ]
-  },
-  {
-    icon:'🥚', av:'⏰', name:'การสร้างไข่ & การตกไข่', en:'Oogenesis & Ovulation',
-    boss:{name:'Ovulation Clock ⏰', av:'⏰'},
-    story:'สลับมาที่รังไข่! เธอคือ "ไข่" ที่ถูกพักไว้นานหลายปี ต้องปลุกให้แบ่งเซลล์ต่อในจังหวะที่ถูกต้อง เพื่อให้สุกและตกไข่ทันเวลานัดพบสเปิร์ม!',
-    bossTag:'บอส: นาฬิกาแห่งการตกไข่',
-    outro:'ไข่สุกและตกออกมาแล้ว! ตอนนี้ secondary oocyte ค้างอยู่ที่ metaphase II รอสเปิร์มมาปลุกให้แบ่งต่อ',
-    q:[
-      {q:'oogonia แบ่งตัวแบบไมโทซิสจำนวนมากในช่วงใดของชีวิต?', eng:'When do oogonia multiply by mitosis?',
-       o:['ช่วงวัยรุ่น','ช่วงเป็นทารกในครรภ์','ทุกเดือนหลังมีประจำเดือน','หลังหมดประจำเดือน'], a:1,
-       ex:'oogonia แบ่งไมโทซิสในช่วงทารกในครรภ์ และไม่มีการสร้างเซลล์ไข่ใหม่หลังคลอด'},
-      {q:'primary oocyte ถูกพักค้างที่ระยะใดตั้งแต่ก่อนเกิดจนถึงวัยรุ่น?', eng:'Primary oocyte arrests at which phase?',
-       o:['Prophase I','Metaphase II','ระยะ S','Anaphase I'], a:0,
-       ex:'ไข่ถูกพักครั้งแรกที่ prophase I (ระยะไดโพลทีน) อาจนานหลายสิบปีจนถึงตกไข่'},
-      {q:'การแบ่งไซโทพลาซึมไม่เท่ากันใน oogenesis ทำให้ได้เซลล์เล็กที่เรียกว่าอะไร?', eng:'Small cell from unequal division?', img:'oo_unequal',
-       o:['Zygote','Polar body','Blastocyst','Spermatid'], a:1,
-       ex:'แบ่งไม่เท่ากันได้ secondary oocyte ที่มีไซโทพลาซึมมาก กับ polar body ที่เล็กและมักสลายไป'},
-      {q:'secondary oocyte ถูกพักค้างครั้งที่สองที่ระยะใด จนกว่าจะปฏิสนธิ?', eng:'Egg arrests again at which stage?',
-       o:['Prophase I','Metaphase II','Telophase I','ระยะ G1'], a:1,
-       ex:'ไข่ค้างที่ metaphase II และจะแบ่งไมโอซิส II ต่อก็ต่อเมื่อมีสเปิร์มเข้าผสมเท่านั้น'},
-      {q:'จาก oogonium 1 เซลล์ ได้ไข่สมบูรณ์กี่ฟอง?', eng:'How many functional ova from 1 oogonium?',
-       o:['1 ฟอง','2 ฟอง','4 ฟอง','8 ฟอง'], a:0,
-       ex:'ได้ไข่สมบูรณ์เพียง 1 ฟอง ส่วน polar body อีก 3 อันจะสลายไป'},
-      {q:'ตลอดชีวิตของผู้หญิงหนึ่งคน มีไข่สุกและตกไข่ประมาณกี่ฟอง?', eng:'How many eggs ovulate in a lifetime?',
-       o:['ประมาณ 7 ล้านฟอง','ประมาณ 400 ฟอง','ประมาณ 4 ฟอง','ประมาณ 1 ล้านฟอง'], a:1,
-       ex:'จาก primary oocytes หลายแสนถึงล้านเซลล์ มีเพียงราว 400 ฟองที่สุกและตกไข่ตลอดชีวิต'},
-      {q:'จำนวน primary oocytes โดยประมาณเมื่อแรกเกิดมีเท่าใด?', eng:'About how many primary oocytes at birth?',
-       o:['ประมาณ 1–2 ล้านเซลล์','ประมาณ 400 เซลล์','ประมาณ 50 เซลล์','ประมาณ 7 พันล้านเซลล์'], a:0,
-       ex:'เมื่อแรกเกิดมี primary oocytes ราว 1–2 ล้านเซลล์ และค่อย ๆ ลดจำนวนลงตลอดชีวิต'},
-      {q:'เหตุใดการแบ่งเซลล์ใน oogenesis จึงแบ่งไซโทพลาซึมไม่เท่ากัน?', eng:'Why is the cytoplasm divided unequally?', img:'oo_unequal',
-       o:['เพื่อให้ไข่เก็บไซโทพลาซึมและสารอาหารไว้มากที่สุด','เพื่อสร้างสเปิร์ม','เพื่อเพิ่มจำนวนไข่ให้มากขึ้น','เพื่อให้ไข่ไม่มีโครโมโซม'], a:0,
-       ex:'การแบ่งไม่เท่ากันทำให้ไข่เก็บสารอาหารและออร์แกเนลล์ไว้มากที่สุด เพื่อหล่อเลี้ยงตัวอ่อนหลังปฏิสนธิ'},
-      {q:'สิ่งใดกระตุ้นให้ secondary oocyte แบ่งไมโอซิส II จนจบ?', eng:'What triggers the egg to complete meiosis II?',
-       o:['การที่สเปิร์มเข้าผสม','การมีประจำเดือน','การหลั่ง FSH','การที่ไข่ฝ่อ'], a:0,
-       ex:'การปฏิสนธิ (สเปิร์มเข้าผสม) ปลดล็อกการค้างที่ metaphase II ทำให้ไข่จบไมโอซิส II'},
-      {q:'ข้อใดเป็นความแตกต่างของ oogenesis เมื่อเทียบกับ spermatogenesis?', eng:'How does oogenesis differ from spermatogenesis?',
-       o:['ได้เซลล์สืบพันธุ์ใช้งานได้เพียง 1 จากเซลล์ตั้งต้น','ได้เซลล์ใช้งานได้ 4 เท่ากัน','เกิดในอัณฑะ','ไม่ใช้ไมโอซิส'], a:0,
-       ex:'oogenesis ได้ไข่ใช้งานได้ 1 ฟอง (สเปิร์มได้ 4 ตัว) เริ่มก่อนเกิด และพักไมโอซิส 2 จุด'}
-    ]
-  },
-  {
-    icon:'⚗️', av:'🌊', name:'ฮอร์โมน & การปรับสภาพ', en:'Hormones & Capacitation',
-    boss:{name:'Cervical Gauntlet 🌊', av:'🌊'},
-    story:'สเปิร์มต้องว่ายผ่านทางเดินสืบพันธุ์เพศหญิง! ใช้ความรู้เรื่องฮอร์โมนและกระบวนการ capacitation เพื่อ "ชาร์จพลัง" ให้พร้อมเจาะไข่',
-    bossTag:'บอส: มูกปากมดลูก & วงจรฮอร์โมน',
-    outro:'สเปิร์มผ่าน capacitation เรียบร้อย เคลื่อนที่ไวขึ้นและพร้อมจะเกิด acrosome reaction แล้ว!',
-    q:[
-      {q:'ฮอร์โมนใดจากไฮโพทาลามัส กระตุ้นต่อมใต้สมองให้หลั่ง FSH และ LH?', eng:'Hypothalamic hormone triggering FSH & LH?', img:'hormone',
-       o:['GnRH','Inhibin','Estrogen','Testosterone'], a:0,
-       ex:'GnRH จากไฮโพทาลามัสกระตุ้นต่อมใต้สมองส่วนหน้าให้หลั่ง FSH และ LH'},
-      {q:'ในเพศชาย FSH กระตุ้นเซลล์ใดเพื่อส่งเสริมการสร้างสเปิร์ม?', eng:'FSH stimulates which cells in males?', img:'hormone',
-       o:['เซลล์ลัยดิก','เซลล์เซอร์โทลี','เซลล์ไข่','เซลล์กล้ามเนื้อ'], a:1,
-       ex:'FSH กระตุ้นเซลล์เซอร์โทลี และเซลล์นี้หลั่ง inhibin กลับไปยับยั้ง FSH แบบป้อนกลับเชิงลบ'},
-      {q:'การพุ่งสูงขึ้นอย่างรวดเร็วของฮอร์โมนใด เป็นสัญญาณการตกไข่?', eng:'Surge of which hormone signals ovulation?',
-       o:['FSH','LH','Inhibin','Progesterone'], a:1,
-       ex:'การพุ่งสูงของ LH (LH surge) เป็นตัวกระตุ้นให้เกิดการตกไข่'},
-      {q:'ฮอร์โมนใดที่หลั่งออกมาเพื่อยับยั้ง FSH?', eng:'Which hormone inhibits FSH?',
-       o:['Inhibin','GnRH','LH','Estrogen'], a:0,
-       ex:'Inhibin จากเซลล์เซอร์โทลีหรือฟอลลิเคิล ยับยั้งการหลั่ง FSH'},
-      {q:'กระบวนการที่สเปิร์มถูกปรับสภาพให้พร้อมเจาะไข่ เกิดขึ้นที่ใด?', eng:'Where does capacitation occur?',
-       o:['ในทางเดินสืบพันธุ์เพศหญิง','ในอัณฑะ','ในหลอดเก็บอสุจิ','ในรังไข่'], a:0,
-       ex:'capacitation เกิดในทางเดินสืบพันธุ์เพศหญิง ทำให้สเปิร์มเคลื่อนที่ไวขึ้นและเยื่อหุ้มพร้อมหลั่งเอนไซม์'},
-      {q:'ฮอร์โมนคู่ใดช่วยเตรียมเยื่อบุโพรงมดลูกและควบคุมรอบเดือน?', eng:'Which hormones prepare the endometrium?',
-       o:['GnRH และ FSH','เอสโตรเจนและโปรเจสเตอโรน','Inhibin และ LH','เทสโทสเตอโรนเดี่ยว'], a:1,
-       ex:'เอสโตรเจนและโปรเจสเตอโรนเตรียมเยื่อบุมดลูก เมื่อลดลงจะเริ่มรอบเดือนใหม่'},
-      {q:'ในเพศชาย LH กระตุ้นเซลล์ใดให้สร้างเทสโทสเตอโรน?', eng:'LH stimulates which cells in males?', img:'hormone',
-       o:['เซลล์ลัยดิก','เซลล์เซอร์โทลี','spermatid','เซลล์ไข่'], a:0,
-       ex:'LH กระตุ้นเซลล์ลัยดิกให้สร้างเทสโทสเตอโรน ซึ่งช่วยการสร้างสเปิร์มและลักษณะเพศรอง'},
-      {q:'capacitation ทำให้สเปิร์มเปลี่ยนแปลงอย่างไร?', eng:'What does capacitation change in sperm?',
-       o:['เคลื่อนที่ไวขึ้นและเยื่อหุ้มพร้อมหลั่งเอนไซม์','สร้างหางใหม่','เพิ่มจำนวนเป็น 2 เท่า','เปลี่ยนเป็นไข่'], a:0,
-       ex:'capacitation เพิ่มการเคลื่อนที่ (hyperactivation) และทำให้เยื่อหุ้มไม่เสถียร พร้อมเกิด acrosome reaction'},
-      {q:'ต่อมใดเป็นผู้หลั่งฮอร์โมน FSH และ LH โดยตรง?', eng:'Which gland secretes FSH and LH?',
-       o:['ต่อมใต้สมองส่วนหน้า','ไฮโพทาลามัส','รังไข่','อัณฑะ'], a:0,
-       ex:'ต่อมใต้สมองส่วนหน้า (anterior pituitary) หลั่ง FSH และ LH เมื่อถูกกระตุ้นด้วย GnRH'},
-      {q:'การควบคุมระดับฮอร์โมนเพศโดยรวมอาศัยกลไกแบบใดเป็นหลัก?', eng:'What is the main control mechanism?',
-       o:['การป้อนกลับเชิงลบ','ไม่มีการควบคุมใด ๆ','การแพร่แบบสุ่ม','การป้อนกลับเชิงบวกตลอดเวลา'], a:0,
-       ex:'แกนไฮโพทาลามัส-ต่อมใต้สมอง-ต่อมเพศใช้ป้อนกลับเชิงลบเป็นหลัก (ยกเว้น LH surge ที่เป็นป้อนกลับเชิงบวกชั่วคราว)'}
-    ]
-  },
-  {
-    icon:'🛡️', av:'🛡️', name:'เจาะกำแพง Zona Pellucida', en:'Acrosome Reaction (BOSS)',
-    boss:{name:'กำแพง Zona Pellucida 🛡️', av:'🛡️'},
-    story:'ด่านบอสใหญ่! สเปิร์มมาถึงไข่แล้ว แต่มี "กำแพง zona pellucida" ขวางอยู่ และสเปิร์มคู่แข่งก็แย่งกันเข้า! ใช้ acrosome reaction เจาะกำแพงให้ได้ก่อน!',
-    bossTag:'บอส: กำแพง Zona Pellucida + สเปิร์มคู่แข่ง',
-    outro:'สเปิร์มหลั่งเอนไซม์จาก acrosome เจาะทะลุ corona radiata และ zona pellucida สำเร็จ! กำลังจะหลอมรวมกับเยื่อหุ้มไข่',
-    q:[
-      {q:'การปฏิสนธิระหว่างสเปิร์มกับไข่ตามปกติเกิดขึ้นที่ส่วนใด?', eng:'Where does fertilization normally occur?', img:'fertsite',
-       o:['ในรังไข่','ในมดลูก','ในท่อนำไข่','ในช่องคลอด'], a:2,
-       ex:'การปฏิสนธิเกิดในท่อนำไข่ (oviduct) จากสเปิร์มหลายล้านตัว มีเพียงไม่กี่ร้อยที่เดินทางมาถึง'},
-      {q:'สเปิร์มต้องผ่านชั้นเซลล์ใดที่ห่อหุ้มไข่ ก่อนสัมผัส zona pellucida?', eng:'Which layer must sperm pass first?', img:'zona',
-       o:['Corona radiata','Cortical granule','ชั้นเซลล์เซอร์โทลี','เยื่อบุโพรงมดลูก'], a:0,
-       ex:'สเปิร์มต้องเจาะผ่านชั้นเซลล์ corona radiata ก่อน แล้วจึงถึงเยื่อ zona pellucida'},
-      {q:'โปรตีนใดบน zona pellucida ที่จับกับสเปิร์มและเหนี่ยวนำให้เกิด acrosome reaction?', eng:'Which protein triggers the acrosome reaction?', img:'zona',
-       o:['ZP1','ZP2','ZP3','Inhibin'], a:2,
-       ex:'ZP3 เป็นตัวรับสเปิร์มที่สำคัญ ไข่ที่ขาด ZP3 จะเป็นหมัน เมื่อสเปิร์มจับ ZP3 จะกระตุ้น acrosome reaction'},
-      {q:'acrosome reaction คือการที่สเปิร์มหลั่งสิ่งใดออกมา?', eng:'What does the acrosome reaction release?',
-       o:['เอนไซม์ย่อยเพื่อเจาะ zona pellucida','ฮอร์โมนเอสโตรเจน','คลื่นแคลเซียม','polar body'], a:0,
-       ex:'acrosome reaction หลั่งเอนไซม์ไฮโดรไลติกและโปรตีเอสย่อย zona pellucida ให้สเปิร์มเจาะเข้าไปได้'},
-      {q:'ไอออนใดที่เพิ่มขึ้นและจำเป็นต่อการเริ่ม acrosome reaction?', eng:'Which ion is needed to start the reaction?',
-       o:['Na⁺','Ca²⁺','K⁺','Cl⁻'], a:1,
-       ex:'การเพิ่มของ Ca²⁺ ในสเปิร์มจำเป็นต่อการเริ่มต้น acrosome reaction'},
-      {q:'zona pellucida ของไข่สัตว์เลี้ยงลูกด้วยนมประกอบด้วยไกลโคโปรตีนหลักกี่ชนิด?', eng:'How many main zona glycoproteins?',
-       o:['1 ชนิด','2 ชนิด','3 ชนิด','5 ชนิด'], a:2,
-       ex:'zona ประกอบด้วยไกลโคโปรตีน 3 ชนิด คือ ZP1, ZP2, ZP3'},
-      {q:'จากสเปิร์มที่หลั่งหลายร้อยล้านตัว มีจำนวนเท่าใดที่เดินทางถึงบริเวณไข่โดยประมาณ?', eng:'How many sperm reach the egg?',
-       o:['เพียงไม่กี่ร้อยตัว','ครึ่งหนึ่ง','เกือบทั้งหมด','ไม่เหลือเลย'], a:0,
-       ex:'จากสเปิร์มหลายร้อยล้านตัว มีเพียงไม่กี่ร้อยตัวที่เดินทางถึงท่อนำไข่บริเวณที่ไข่อยู่'},
-      {q:'โครงสร้างของ zona pellucida เป็นอย่างไร?', eng:'What is the structure of the zona?', img:'zona',
-       o:['ZP2 และ ZP3 สานเป็นเส้นใย ZP1 เชื่อมเป็นตาข่าย','เป็นเซลล์มีชีวิตเรียงกัน','เป็นชั้นไขมันบาง ๆ','เป็นกระดูกอ่อน'], a:0,
-       ex:'ZP2 และ ZP3 สานเป็นเส้นใยยาว และ ZP1 เชื่อมเส้นใยเป็นตาข่ายสามมิติรอบไข่'},
-      {q:'สเปิร์มกี่ตัวที่หลอมรวมและปฏิสนธิกับไข่ได้สำเร็จตามปกติ?', eng:'How many sperm fertilize the egg?',
-       o:['เพียง 1 ตัว','2 ตัว','4 ตัว','ทุกตัวที่มาถึง'], a:0,
-       ex:'แม้หลายตัวจะมาถึง แต่มีเพียงสเปิร์ม 1 ตัวที่หลอมรวมและปฏิสนธิกับไข่ได้สำเร็จ'},
-      {q:'เมื่อสเปิร์มจับกับ ZP3 เกิดอะไรขึ้นกับเยื่อหุ้มอะโครโซม?', eng:'What happens to the acrosomal membrane?',
-       o:['เยื่อหุ้มหลอมรวมและปล่อยเอนไซม์ออกมา','เยื่อหนาขึ้นและปิดสนิท','สเปิร์มตายทันที','ไข่เริ่มแบ่งตัว'], a:0,
-       ex:'การจับ ZP3 ทำให้เยื่อหุ้มเซลล์สเปิร์มหลอมรวมกับเยื่ออะโครโซม แล้วปล่อยเอนไซม์ย่อยออกมา'}
-    ]
-  },
-  {
-    icon:'💞', av:'🥚', name:'ปฏิสนธิ & กัน Polyspermy', en:'Cortical Reaction & Syngamy',
-    boss:{name:'Polyspermy Threat 🚫', av:'🚫'},
-    story:'ด่านสุดท้าย! สเปิร์มหนึ่งตัวหลอมรวมกับไข่แล้ว แต่ต้องรีบ "ปิดประตู" ไม่ให้สเปิร์มตัวอื่นเข้าได้ มิฉะนั้นจะเกิด polyspermy! แล้วรวมนิวเคลียสให้เป็นไซโกต!',
-    bossTag:'บอส: สเปิร์มส่วนเกิน (Polyspermy)',
-    outro:'สำเร็จ! cortical reaction ทำให้ zona แข็งตัวกันสเปิร์มตัวอื่น ไข่จบไมโอซิส II นิวเคลียสรวมกันเป็น zygote ดิพลอยด์ 🎉',
-    q:[
-      {q:'ปฏิกิริยาใดของไข่ช่วยป้องกันไม่ให้สเปิร์มหลายตัวเข้าผสม?', eng:'Which reaction blocks polyspermy?',
-       o:['Acrosome reaction','Cortical reaction','Capacitation','ไมโทซิส'], a:1,
-       ex:'cortical reaction ปล่อยเอนไซม์จาก cortical granules ไปปรับ zona pellucida เพื่อกันสเปิร์มตัวอื่น'},
-      {q:'cortical reaction ทำให้ zona pellucida เปลี่ยนแปลงอย่างไร?', eng:'How does the cortical reaction change the zona?',
-       o:['ทำให้ zona แข็งตัว สเปิร์มจับไม่ได้อีก','ละลายหายไปทั้งหมด','ขยายใหญ่ขึ้นเป็นสองเท่า','เปลี่ยนเป็นเซลล์ใหม่'], a:0,
-       ex:'เอนไซม์จาก cortical granules ทำให้ zona แข็งตัวและดัดแปลง ZP2/ZP3 สเปิร์มจึงจับไม่ได้อีก'},
-      {q:'สิ่งใดเป็นสัญญาณกระตุ้นให้เกิด cortical reaction และปลุกไข่ให้แบ่งต่อ?', eng:'What signal triggers the cortical reaction?',
-       o:['คลื่นและการเพิ่มของ Ca²⁺','การลดลงของ FSH','เอนไซม์จากสเปิร์ม','โปรเจสเตอโรน'], a:0,
-       ex:'คลื่น Ca²⁺ ในไซโทพลาซึมของไข่กระตุ้น cortical reaction และปลดล็อกการค้างที่ metaphase II'},
-      {q:'หลังสเปิร์มเข้าผสม ไข่จบไมโอซิส II แล้วสร้างสิ่งใดเพิ่ม?', eng:'After fertilization, the egg forms what?',
-       o:['polar body ตัวที่สอง','สเปิร์มตัวใหม่','ฟอลลิเคิล','corpus luteum'], a:0,
-       ex:'การปฏิสนธิทำให้ไข่จบไมโอซิส II และสร้าง polar body ตัวที่สอง'},
-      {q:'เมื่อนิวเคลียสของสเปิร์มและไข่รวมกัน เกิดเซลล์ใหม่ชื่ออะไร?', eng:'What cell forms when nuclei fuse?',
-       o:['ไซโกต ดิพลอยด์','เกมีต แฮพลอยด์','polar body','oocyte'], a:0,
-       ex:'เกิด zygote ที่เป็นดิพลอยด์ ครึ่งหนึ่งจากพ่อ ครึ่งจากแม่ เริ่มการพัฒนาตัวอ่อน'},
-      {q:'ไซโกตของมนุษย์มีจำนวนโครโมโซมเท่าใด?', eng:'How many chromosomes in a human zygote?',
-       o:['46 โครโมโซม','23 โครโมโซม','92 โครโมโซม','22 โครโมโซม'], a:0,
-       ex:'ไข่ (23) + สเปิร์ม (23) รวมเป็นไซโกตดิพลอยด์ 46 โครโมโซม (2n)'},
-      {q:'คำว่า syngamy ในกระบวนการปฏิสนธิหมายถึงอะไร?', eng:'What does syngamy mean?',
-       o:['การรวมกันของนิวเคลียสสเปิร์มและไข่','การแบ่งเซลล์ของตัวอ่อน','การตกไข่','การหลั่งฮอร์โมน'], a:0,
-       ex:'syngamy คือการที่นิวเคลียส (โครโมโซม) ของสเปิร์มและไข่รวมกันเป็นชุดเดียวในไซโกต'},
-      {q:'cortical granules ที่ใช้ในการกัน polyspermy พัฒนามาจากออร์แกเนลล์ใด?', eng:'Cortical granules develop from which organelle?',
-       o:['กอลจิแอปพาราตัส','ไมโตคอนเดรีย','นิวเคลียส','ไรโบโซม'], a:0,
-       ex:'cortical granules พัฒนามาจากกอลจิแอปพาราตัส (Golgi) อยู่บริเวณคอร์เทกซ์ของไข่ก่อนปฏิสนธิ'},
-      {q:'เหตุใดร่างกายจึงต้องป้องกันการเกิด polyspermy?', eng:'Why must polyspermy be prevented?',
-       o:['เพื่อให้ไซโกตมีจำนวนโครโมโซมที่ถูกต้อง','เพื่อให้ไข่มีขนาดใหญ่ขึ้น','เพื่อสร้างสเปิร์มเพิ่ม','เพื่อหยุดการหลั่งฮอร์โมน'], a:0,
-       ex:'หากหลายสเปิร์มเข้าผสม ไซโกตจะมีโครโมโซมเกิน 2n ทำให้พัฒนาผิดปกติและตายในที่สุด'},
-      {q:'หลังปฏิสนธิ ไซโกตจะเดินทางไปฝังตัว (implantation) ที่ส่วนใด?', eng:'Where does the zygote implant?', img:'fertsite',
-       o:['ผนังมดลูก','รังไข่','ค้างที่ท่อนำไข่ตลอดไป','ช่องคลอด'], a:0,
-       ex:'ไซโกตแบ่งตัวขณะเคลื่อนผ่านท่อนำไข่ แล้วไปฝังตัวที่เยื่อบุผนังมดลูกเพื่อพัฒนาต่อ'}
-    ]
+/* ---------- helpers: วาดโครโมโซมในเซลล์ ---------- */
+const CH = { A:'var(--chromA)', a:'var(--chroma)', B:'var(--chromB)', b:'var(--chromb)' };
+function chromoSVG(color, big, replicated){
+  const h = big?26:17, w=7;
+  if(replicated){
+    return `<g>
+      <line x1="-${w/2}" y1="-${h/2}" x2="${w/2}" y2="${h/2}" stroke="${color}" stroke-width="5" stroke-linecap="round"/>
+      <line x1="${w/2}" y1="-${h/2}" x2="-${w/2}" y2="${h/2}" stroke="${color}" stroke-width="5" stroke-linecap="round"/>
+      <circle r="2.4" fill="#fff"/>
+    </g>`;
   }
+  return `<line x1="0" y1="-${h/2}" x2="0" y2="${h/2}" stroke="${color}" stroke-width="5" stroke-linecap="round"/>`;
+}
+// วาดเซลล์ 1 ใบ (รองรับขนาดต่างกัน — เซลล์ใหญ่/เซลล์เล็ก = polar body)
+function cellSVG(set, sizeR=34, kind='round', label=''){
+  const positions = [[-12,-8],[12,-8],[-12,10],[12,10]];
+  let inner='';
+  set.forEach((ch,i)=>{
+    const p = positions[i] || [0,0];
+    inner += `<g transform="translate(${p[0]},${p[1]})">${chromoSVG(CH[ch.c], ch.big, ch.rep)}</g>`;
+  });
+  let strokeColor;
+  if(kind==='oogonia')strokeColor='#ef476f';
+  else if(kind==='primOo')strokeColor='#118ab2';
+  else if(kind==='secOo')strokeColor='#b07cff';
+  else if(kind==='ootid')strokeColor='#3ddc97';
+  else if(kind==='ovum')strokeColor='#ffb454';
+  else if(kind==='polar')strokeColor='#ef476f';
+  else strokeColor='#ff6b9d';
+
+  const fillBg = kind==='ovum'?'rgba(255,180,84,.08)':kind==='polar'?'rgba(239,71,111,.18)':'rgba(255,255,255,.04)';
+  const dim = (sizeR+6)*2;
+  return `<svg class="cell-anim" width="${dim}" height="${dim+(label?14:0)}" viewBox="-${sizeR+6} -${sizeR+6} ${dim} ${dim+(label?14:0)}">
+    <circle r="${sizeR}" fill="${fillBg}" stroke="${strokeColor}" stroke-width="2.5"/>
+    ${inner}
+    ${label?`<text y="${sizeR+14}" text-anchor="middle" fill="${strokeColor}" font-size="10" font-weight="700">${label}</text>`:''}
+  </svg>`;
+}
+
+/* ---------- TAB switching ---------- */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.v).classList.add('active');
+  };
+});
+
+/* ---------- TAB 1: ovary info ---------- */
+const ovInfo={
+ primordial:['Primordial follicle (ฟอลลิเคิลเริ่มต้น)','<span class="badge dip">2n</span><span class="badge arr">Prophase I หยุดอยู่</span>ฟอลลิเคิลที่มี <b>โอโอไซต์ระยะแรก (primary oocyte)</b> ล้อมรอบด้วยเซลล์ฟอลลิเคิลชั้นเดียวรูปแบน เกิดขึ้นในตัวอ่อนเพศหญิงตั้งแต่ทารกในครรภ์ และหยุดอยู่ที่ระยะ <b>prophase I ของไมโอซิส</b> นานนับสิบปี รอจนถึงวัยเจริญพันธุ์'],
+ primary:['Primary follicle','<span class="badge dip">2n</span>เซลล์ฟอลลิเคิลเปลี่ยนจากแบนเป็นทรงลูกบาศก์ <b>1 ชั้น</b> เริ่มสร้าง <b>zona pellucida</b> ล้อมรอบโอโอไซต์ — เริ่มตอบสนองต่อ <b>FSH</b>'],
+ secondary:['Secondary (preantral) follicle','<span class="badge dip">2n</span>เซลล์ฟอลลิเคิลแบ่งตัวเป็น <b>หลายชั้น</b> (granulosa) และเริ่มมี <b>theca cells</b> ล้อมรอบ ผลิตเอสโทรเจนมากขึ้น'],
+ antral:['Antral (tertiary) follicle','<span class="badge dip">2n</span>เกิดช่องเล็ก ๆ บรรจุของเหลวเรียก <b>antrum</b> ฟอลลิเคิลขยายใหญ่ขึ้นชัดเจน เห็นได้จากอัลตราซาวด์'],
+ graafian:['Graafian follicle (ฟอลลิเคิลเต็มวัย)','<span class="badge hap">เพิ่งจะ n</span>ฟอลลิเคิลสุกพร้อมตกไข่ • โอโอไซต์ระยะแรกแบ่ง <b>ไมโอซิส I</b> เสร็จ → ได้ <b>secondary oocyte</b> + <b>1st polar body</b> และหยุดอยู่ที่ <b>metaphase II</b>'],
+ ovulation:['Ovulation (การตกไข่)','<span class="badge hap">n</span>เมื่อ <b>LH surge</b> สูงสุดราววันที่ 14 ผนังฟอลลิเคิลแตกออก ปล่อย <b>secondary oocyte</b> พร้อม <b>corona radiata</b> และ <b>zona pellucida</b> เข้าสู่ท่อนำไข่ • โอโอไซต์นี้จะแบ่งไมโอซิส II เสร็จ <b>ต่อเมื่อมีอสุจิมาผสม</b>'],
+ corpus:['Corpus luteum','ส่วนที่เหลือของฟอลลิเคิลหลังตกไข่ — ภายใต้การกระตุ้นของ <b>LH</b> จะสร้าง <b>โพรเจสเทอโรน</b> และเอสโทรเจน ทำให้เยื่อบุมดลูกหนาเตรียมรับการฝังตัว • ถ้าไม่ตั้งครรภ์จะฝ่อใน ~14 วัน'],
+ albicans:['Corpus albicans (รอยแผล)','ซากของ corpus luteum ที่ฝ่อแล้ว เป็นเนื้อเยื่อเกี่ยวพันสีขาว — ระดับโพรเจสเทอโรนลดลง ทำให้เยื่อบุมดลูกหลุดลอก = ประจำเดือน']
+};
+document.getElementById('ovary').addEventListener('click',e=>{
+  const el=e.target.closest('.ov-cell'); if(!el)return;
+  const k=el.dataset.info, d=ovInfo[k];
+  document.getElementById('ovaryInfo').innerHTML=`<b>${d[0]}</b><p class="small" style="margin:6px 0 0">${d[1]}</p>`;
+});
+
+/* ---------- TAB 2: oogenesis ladder ---------- */
+const rep=(c,big)=>({c,big,rep:true});
+const sing=(c,big)=>({c,big,rep:false});
+
+const STAGES=[
+ { key:'oogonia',
+   label:['โอโอโกเนียม','Oogonium • เซลล์ต้นกำเนิด (ในตัวอ่อน)'],
+   render: ()=>cellSVG([sing('A',1),sing('a',1),sing('B',0),sing('b',0)],34,'oogonia'),
+   info:'<span class="badge dip">2n</span>เซลล์ต้นกำเนิดเซลล์ไข่ในรังไข่ของ <b>ตัวอ่อนเพศหญิง</b> — แบ่ง <b>ไมโทซิส</b> เพิ่มจำนวนเป็นล้านเซลล์ในช่วงทารกในครรภ์ จากนั้นจะเปลี่ยนเป็นโอโอไซต์ระยะแรก',
+   note:'ช่วงทารกในครรภ์ • ไมโทซิสเพิ่มจำนวน'},
+
+ { key:'primOo',
+   label:['โอโอไซต์ระยะแรก','Primary oocyte • หยุดที่ prophase I'],
+   render: ()=>cellSVG([rep('A',1),rep('a',1),rep('B',0),rep('b',0)],38,'primOo','หยุด: Prophase I'),
+   info:'<span class="badge dip">2n</span><span class="badge arr">หยุดยาว!</span>จำลอง DNA แล้ว — แต่ <b>หยุดอยู่ที่ prophase I</b> ของไมโอซิส ตั้งแต่ก่อนคลอด ค้างไว้ในฟอลลิเคิลจนถึงวัยเจริญพันธุ์ <b>นานเป็นสิบปี!</b> แต่ละรอบเดือนจะมีบางเซลล์ที่ถูกกระตุ้นให้เจริญต่อ',
+   note:'⏸ หยุดยาว: ตั้งแต่ก่อนคลอด → วัยเจริญพันธุ์'},
+
+ { key:'secOo',
+   label:['โอโอไซต์ระยะที่สอง + 1st polar body','Secondary oocyte • หลัง Meiosis I (แบ่งไซโตพลาซึมไม่เท่ากัน)'],
+   render: ()=>cellSVG([rep('A',1),rep('B',0)],40,'secOo','Secondary oocyte (หยุด: Metaphase II)')+
+                '<span class="arrow">+</span>'+
+                cellSVG([rep('a',1),rep('b',0)],14,'polar','1st polar body'),
+   info:'<span class="badge hap">n</span><span class="badge arr">หยุด Metaphase II</span><b>ไมโอซิส I</b> เสร็จก่อนตกไข่เล็กน้อย — โครโมโซมคู่เหมือนแยกจากกัน แต่ไซโตพลาซึม <b>แบ่งไม่เท่ากัน</b> เซลล์ใหญ่เอาทรัพยากรไปเกือบหมด → กลายเป็น secondary oocyte • เซลล์เล็ก = 1st polar body • secondary oocyte จะเข้าไมโอซิส II แต่ <b>หยุดที่ metaphase II</b> และตกไข่ในระยะนี้',
+   note:'⭐ ไมโอซิส I เสร็จก่อนตกไข่ • หยุด Metaphase II รอผสม'},
+
+ { key:'ovulated',
+   label:['ตกไข่!','Ovulation • secondary oocyte ออกจากรังไข่'],
+   render: ()=>cellSVG([rep('A',1),rep('B',0)],42,'secOo','Secondary oocyte (กำลังตกไข่)')+
+                '<span class="arrow">+</span>'+
+                cellSVG([rep('a',1),rep('b',0)],14,'polar','1st PB'),
+   info:'<span class="badge hap">n</span>วันที่ ~14 ของรอบเดือน <b>LH surge</b> ทำให้ฟอลลิเคิลแตก ปล่อย secondary oocyte (พร้อม zona pellucida + corona radiata) เข้าท่อนำไข่ • ถ้าไม่มีอสุจิมาผสมภายใน ~24 ชม. ก็จะสลายไป',
+   note:'🥚 ออกจากรังไข่ → เข้าท่อนำไข่ • รอ ~24 ชม.'},
+
+ { key:'fertilized',
+   label:['ผสมพันธุ์ → ไมโอซิส II เสร็จ','Ovum (ไข่สุก) + 2nd polar body'],
+   render: ()=>cellSVG([sing('A',1),sing('B',0)],44,'ovum','Ovum (n) — ผสมกับอสุจิแล้ว')+
+                '<span class="arrow">+</span>'+
+                cellSVG([sing('A',1),sing('B',0)],14,'polar','2nd PB')+
+                cellSVG([rep('a',1),rep('b',0)],14,'polar','1st PB'),
+   info:'<span class="badge hap">n</span><b>เมื่อมีอสุจิเจาะเข้า</b> secondary oocyte จึงแบ่ง <b>ไมโอซิส II</b> เสร็จ — แยกซิสเตอร์โครมาทิด → ได้ <b>ovum 1 ใบ + 2nd polar body 1 ตัว</b> • 1st polar body บางครั้งก็แบ่งอีกครั้งเป็น 2 ตัว',
+   note:'✅ สรุป: 1 primary oocyte → ovum 1 + polar body 2–3 ตัว'}
 ];
 
-/* ============================================================ */
-const TIME_PER_Q = 15, PLAYER_MAX = 100, BOSS_DMG = 22;
-const $ = id => document.getElementById(id);
-
-let player='', unlocked=1, starsByStage={};
-let cur=0, qi=0, meHP=100, bossHP=100, bossMax=100, streak=0, bestStreak=0;
-let totalScore=0, totalCorrect=0, stageWrong=0, answered=false, timer=null, qStart=0;
-let muted=false, wrongLog=[], stageWrongLog=[];
-
-/* ---- screens ---- */
-function show(s){ ['startScreen','mapScreen','introScreen','battleScreen','clearScreen','failScreen','resultScreen','fcTopicScreen','fcStudyScreen','fcDoneScreen','studyScreen','reviewScreen','verifyScreen'].forEach(x=>$(x).classList.toggle('hidden', x!==s)); window.scrollTo(0,0); }
-function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-
-/* ---- start ---- */
-$('startBtn').onclick=()=>{ player=($('nameInput').value||'').trim()||'นักผจญภัย'; $('nameInput').value=player; newGame(); };
-function newGame(){ unlocked=1; starsByStage={}; totalScore=0; totalCorrect=0; bestStreak=0; wrongLog=[]; renderMap(); show('mapScreen'); }
-$('resetBtn').onclick=newGame;
-$('homeBtn').onclick=()=>show('startScreen');
-$('againBtn').onclick=newGame;
-
-/* ============================================================
-   FLASHCARD PRACTICE MODE
-   ============================================================ */
-$('flashBtn').onclick=openFcTopics;
-$('fcHomeBtn').onclick=()=>show('startScreen');
-$('fcQuitBtn').onclick=()=>show('startScreen');
-$('fcPickAnotherBtn').onclick=openFcTopics;
-
-let fcDeck=[], fcIdx=0, fcKnown=0, fcSource=[], fcLabel='';
-
-function buildCards(stageIndex){
-  // stageIndex = number (0-4) for one stage, or 'all'
-  const list=[];
-  STAGES.forEach((s,si)=>{
-    if(stageIndex!=='all' && si!==stageIndex) return;
-    s.q.forEach(q=>{
-      list.push({ icon:s.icon, chip:s.name, chipColor:['b-sperm','b-egg','b-fert','b-horm','b-fert'][si]||'b-fert',
-                  q:q.q, eng:q.eng, a:q.o[q.a], ex:q.ex, img:q.img });
-    });
-  });
-  return list;
+const ladder=document.getElementById('ladder');
+function buildLadder(){
+  ladder.innerHTML=STAGES.map((s,i)=>`
+    <div class="rung" data-i="${i}">
+      <div class="label"><b>${s.label[0]}</b><span>${s.label[1]}</span></div>
+      <div class="cells" id="cells-${i}"></div>
+    </div>`).join('');
 }
-
-function openFcTopics(){
-  const box=$('fcTopicBox'); box.innerHTML='';
-  const total=STAGES.reduce((a,s)=>a+s.q.length,0);
-  const all=document.createElement('div');
-  all.className='fc-topic all';
-  all.innerHTML='<div class="ic">🌈</div><div class="meta"><div class="nm">ทุกหัวข้อรวมกัน</div><div class="en">All topics</div></div><div class="cnt">'+total+' การ์ด</div>';
-  all.onclick=()=>startFc('all','ทุกหัวข้อ');
-  box.appendChild(all);
-  STAGES.forEach((s,i)=>{
-    const t=document.createElement('div'); t.className='fc-topic';
-    t.innerHTML='<div class="ic">'+s.icon+'</div><div class="meta"><div class="nm">'+s.name+'</div><div class="en">'+s.en+'</div></div><div class="cnt">'+s.q.length+' การ์ด</div>';
-    t.onclick=()=>startFc(i,s.name);
-    box.appendChild(t);
-  });
-  show('fcTopicScreen');
+let curStep=-1, autoTimer=null;
+function showStep(i){
+  const rung=ladder.querySelector(`.rung[data-i="${i}"]`);
+  rung.classList.add('on');
+  ladder.querySelectorAll('.rung').forEach(r=>r.classList.remove('current'));
+  rung.classList.add('current');
+  const box=document.getElementById('cells-'+i);
+  box.innerHTML=STAGES[i].render();
+  document.getElementById('stepInfo').innerHTML=
+    `<b>${STAGES[i].label[0]}</b><div class="stepNote" style="margin:4px 0">${STAGES[i].note}</div>
+     <p class="small" style="margin:6px 0 0">${STAGES[i].info}</p>`;
+  rung.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-
-function startFc(stageIndex,label){
-  fcSource=buildCards(stageIndex); fcLabel=label;
-  studyDeck(shuffle(fcSource));
+function nextStep(){
+  if(curStep>=STAGES.length-1)return;
+  curStep++; showStep(curStep);
+  document.getElementById('nextStep').disabled = curStep>=STAGES.length-1;
 }
-function studyDeck(cards){
-  fcDeck=cards.map(c=>({...c,_known:false}));
-  fcIdx=0; fcKnown=0;
-  renderCard(); show('fcStudyScreen');
+function resetSteps(){
+  clearInterval(autoTimer);autoTimer=null;
+  document.getElementById('autoBtn').textContent='▶ เล่นอัตโนมัติ';
+  curStep=-1; buildLadder();
+  document.getElementById('stepInfo').innerHTML='<b>กดปุ่ม "ขั้นถัดไป" เพื่อเริ่ม</b><p class="small muted" style="margin:6px 0 0">ติดตามการเปลี่ยนแปลงจากเซลล์ต้นกำเนิดในตัวอ่อน จนได้ไข่สุก 1 ใบหลังการผสมพันธุ์</p>';
+  document.getElementById('nextStep').disabled=false;
 }
-
-function renderCard(){
-  if(fcDeck.length===0){ fcDone(); return; }
-  if(fcIdx>=fcDeck.length){ fcDone(); return; }
-  const c=fcDeck[fcIdx], card=$('fcCard');
-  card.classList.remove('flip');
-  const chip=$('fcChip'); chip.className='chip '+c.chipColor; chip.textContent=c.icon+' '+c.chip;
-  $('fcQ').innerHTML=c.q+'<span class="eng">'+c.eng+'</span>';
-  const fim=$('fcImg');
-  if(c.img && IMG[c.img]){ fim.innerHTML=IMG[c.img]; fim.classList.remove('hidden'); }
-  else { fim.innerHTML=''; fim.classList.add('hidden'); }
-  $('fcA').textContent=c.a;
-  $('fcEx').innerHTML='💡 '+c.ex;
-  $('fcProg').textContent='การ์ด '+(fcIdx+1)+'/'+fcDeck.length;
-  $('fcKnow').textContent='รู้แล้ว '+fcKnown;
-  $('fcFill').style.width=(fcIdx/fcDeck.length*100)+'%';
-  $('fcPrevBtn').disabled = fcIdx===0;
-}
-
-$('fcCard').onclick=()=>$('fcCard').classList.toggle('flip');
-
-$('fcGotBtn').onclick=()=>{
-  const c=fcDeck[fcIdx];
-  if(!c._known){ c._known=true; fcKnown++; }
-  fcIdx++; renderCard();
+document.getElementById('nextStep').onclick=nextStep;
+document.getElementById('resetStep').onclick=resetSteps;
+document.getElementById('autoBtn').onclick=function(){
+  if(autoTimer){clearInterval(autoTimer);autoTimer=null;this.textContent='▶ เล่นอัตโนมัติ';return;}
+  if(curStep>=STAGES.length-1)resetSteps();
+  this.textContent='⏸ หยุด';
+  autoTimer=setInterval(()=>{
+    if(curStep>=STAGES.length-1){clearInterval(autoTimer);autoTimer=null;document.getElementById('autoBtn').textContent='▶ เล่นอัตโนมัติ';return;}
+    nextStep();
+  },2000);
 };
-$('fcAgainBtn').onclick=()=>{
-  const c=fcDeck[fcIdx];
-  if(c._known){ c._known=false; fcKnown=Math.max(0,fcKnown-1); }
-  fcIdx++; renderCard();
-};
-$('fcPrevBtn').onclick=()=>{ if(fcIdx>0){ fcIdx--; renderCard(); } };
-$('fcShuffleBtn').onclick=()=>{ fcDeck=shuffle(fcDeck); fcIdx=0; fcKnown=fcDeck.filter(c=>c._known).length; renderCard(); };
+resetSteps();
 
-function fcDone(){
-  $('fcFill').style.width='100%';
-  $('fcDoneEn').textContent=fcLabel+' — เสร็จสิ้น';
-  const total=fcDeck.length;
-  const unknown=fcDeck.filter(c=>!c._known).length;
-  $('fcDoneMsg').textContent='เธอทบทวนหมวด "'+fcLabel+'" ครบแล้ว · รู้แล้ว '+fcKnown+'/'+total+' การ์ด'+(unknown?' · ยังไม่แม่นอีก '+unknown+' การ์ด':' · เก่งมาก ครบทุกใบ! 🎉');
-  $('fcRedoAgainBtn').disabled = unknown===0;
-  show('fcDoneScreen');
-}
-$('fcRedoAgainBtn').onclick=()=>{
-  const review=fcDeck.filter(c=>!c._known);
-  if(review.length===0){ studyDeck(shuffle(fcSource)); return; }
-  studyDeck(shuffle(review));
-};
-$('fcRestartBtn').onclick=()=>studyDeck(shuffle(fcSource));
+/* ---------- TAB 3: corona radiata + cortical granules dots ---------- */
+(function(){
+  // corona radiata cells around zona
+  let html='';
+  const N=24;
+  for(let i=0;i<N;i++){
+    const ang=(i/N)*Math.PI*2;
+    const x=300+Math.cos(ang)*145, y=180+Math.sin(ang)*145;
+    html+=`<circle cx="${x}" cy="${y}" r="13" fill="#ff9ec2" stroke="#ff6b9d" stroke-width="1"/>
+           <circle cx="${x}" cy="${y}" r="5" fill="#7a3b5c"/>`;
+  }
+  document.getElementById('corona').innerHTML=html;
+  // cortical granules
+  let g='';
+  const M=30;
+  for(let i=0;i<M;i++){
+    const ang=(i/M)*Math.PI*2;
+    const x=300+Math.cos(ang)*105, y=180+Math.sin(ang)*105;
+    g+=`<circle cx="${x}" cy="${y}" r="3" fill="#ffb454"/>`;
+  }
+  document.getElementById('granules').innerHTML=g;
+})();
 
-/* ---- map ---- */
-function renderMap(){
-  $('mapPlayer').textContent='ผู้เล่น: '+player+' · เคลียร์แล้ว '+(unlocked-1)+'/5 ด่าน';
-  const box=$('mapBox'); box.innerHTML='';
-  STAGES.forEach((s,i)=>{
-    const locked=i+1>unlocked, done=!!starsByStage[i];
-    const n=document.createElement('div');
-    n.className='node'+(locked?' locked':'')+(done?' done':'');
-    let right = done ? '<div class="stars">'+'⭐'.repeat(starsByStage[i])+'</div>' : (locked?'<div class="go">🔒</div>':'<div class="go">▶</div>');
-    n.innerHTML='<div class="ic">'+s.icon+'</div><div class="meta"><div class="st">ด่าน '+(i+1)+'</div><div class="nm">'+s.name+'</div><div class="en">'+s.en+'</div></div>'+right;
-    if(!locked) n.onclick=()=>openIntro(i);
-    box.appendChild(n);
-  });
+/* ---------- TAB 4: menstrual cycle (dynamic length) ---------- */
+let CYCLE_LEN = 28;
+let OVUL_DAY = 14;
+
+function dayToX(d){ return 40 + (d-1)/(CYCLE_LEN-1)*620; }
+
+// hormone curves — สูตรเปลี่ยนตาม OVUL_DAY (luteal phase คงที่ 14 วัน, follicular phase ยืดหดได้)
+function fshLvl(d){
+  const ov=OVUL_DAY;
+  if(d<=5) return 0.35 + 0.05*Math.sin(d);
+  if(d<=ov-3) return 0.4 - 0.04*(d-5)/Math.max(1,ov-8);
+  if(d<=ov+1) return 0.36 + 0.4*Math.exp(-Math.pow(d-ov+0.5,2)/1.5);
+  return 0.25 + 0.05*Math.sin(d/3);
+}
+function lhLvl(d){
+  const ov=OVUL_DAY;
+  if(d<=ov-3) return 0.25 + 0.03*Math.sin(d);
+  if(d<=ov+1) return 0.25 + 0.75*Math.exp(-Math.pow(d-ov+0.5,2)/1.2);
+  return 0.25 + 0.05*Math.sin(d/3);
+}
+function estLvl(d){
+  const ov=OVUL_DAY;
+  if(d<=5) return 0.15;
+  if(d<=ov-1) return 0.15 + 0.7*Math.pow((d-5)/Math.max(1,ov-6), 1.6);
+  if(d<=ov+1) return Math.max(0.3, 0.85 - 0.4*(d-ov+1));
+  const lutD = d-ov;
+  return Math.max(0.1, 0.4 + 0.2*Math.exp(-Math.pow(lutD-7,2)/30) - 0.25*Math.max(0,lutD-10)/4);
+}
+function progLvl(d){
+  const ov=OVUL_DAY;
+  if(d<=ov) return 0.1;
+  const lutD=d-ov;
+  if(lutD<=7) return 0.1 + 0.8*lutD/7;
+  if(lutD<=12) return 0.9 - 0.1*(lutD-7);
+  return Math.max(0.1, 0.4 - 0.3*(lutD-12)/2);
+}
+function buildCurve(fn){
+  const xs=[],ys=[];
+  for(let d=1; d<=CYCLE_LEN; d+=0.5){
+    xs.push(dayToX(d));
+    ys.push(320 - fn(d)*255);
+  }
+  let path=`M${xs[0]} ${ys[0]}`;
+  for(let i=1;i<xs.length;i++) path+=` L${xs[i]} ${ys[i]}`;
+  return path;
 }
 
-/* ---- intro ---- */
-function openIntro(i){
-  cur=i; const s=STAGES[i];
-  $('introIcon').textContent=s.icon; $('introName').textContent='ด่าน '+(i+1)+': '+s.name;
-  $('introEn').textContent=s.en; $('introStory').textContent=s.story; $('introBoss').textContent=s.bossTag;
-  show('introScreen');
-}
-$('backMapBtn').onclick=()=>{renderMap();show('mapScreen');};
-$('clearMapBtn').onclick=()=>{renderMap();show('mapScreen');};
-$('failMapBtn').onclick=()=>{renderMap();show('mapScreen');};
-$('beginBtn').onclick=()=>startBattle();
-$('retryBtn').onclick=()=>startBattle();
-
-/* ---- battle ---- */
-let deck=[];
-function startBattle(){
-  const s=STAGES[cur];
-  deck=shuffle(s.q);
-  qi=0; meHP=PLAYER_MAX; bossMax=deck.length*25; bossHP=bossMax; stageWrong=0; streak=0; stageWrongLog=[];
-  $('battleStage').textContent='ด่าน '+(cur+1)+' / 5 · '+s.name;
-  $('meAv').textContent=s.icon; $('meName').textContent=player;
-  $('bossAv').textContent=s.boss.av; $('bossName').textContent=s.boss.name;
-  updateHP();
-  show('battleScreen'); renderQ();
-}
-function updateHP(){
-  $('meHp').style.width=Math.max(0,meHP/PLAYER_MAX*100)+'%'; $('meHpN').textContent=Math.max(0,meHP);
-  $('bossHp').style.width=Math.max(0,bossHP/bossMax*100)+'%'; $('bossHpN').textContent=Math.max(0,bossHP);
-}
-function renderQ(){
-  answered=false;
-  const s=STAGES[cur], q=deck[qi];
-  $('qChip').textContent='ข้อ '+(qi+1)+'/'+deck.length;
-  $('qText').innerHTML=q.q+'<span class="eng">'+q.eng+'</span>';
-  const im=$('qImg');
-  if(q.img && IMG[q.img]){ im.innerHTML=IMG[q.img]; im.classList.remove('hidden'); }
-  else { im.innerHTML=''; im.classList.add('hidden'); }
-  const opts=shuffle(q.o.map((t,i)=>({t,correct:i===q.a})));
-  const keys=['A','B','C','D'], box=$('optBox'); box.innerHTML='';
-  opts.forEach((op,i)=>{
-    const b=document.createElement('button'); b.className='opt';
-    b.innerHTML='<span class="k">'+keys[i]+'</span><span>'+op.t+'</span>';
-    b.onclick=()=>choose(b,op.correct); box.appendChild(b);
-  });
-  $('explainBox').classList.add('hidden'); $('contBtn').classList.add('hidden');
-  startTimer();
-}
-function startTimer(){
-  qStart=Date.now(); const f=$('tFill'); f.classList.remove('warn'); f.style.width='100%';
-  clearInterval(timer); let el=0; const tick=50;
-  timer=setInterval(()=>{
-    el+=tick; const frac=Math.max(0,1-el/(TIME_PER_Q*1000));
-    f.style.width=(frac*100)+'%'; $('tNum').textContent=Math.ceil(frac*TIME_PER_Q);
-    if(frac<.3)f.classList.add('warn');
-    if(frac<=0){clearInterval(timer); resolve(false,true);}
-  },tick);
-}
-function choose(btn,correct){
-  if(answered)return; answered=true; clearInterval(timer);
-  const chosen = btn.querySelector('span:last-child').textContent;
-  document.querySelectorAll('.opt').forEach(o=>o.classList.add('dim'));
-  if(correct){ btn.classList.add('correct'); } 
-  else { btn.classList.add('wrong'); revealCorrect(); }
-  resolve(correct,false,btn,chosen);
-}
-function revealCorrect(){
-  const q=deck[qi];
-  document.querySelectorAll('.opt').forEach(o=>{ if(o.querySelector('span:last-child').textContent===q.o[q.a]) o.classList.add('correct'); });
-}
-function resolve(correct, timedOut, btn, chosen){
-  if(!answered){answered=true;}
-  clearInterval(timer);
-  const q=deck[qi];
-  if(timedOut){ document.querySelectorAll('.opt').forEach(o=>o.classList.add('dim')); revealCorrect(); }
-  const secs=(Date.now()-qStart)/1000;
-  if(correct){
-    totalCorrect++; streak++; bestStreak=Math.max(bestStreak,streak);
-    const crit = secs < TIME_PER_Q*0.4;
-    const dmg = 25 + (crit?12:0);
-    bossHP=Math.max(0,bossHP-dmg);
-    const timeBonus=Math.max(0,Math.round((TIME_PER_Q-secs)/TIME_PER_Q*50));
-    const gained=100+timeBonus+(streak-1)*20;
-    totalScore+=gained;
-    hitFx('boss', dmg, crit);
-    showExplain(true,gained,crit,q.ex);
-    flash(crit?'💥':(streak>=3?'🔥':'⚔️'));
-    beep(crit?990:820,.12);
+// dayState — ขอบเขตเฟสคำนวณจาก OVUL_DAY
+function dayState(d){
+  const ov=OVUL_DAY;
+  let phase,phaseColor,desc,info,foll,follLabel,antrumR,endoH,endoLabel;
+  if(d<=5){
+    phase='Menstrual'; phaseColor='#ff6b9d';
+    desc='ประจำเดือนกำลังมา • เยื่อบุมดลูกหลุดลอก';
+    info='<b>วัน '+d+': Menstrual phase</b><p class="small">corpus luteum รอบที่แล้วฝ่อ → <b>โพรเจสเทอโรน + เอสโทรเจน</b> ต่ำ → เยื่อบุมดลูกหลุดลอกเป็นประจำเดือน • พร้อมกัน <b>FSH</b> เริ่มสูงเพื่อกระตุ้นฟอลลิเคิลรุ่นใหม่</p>';
+    foll=20; follLabel='Primordial → Primary'; antrumR=0; endoH=10; endoLabel='หลุดลอก (menstruation)';
+  } else if(d < ov-3){
+    phase='Follicular (early)'; phaseColor='#ffb454';
+    desc='ฟอลลิเคิลเจริญขึ้นเรื่อย ๆ • เยื่อบุมดลูกเริ่มสร้างใหม่';
+    info='<b>วัน '+d+': Early follicular</b><p class="small"><b>FSH</b> กระตุ้นฟอลลิเคิลหลายตัวให้เจริญ พวกมันสร้าง <b>เอสโทรเจน</b> เพิ่มขึ้น → <b>เยื่อบุมดลูก</b> หนาขึ้น (proliferative phase) • ฟอลลิเคิลที่ตอบสนองดีที่สุดจะเป็น "dominant follicle" ตัวอื่นฝ่อ</p>';
+    const prog=(d-5)/Math.max(1,ov-8);
+    foll=22+prog*12; follLabel='Secondary follicle'; antrumR=4+prog*10; endoH=15+prog*12; endoLabel='เยื่อบุหนาขึ้น (proliferative)';
+  } else if(d <= ov-1){
+    phase='Late follicular'; phaseColor='#ffb454';
+    desc='Graafian follicle ใหญ่เต็มที่ • เอสโทรเจนสูงสุด';
+    info='<b>วัน '+d+': Late follicular</b><p class="small">Dominant follicle ขยายเป็น <b>Graafian follicle</b> ขนาดใหญ่ • เอสโทรเจนสูงมาก → <b>positive feedback</b> กระตุ้น <b>LH surge</b></p>';
+    foll=34; follLabel='Graafian follicle'; antrumR=24; endoH=28; endoLabel='เยื่อบุหนา (proliferative)';
+  } else if(d <= ov){
+    phase='Ovulation 🥚'; phaseColor='#3ddc97';
+    desc='LH surge → ฟอลลิเคิลแตก → ตกไข่ในวันที่ '+ov+'!';
+    info='<b>วัน '+d+': Ovulation (วันตกไข่)</b><p class="small"><b>LH surge</b> ทำให้:<br>1) primary oocyte แบ่ง <b>ไมโอซิส I</b> เสร็จ → <b>secondary oocyte</b> + 1st polar body<br>2) ผนัง Graafian follicle อ่อนตัวและแตก → ปล่อย secondary oocyte เข้าสู่ <b>ท่อนำไข่</b><br>3) secondary oocyte หยุดที่ <b>metaphase II</b> รอผสม</p><p class="small" style="color:var(--accent2);margin-top:6px"><b>📐 รอบ '+CYCLE_LEN+' วัน → ตกไข่วันที่ '+ov+' (= '+CYCLE_LEN+' − 14)</b></p>';
+    foll=36; follLabel='ตกไข่!'; antrumR=26; endoH=28; endoLabel='เยื่อบุพร้อม';
+  } else if(d <= ov+7){
+    phase='Luteal (early)'; phaseColor='#b07cff';
+    desc='Corpus luteum สร้างโพรเจสเทอโรน • เยื่อบุมดลูกพร้อมรับการฝังตัว';
+    info='<b>วัน '+d+': Early luteal</b><p class="small">ฟอลลิเคิลเปลี่ยนเป็น <b>corpus luteum</b> สร้าง <b>โพรเจสเทอโรน</b> + เอสโทรเจน • เยื่อบุมดลูกเข้าสู่ <b>secretory phase</b> พร้อมรับการฝังตัวของตัวอ่อน • <b>negative feedback</b> ยับยั้ง FSH/LH ใหม่</p>';
+    foll=28; follLabel='Corpus luteum'; antrumR=0; endoH=30; endoLabel='Secretory phase (พร้อมฝังตัว)';
+  } else if(d <= CYCLE_LEN-2){
+    phase='Luteal (mid)'; phaseColor='#b07cff';
+    desc='ถ้าไม่ตั้งครรภ์ corpus luteum เริ่มฝ่อ';
+    info='<b>วัน '+d+': Mid luteal</b><p class="small">ถ้าไม่มี hCG จากตัวอ่อน → <b>corpus luteum ฝ่อ</b> → โพรเจสเทอโรน + เอสโทรเจนเริ่มลดลง</p>';
+    foll=22; follLabel='Corpus luteum (เริ่มฝ่อ)'; antrumR=0; endoH=30; endoLabel='Secretory phase';
   } else {
-    streak=0; stageWrong++;
-    stageWrongLog.push({ stage:cur, q:q.q, eng:q.eng, ans:q.o[q.a], chosen:(timedOut?null:chosen), ex:q.ex, timedOut:!!timedOut });
-    meHP=Math.max(0,meHP-BOSS_DMG);
-    hitFx('me', BOSS_DMG, false);
-    showExplain(false,0,false,q.ex,timedOut);
-    flash(timedOut?'⏰':'⚡');
-    beep(200,.18);
+    phase='Late luteal'; phaseColor='#b07cff';
+    desc='โพรเจสเทอโรนต่ำลง • เตรียมเข้าสู่รอบใหม่';
+    info='<b>วัน '+d+': Late luteal</b><p class="small">corpus luteum กลายเป็น <b>corpus albicans</b> ฮอร์โมนต่ำ → ในอีกไม่กี่วันเยื่อบุมดลูกจะหลุดลอก → กลับสู่วันที่ 1</p>';
+    foll=15; follLabel='Corpus albicans'; antrumR=0; endoH=28; endoLabel='ใกล้หลุดลอก';
   }
-  updateHP();
-  if(meHP<=0){ setTimeout(()=>show('failScreen'),700); return; }
-  const last = qi>=deck.length-1;
-  const cb=$('contBtn'); cb.classList.remove('hidden');
-  cb.textContent = last ? (bossHP<=0?'พิชิตบอสสำเร็จ! 🏆':'จบด่าน ▶') : 'โจมตีต่อ ▶';
-  cb.onclick=()=>{ if(last){ stageClear(); } else { qi++; renderQ(); } };
-}
-function showExplain(ok,gained,crit,ex,timedOut){
-  const b=$('explainBox'); b.classList.remove('hidden','ok','no'); b.classList.add(ok?'ok':'no');
-  let head = ok ? ('⚔️ โจมตีสำเร็จ! +'+gained+' คะแนน'+(crit?' (คริติคอล 💥)':'')) : (timedOut?'⏰ หมดเวลา! บอสตีกลับ -'+BOSS_DMG+' HP':'⚡ ตอบผิด! บอสตีกลับ -'+BOSS_DMG+' HP');
-  $('exH').textContent=head; $('exB').innerHTML='💡 '+ex;
-}
-function hitFx(who, dmg, crit){
-  const el = who==='boss'?$('bossAv'):$('meAv');
-  el.classList.add(who==='boss'?'hit-pop':'shake');
-  setTimeout(()=>el.classList.remove('hit-pop','shake'),360);
-  const d=document.createElement('div'); d.className='dmg';
-  d.style.color = who==='boss' ? (crit?'#e0a92f':'#e3578d') : '#ef5d5d';
-  d.textContent='-'+dmg+(crit?'!':''); 
-  d.style.left='50%'; d.style.top='10px'; d.style.transform='translateX(-50%)';
-  el.parentElement.style.position='relative'; el.parentElement.appendChild(d);
-  setTimeout(()=>d.remove(),820);
+  return {phase,phaseColor,desc,info,foll,follLabel,antrumR,endoH,endoLabel};
 }
 
-/* ---- stage clear ---- */
-function stageClear(){
-  wrongLog=wrongLog.concat(stageWrongLog);
-  let stars = stageWrong===0?3 : (stageWrong<=2?2:1);
-  if(!starsByStage[cur] || starsByStage[cur]<stars) starsByStage[cur]=stars;
-  if(unlocked<cur+2) unlocked=cur+2;
-  const s=STAGES[cur];
-  $('clearEn').textContent=s.en+' — Clear!';
-  $('clearStars').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
-  $('clearOutro').textContent=s.outro;
-  $('nextStageBtn').classList.toggle('hidden', cur>=STAGES.length-1);
-  $('nextStageBtn').textContent = cur>=STAGES.length-1 ? '' : 'ด่านต่อไป ▶';
-  if(cur>=STAGES.length-1){ setTimeout(()=>finish(),300); return; }
-  show('clearScreen');
-}
-$('nextStageBtn').onclick=()=>{ openIntro(cur+1); };
-
-/* ---- finish ---- */
-function finish(){
-  const totalStars=Object.values(starsByStage).reduce((a,b)=>a+b,0);
-  const totalQ=STAGES.reduce((a,s)=>a+s.q.length,0);
-  $('finalScore').textContent=totalScore;
-  $('sCorrect').textContent=totalCorrect+'/'+totalQ;
-  $('sStars').textContent=totalStars+'/15';
-  $('sStreak').textContent=bestStreak;
-  const bb=$('badgeBox'); bb.innerHTML='';
-  const badges=[];
-  if(totalStars===15) badges.push('👑 Perfect Run 15⭐');
-  if(totalCorrect===totalQ) badges.push('💯 ตอบถูกทุกข้อ');
-  if(bestStreak>=6) badges.push('🔥 Combo Master x'+bestStreak);
-  badges.push('💞 นักปฏิสนธิแห่งปี');
-  badges.forEach(t=>{const s=document.createElement('span');s.className='eb';s.textContent=t;bb.appendChild(s);});
-  // teacher result card + verification code
-  const dateStr=new Date().toLocaleDateString('th-TH');
-  const code=makeCode(player,totalScore,totalCorrect,totalStars);
-  lastResult={name:player,score:totalScore,correct:totalCorrect,totalQ,stars:totalStars,date:dateStr,code};
-  $('rcardInfo').innerHTML='ชื่อ: <b>'+esc(player)+'</b><br>คะแนน: <b>'+totalScore+'</b> · ตอบถูก <b>'+totalCorrect+'/'+totalQ+'</b> · ดาว <b>'+totalStars+'/15</b><br>วันที่: '+dateStr;
-  $('resultCode').textContent=code;
-  $('reviewBtn').textContent='📋 ทบทวนข้อที่ตอบผิด ('+wrongLog.length+' ข้อ)';
-  $('reviewBtn').disabled = wrongLog.length===0;
-  if(wrongLog.length===0) $('reviewBtn').textContent='🌟 ตอบถูกทุกข้อ ไม่มีข้อผิด!';
-  saveScore(player,totalScore,totalStars); renderLB();
-  show('resultScreen');
-}
-
-/* ---- verification code (deters score tampering) ---- */
-function csum(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h.toString(36).toUpperCase().slice(-4).padStart(4,'0');}
-function makeCode(name,score,correct,stars){
-  const payload=score+'.'+correct+'.'+stars;
-  const sig=csum((name||'').trim().toLowerCase()+'|'+payload);
-  return 'FZ-'+score+'-'+correct+'c-'+stars+'s-'+sig;
-}
-let lastResult=null;
-
-/* ---- copy result for teacher ---- */
-$('copyResultBtn').onclick=()=>{
-  if(!lastResult)return;
-  const r=lastResult;
-  const txt='🧬 ผลเกมภารกิจปฏิสนธิ\nชื่อ: '+r.name+'\nคะแนน: '+r.score+'\nตอบถูก: '+r.correct+'/'+r.totalQ+'\nดาว: '+r.stars+'/15\nวันที่: '+r.date+'\nรหัสยืนยัน: '+r.code;
-  const done=()=>{ const b=$('copyResultBtn'); const old=b.textContent; b.textContent='✓ คัดลอกแล้ว!'; setTimeout(()=>b.textContent=old,1600); };
-  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done)); }
-  else fallbackCopy(txt,done);
-};
-function fallbackCopy(txt,cb){ const t=document.createElement('textarea'); t.value=txt; t.style.position='fixed'; t.style.opacity='0'; document.body.appendChild(t); t.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(t); cb&&cb(); }
-
-/* ---- review wrong answers ---- */
-const CHIPCOLOR=['b-sperm','b-egg','b-fert','b-horm','b-fert'];
-$('reviewBtn').onclick=()=>{ if(wrongLog.length) renderReview(); };
-$('reviewBackBtn').onclick=()=>show('resultScreen');
-function renderReview(){
-  $('reviewSub').textContent='ทั้งหมด '+wrongLog.length+' ข้อ — อ่านเฉลยและคำอธิบายให้เข้าใจก่อนลองใหม่';
-  const box=$('reviewBox'); box.innerHTML='';
-  wrongLog.forEach(w=>{
-    const s=STAGES[w.stage];
-    const d=document.createElement('div'); d.className='rev-item';
-    let html='<span class="chip '+(CHIPCOLOR[w.stage]||'b-fert')+'">'+s.icon+' '+s.name+'</span>';
-    html+='<div class="q">'+esc(w.q)+'<span class="eng">'+esc(w.eng)+'</span></div>';
-    html+= w.timedOut ? '<div class="yours">⏰ หมดเวลา (ไม่ได้ตอบ)</div>' : '<div class="yours">✗ ที่ตอบ: '+esc(w.chosen||'-')+'</div>';
-    html+='<div class="ans">✓ เฉลย: '+esc(w.ans)+'</div>';
-    html+='<div class="ex">💡 '+esc(w.ex)+'</div>';
-    d.innerHTML=html; box.appendChild(d);
+function renderCyclePhases(){
+  const ov=OVUL_DAY;
+  const x1=dayToX(1), x5=dayToX(5.5);
+  const xOvL=dayToX(ov-0.5), xOvR=dayToX(ov+0.5), xOv=dayToX(ov);
+  const xEnd=dayToX(CYCLE_LEN);
+  const w=(a,b)=>Math.max(0,b-a);
+  const mid=(a,b)=>(a+b)/2;
+  let h='';
+  h+=`<rect x="${x1}" y="20" width="${w(x1,x5)}" height="320" fill="#ff6b9d" opacity=".08"/>`;
+  h+=`<rect x="${x5}" y="20" width="${w(x5,xOvL)}" height="320" fill="#ffb454" opacity=".08"/>`;
+  h+=`<rect x="${xOvL}" y="20" width="${w(xOvL,xOvR)}" height="320" fill="#3ddc97" opacity=".18"/>`;
+  h+=`<rect x="${xOvR}" y="20" width="${w(xOvR,xEnd)}" height="320" fill="#b07cff" opacity=".08"/>`;
+  h+=`<text x="${mid(x1,x5)}" y="38" text-anchor="middle" fill="#ff6b9d" font-size="11" font-weight="700">Menstrual</text>`;
+  h+=`<text x="${mid(x1,x5)}" y="50" text-anchor="middle" fill="#ff6b9d" font-size="10">วัน 1–5</text>`;
+  h+=`<text x="${mid(x5,xOvL)}" y="38" text-anchor="middle" fill="#ffb454" font-size="11" font-weight="700">Follicular</text>`;
+  h+=`<text x="${mid(x5,xOvL)}" y="50" text-anchor="middle" fill="#ffb454" font-size="10">วัน 6–${ov-1}</text>`;
+  h+=`<text x="${mid(xOvR,xEnd)}" y="38" text-anchor="middle" fill="#b07cff" font-size="11" font-weight="700">Luteal</text>`;
+  h+=`<text x="${mid(xOvR,xEnd)}" y="50" text-anchor="middle" fill="#b07cff" font-size="10">วัน ${ov+1}–${CYCLE_LEN}</text>`;
+  document.getElementById('cyclePhases').innerHTML=h;
+  // day markers
+  let m='';
+  const ticks=[1,5,ov,ov+7,CYCLE_LEN].filter((v,i,a)=>v>=1 && v<=CYCLE_LEN && a.indexOf(v)===i);
+  ticks.forEach(t=>{
+    m+=`<text x="${dayToX(t)}" y="335" text-anchor="middle" fill="#c6b3dc" font-size="9">${t}</text>`;
+    m+=`<line x1="${dayToX(t)}" y1="320" x2="${dayToX(t)}" y2="324" stroke="#c6b3dc"/>`;
   });
-  show('reviewScreen');
+  document.getElementById('cycleMarkers').innerHTML=m;
+  // ovulation marker
+  document.getElementById('ovulMark').setAttribute('x1',xOv);
+  document.getElementById('ovulMark').setAttribute('x2',xOv);
+  document.getElementById('ovulMarkLbl').setAttribute('x',xOv);
 }
 
-/* ---- study / glossary ---- */
-const GLOSSARY=[
-  ['Spermatogenesis','การสร้างสเปิร์ม','กระบวนการสร้างเซลล์สืบพันธุ์เพศชายในท่อเซมินิเฟอรัส'],
-  ['Oogenesis','การสร้างไข่','กระบวนการสร้างเซลล์สืบพันธุ์เพศหญิงในรังไข่'],
-  ['Sertoli cell','เซลล์เซอร์โทลี','เซลล์พี่เลี้ยงที่หล่อเลี้ยงและปกป้องสเปิร์มที่กำลังพัฒนา'],
-  ['Leydig cell','เซลล์ลัยดิก','เซลล์ที่ผลิตเทสโทสเตอโรน อยู่ระหว่างท่อสร้างสเปิร์ม'],
-  ['Spermiogenesis','การเปลี่ยนรูปสเปิร์ม','ขั้นที่ spermatid เปลี่ยนเป็นสเปิร์มที่มีหัว คอ และหาง'],
-  ['Polar body','โพลาร์บอดี','เซลล์เล็กที่ได้จากการแบ่งไซโทพลาซึมไม่เท่ากันใน oogenesis'],
-  ['Capacitation','การปรับสภาพสเปิร์ม','การที่สเปิร์มพร้อมเจาะไข่หลังอยู่ในทางเดินสืบพันธุ์หญิง'],
-  ['Acrosome reaction','ปฏิกิริยาอะโครโซม','การหลั่งเอนไซม์จากหัวสเปิร์มเพื่อเจาะ zona pellucida'],
-  ['Zona pellucida','โซนาเพลลูซิดา','เยื่อไกลโคโปรตีน (ZP1–ZP3) หุ้มไข่ ZP3 เป็นตัวรับสเปิร์ม'],
-  ['Corona radiata','โคโรนาราดิอาตา','ชั้นเซลล์รอบไข่ที่สเปิร์มต้องผ่านก่อนถึง zona'],
-  ['Cortical reaction','ปฏิกิริยาคอร์ติคัล','การที่ไข่ทำให้ zona แข็งตัวเพื่อกันสเปิร์มเกิน (polyspermy)'],
-  ['Polyspermy','พอลิสเปอร์มี','ภาวะที่สเปิร์มหลายตัวเข้าไข่ ทำให้โครโมโซมผิดปกติ'],
-  ['Zygote','ไซโกต','เซลล์ดิพลอยด์ (2n, 46 โครโมโซม) จากการรวมนิวเคลียสสเปิร์มกับไข่'],
-  ['GnRH / FSH / LH','ฮอร์โมนสืบพันธุ์','GnRH กระตุ้นการหลั่ง FSH และ LH ที่ควบคุมต่อมเพศ'],
-  ['Syngamy','การรวมนิวเคลียส','การที่นิวเคลียสสเปิร์มและไข่รวมเป็นชุดเดียวในไซโกต']
+function renderCycleCurves(){
+  document.getElementById('curveFSH').setAttribute('d', buildCurve(fshLvl));
+  document.getElementById('curveLH').setAttribute('d', buildCurve(lhLvl));
+  document.getElementById('curveE').setAttribute('d', buildCurve(estLvl));
+  document.getElementById('curveP').setAttribute('d', buildCurve(progLvl));
+}
+
+function dateLabel(day){
+  if(day<=30) return day+' มิ.ย.';
+  if(day<=61) return (day-30)+' ก.ค.';
+  return (day-61)+' ส.ค.';
+}
+
+function applyCycleLen(len){
+  len=Math.max(21,Math.min(40,len|0));
+  CYCLE_LEN=len; OVUL_DAY=len-14;
+  document.getElementById('cycleLen').value=len;
+  document.getElementById('curLenLbl').textContent=len;
+  document.getElementById('ovulDayLbl').textContent=OVUL_DAY;
+  document.getElementById('fertWin').textContent=Math.max(1,OVUL_DAY-5)+'–'+(OVUL_DAY+1);
+  // ตัวอย่างคำนวณ (รอบเริ่ม 5 มิ.ย.)
+  document.getElementById('exLen').textContent=len;
+  document.getElementById('exOffset').textContent=OVUL_DAY-1;
+  document.getElementById('exOvul').textContent=dateLabel(5+OVUL_DAY-1);
+  document.getElementById('exNextPeriod').textContent=dateLabel(5+len);
+  const slider=document.getElementById('daySlider');
+  slider.max=len;
+  if(+slider.value>len) slider.value=len;
+  renderCyclePhases();
+  renderCycleCurves();
+  updateDay(slider.value);
+}
+
+const slider=document.getElementById('daySlider');
+function updateDay(d){
+  d=+d;
+  const s=dayState(d);
+  document.getElementById('dayNum').textContent=d;
+  const pill=document.getElementById('phasePill');
+  pill.textContent=s.phase;
+  pill.style.background='rgba(255,107,157,.15)';
+  pill.style.color=s.phaseColor;
+  pill.style.border='1px solid '+s.phaseColor;
+  document.getElementById('dayDesc').textContent=s.desc;
+  document.getElementById('dayInfo').innerHTML=s.info;
+  const x=dayToX(d);
+  document.getElementById('dayCursor').setAttribute('x1',x);
+  document.getElementById('dayCursor').setAttribute('x2',x);
+  document.getElementById('follicleCircle').setAttribute('r',s.foll);
+  document.getElementById('antrumCircle').setAttribute('r',s.antrumR);
+  const ov=OVUL_DAY;
+  if(d>ov && d<=CYCLE_LEN-2){
+    document.getElementById('follicleCircle').setAttribute('fill','#ffb454');
+    document.getElementById('follicleCircle').setAttribute('stroke','#ff8c42');
+    document.getElementById('oocyteCircle').setAttribute('fill','#ff6b35');
+  } else if(d>CYCLE_LEN-2){
+    document.getElementById('follicleCircle').setAttribute('fill','#5d4a6d');
+    document.getElementById('follicleCircle').setAttribute('stroke','#7a6a8d');
+    document.getElementById('oocyteCircle').setAttribute('fill','#5d4a6d');
+  } else {
+    document.getElementById('follicleCircle').setAttribute('fill','#ffd6e7');
+    document.getElementById('follicleCircle').setAttribute('stroke','#ff6b9d');
+    document.getElementById('oocyteCircle').setAttribute('fill','#ef476f');
+  }
+  document.getElementById('follicleLabel').textContent=s.follLabel;
+  const endo=document.getElementById('endoLayer');
+  endo.setAttribute('height',s.endoH);
+  endo.setAttribute('y',170-s.endoH);
+  document.getElementById('endoLabel').textContent=s.endoLabel;
+}
+slider.addEventListener('input',e=>updateDay(e.target.value));
+
+// cycle length controls
+document.getElementById('cycleLen').addEventListener('change',e=>applyCycleLen(+e.target.value));
+document.getElementById('cycleLen').addEventListener('input',e=>{
+  if(e.target.value.length>=2) applyCycleLen(+e.target.value);
+});
+document.querySelectorAll('[data-clen]').forEach(b=>{
+  b.onclick=()=>applyCycleLen(+b.dataset.clen);
+});
+
+let cycleTimer=null;
+document.getElementById('cyclePlay').onclick=function(){
+  if(cycleTimer){clearInterval(cycleTimer);cycleTimer=null;this.textContent='▶ เล่นทั้งรอบ';return;}
+  this.textContent='⏸ หยุด';
+  if(+slider.value>=CYCLE_LEN) slider.value=1;
+  cycleTimer=setInterval(()=>{
+    let v=+slider.value;
+    if(v>=CYCLE_LEN){clearInterval(cycleTimer);cycleTimer=null;document.getElementById('cyclePlay').textContent='▶ เล่นทั้งรอบ';return;}
+    slider.value=v+1; updateDay(slider.value);
+  },450);
+};
+document.getElementById('cycleReset').onclick=()=>{
+  if(cycleTimer){clearInterval(cycleTimer);cycleTimer=null;document.getElementById('cyclePlay').textContent='▶ เล่นทั้งรอบ';}
+  slider.value=1; updateDay(1);
+};
+document.getElementById('jumpOvul').onclick=()=>{
+  slider.value=OVUL_DAY; updateDay(OVUL_DAY);
+};
+
+applyCycleLen(28);
+
+/* ---------- TAB 5: fertilization animation ---------- */
+// ตำแหน่งศูนย์กลางของเซลล์ไข่
+const EGG_CX=560, EGG_CY=215;
+
+// สร้าง shape อสุจิที่ "มีหัวอยู่ทางขวา ทางที่ +x" → เมื่อ rotate ให้ +x ชี้ไปทางไข่ จะหันหัวเข้าไข่ถูกทาง
+function bgSpermSVG(scale,opacity){
+  return `
+    <path d="M-15 0 Q-32 -10 -50 0 T-90 0" fill="none" stroke="#ffb454" stroke-width="2.6" stroke-linecap="round" opacity="${opacity}"/>
+    <rect x="-15" y="-4" width="10" height="8" rx="2" fill="#3ddc97" opacity="${opacity}"/>
+    <ellipse cx="0" cy="0" rx="13" ry="9" fill="#4cc9f0" opacity="${opacity}"/>
+    <path d="M13 0 A13 9 0 0 0 0 -9 A6 7 0 0 1 13 -3 Z" fill="#7b61ff" opacity="${opacity*0.95}"/>
+  `;
+}
+
+// build corona radiata + cortical granules + background sperms
+(function(){
+  let html='';
+  const N=22;
+  for(let i=0;i<N;i++){
+    const ang=(i/N)*Math.PI*2;
+    const x=Math.cos(ang)*132, y=Math.sin(ang)*132;
+    html+=`<circle cx="${x}" cy="${y}" r="11" fill="#ff9ec2" stroke="#ff6b9d" stroke-width="1"/>
+           <circle cx="${x}" cy="${y}" r="4.5" fill="#7a3b5c"/>`;
+  }
+  document.getElementById('fertCorona').innerHTML=html;
+
+  let g='';
+  const M=28;
+  for(let i=0;i<M;i++){
+    const ang=(i/M)*Math.PI*2;
+    const x=Math.cos(ang)*92, y=Math.sin(ang)*92;
+    g+=`<circle class="cg" cx="${x}" cy="${y}" r="3" fill="#ffb454"/>`;
+  }
+  document.getElementById('fertGranules').innerHTML=g;
+
+  // อสุจิรอบข้าง — กระจายอยู่ทางซ้ายและรอบ ๆ ไข่ แล้ว rotate ให้หันหัวเข้าหาไข่ทุกตัว
+  const positions=[
+    {x:90,y:90,s:0.55,op:0.45},{x:60,y:300,s:0.6,op:0.5},
+    {x:160,y:110,s:0.5,op:0.4},{x:120,y:260,s:0.55,op:0.45},
+    {x:220,y:90,s:0.45,op:0.35},{x:200,y:310,s:0.5,op:0.4},
+    {x:280,y:140,s:0.4,op:0.32},{x:260,y:240,s:0.45,op:0.38},
+    {x:340,y:100,s:0.4,op:0.3},{x:330,y:310,s:0.4,op:0.32},
+    {x:400,y:130,s:0.38,op:0.28},{x:410,y:280,s:0.38,op:0.28},
+    {x:40,y:180,s:0.6,op:0.5},{x:170,y:200,s:0.5,op:0.42}
+  ];
+  let s='';
+  positions.forEach(p=>{
+    const ang=Math.atan2(EGG_CY-p.y,EGG_CX-p.x)*180/Math.PI;
+    s+=`<g transform="translate(${p.x},${p.y}) rotate(${ang}) scale(${p.s})">${bgSpermSVG(1,p.op)}</g>`;
+  });
+  document.getElementById('fertSperms').innerHTML=s;
+})();
+
+// ตำแหน่งของ hero sperm ในแต่ละขั้น
+function moveHero(x,y,scale){
+  const el=document.getElementById('fertHeroSperm');
+  el.style.transform=`translate(${x}px,${y}px) scale(${scale||1})`;
+}
+function setCallout(text){
+  const c=document.getElementById('fertCallout');
+  if(!text){c.style.display='none';return;}
+  c.style.display='block';
+  document.getElementById('calloutText').textContent=text;
+}
+function resetEgg(){
+  document.getElementById('fertMale').style.display='none';
+  document.getElementById('fertPB').style.display='none';
+  document.getElementById('fertFlash').style.display='none';
+  document.querySelectorAll('#fertGranules .cg').forEach(c=>{c.setAttribute('fill','#ffb454');c.setAttribute('r','3');});
+  document.getElementById('fertZona').setAttribute('stroke','#b07cff');
+  document.getElementById('fertZonaOuter').setAttribute('stroke','#b07cff');
+  document.getElementById('fertFemale').innerHTML=`
+    <circle cx="22" cy="-18" r="30" fill="#b07cff" opacity=".3"/>
+    <text x="22" y="-15" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">2° oocyte</text>
+    <text x="22" y="2" text-anchor="middle" fill="#fff" font-size="10">(Metaphase II)</text>`;
+}
+
+const FERT_STAGES=[
+  {
+    title:'1. อสุจิเดินทางมาถึงไข่',
+    desc:'อสุจิหลายล้านตัวเข้าสู่ท่อนำไข่ • <b>หางโบกพัด</b>ดันให้ว่ายไปข้างหน้าด้วย <b>ส่วนหัว</b>ที่มีอะโครโซมเป็นแนวนำ • secondary oocyte ที่ตกไข่ออกมาหยุดอยู่ที่ <b>metaphase II</b> รอการกระตุ้น',
+    apply: ()=>{
+      resetEgg();
+      moveHero(110,215,1);
+      setCallout('อสุจิว่ายเข้าหาไข่ — หัวนำ หางตาม');
+    }
+  },
+  {
+    title:'2. ทะลุ corona radiata',
+    desc:'อสุจิปล่อยเอนไซม์ <b>ไฮยาลูโรนิเดส (hyaluronidase)</b> จากอะโครโซมเพื่อย่อยกรดไฮยาลูโรนิกที่ยึดเซลล์ corona radiata เข้าด้วยกัน • อสุจิจึงเจาะผ่านชั้นเซลล์เข้าไปได้',
+    apply: ()=>{
+      resetEgg();
+      moveHero(390,215,1);
+      setCallout('Hyaluronidase ละลาย "กาว" ระหว่างเซลล์ corona radiata');
+    }
+  },
+  {
+    title:'3. Acrosome reaction & เจาะ zona pellucida',
+    desc:'อสุจิจับกับโปรตีน <b>ZP3</b> บน zona pellucida → เกิด <b>acrosome reaction</b> ปล่อยเอนไซม์ <b>อะโครซิน (acrosin)</b> ย่อย zona pellucida ทำให้เจาะผ่านเข้าไปถึงเยื่อหุ้มไข่',
+    apply: ()=>{
+      resetEgg();
+      moveHero(450,215,1);
+      // highlight zona briefly
+      document.getElementById('fertZona').setAttribute('stroke','#ffb454');
+      document.getElementById('fertZonaOuter').setAttribute('stroke','#ffb454');
+      setCallout('Acrosin ย่อย Zona pellucida — อสุจิเจาะเข้าไป');
+    }
+  },
+  {
+    title:'4. หลอมรวมเยื่อหุ้ม (Membrane fusion) + Cortical reaction',
+    desc:'เยื่อหุ้มอสุจิและเยื่อหุ้มไข่หลอมรวมกัน • <b>นิวเคลียสของอสุจิ</b>เข้าสู่ไซโตพลาซึมของไข่ • ทันใดนั้น <b>cortical granules</b> ปล่อยเอนไซม์ทำให้ zona pellucida แข็งขึ้น <b>กันอสุจิตัวอื่นเข้ามา</b> (block polyspermy)',
+    apply: ()=>{
+      resetEgg();
+      moveHero(530,215,0.7);
+      document.getElementById('fertFlash').style.display='block';
+      document.querySelectorAll('#fertGranules .cg').forEach(c=>{
+        c.setAttribute('fill','#ff6b6b');c.setAttribute('r','4');
+      });
+      document.getElementById('fertZona').setAttribute('stroke','#ff6b6b');
+      document.getElementById('fertZonaOuter').setAttribute('stroke','#ff6b6b');
+      setCallout('⚡ Cortical reaction — Zona pellucida แข็งตัว กันอสุจิตัวอื่น');
+    }
+  },
+  {
+    title:'5. ไมโอซิส II เสร็จสมบูรณ์',
+    desc:'การเข้ามาของอสุจิเป็นสัญญาณกระตุ้นให้ secondary oocyte แบ่ง <b>ไมโอซิส II</b> ต่อจนเสร็จ → ได้ <b>ovum</b> (ไข่สุก) + <b>2nd polar body</b> • ตอนนี้จึงมีนิวเคลียสครบ <b>n = 23</b> ทั้งฝั่งพ่อและแม่',
+    apply: ()=>{
+      moveHero(560,215,0.001);
+      document.getElementById('fertMale').style.display='block';
+      document.getElementById('fertPB').style.display='block';
+      document.getElementById('fertFlash').style.display='none';
+      document.querySelectorAll('#fertGranules .cg').forEach(c=>{c.setAttribute('fill','#ff8aaa');c.setAttribute('r','3');});
+      document.getElementById('fertZona').setAttribute('stroke','#b07cff');
+      document.getElementById('fertZonaOuter').setAttribute('stroke','#b07cff');
+      document.getElementById('fertFemale').innerHTML=`
+        <circle cx="22" cy="-18" r="22" fill="#ff6b9d" opacity=".55"/>
+        <text x="22" y="-15" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">♀ pronucleus</text>
+        <text x="22" y="0" text-anchor="middle" fill="#fff" font-size="9">(n = 23)</text>`;
+      setCallout('Ovum + 2nd polar body • นิวเคลียส 2 อันพร้อมจะรวมกัน');
+    }
+  },
+  {
+    title:'6. รวมโครโมโซม → Zygote (ไซโกต)',
+    desc:'นิวเคลียสฝั่งพ่อ (<b>male pronucleus</b>) และนิวเคลียสฝั่งแม่ (<b>female pronucleus</b>) เคลื่อนเข้าหากันและหลอมรวม → <b>ไซโกต</b> (2n = 46) เซลล์ตัวอ่อนเริ่มต้นที่จะแบ่งตัว (cleavage) ต่อไป ✨',
+    apply: ()=>{
+      moveHero(560,215,0.001);
+      document.getElementById('fertMale').style.display='none';
+      document.getElementById('fertPB').style.display='block';
+      document.getElementById('fertFemale').innerHTML=`
+        <circle cx="0" cy="0" r="34" fill="url(#zygoteGrad)" opacity=".95"/>
+        <text y="-2" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">ZYGOTE</text>
+        <text y="14" text-anchor="middle" fill="#fff" font-size="11">2n = 46</text>`;
+      setCallout('✨ Zygote เกิดแล้ว — เริ่มต้นชีวิตใหม่');
+    }
+  }
 ];
-$('studyBtn').onclick=()=>{
-  const ul=$('glossBox'); ul.innerHTML='';
-  GLOSSARY.forEach(g=>{ const li=document.createElement('li'); li.innerHTML='<b>'+g[0]+'</b> <span class="th">· '+g[1]+'</span><br>'+g[2]; ul.appendChild(li); });
-  show('studyScreen');
-};
-$('studyHomeBtn').onclick=()=>show('startScreen');
 
-/* ---- teacher verify ---- */
-$('verifyBtn').onclick=()=>{ $('vName').value=''; $('vCode').value=''; $('vResult').innerHTML=''; show('verifyScreen'); };
-$('vHomeBtn').onclick=()=>show('startScreen');
-$('vCheckBtn').onclick=()=>{
-  const name=($('vName').value||'').trim();
-  const code=($('vCode').value||'').trim().toUpperCase();
-  const box=$('vResult');
-  const m=code.match(/^FZ-(\d+)-(\d+)C-(\d+)S-([0-9A-Z]{4})$/);
-  if(!name){ box.className='vbox no'; box.textContent='⚠️ กรุณาใส่ชื่อนักเรียนก่อน'; return; }
-  if(!m){ box.className='vbox no'; box.textContent='❌ รูปแบบรหัสไม่ถูกต้อง (ตัวอย่าง FZ-1820-44c-13s-A7QK)'; return; }
-  const score=+m[1], correct=+m[2], stars=+m[3], sig=m[4];
-  const expect=csum(name.toLowerCase()+'|'+score+'.'+correct+'.'+stars);
-  if(expect===sig){ box.className='vbox ok'; box.innerHTML='✅ รหัสถูกต้อง · ไม่ถูกแก้ไข<br>'+esc(name)+' ได้ <b>'+score+'</b> คะแนน · ตอบถูก <b>'+correct+'</b> ข้อ · <b>'+stars+'/15</b> ดาว'; }
-  else { box.className='vbox no'; box.innerHTML='❌ รหัสไม่ตรงกับชื่อนี้ — อาจถูกแก้คะแนนหรือพิมพ์ชื่อไม่ตรง'; }
-};
-
-/* ---- leaderboard (localStorage; works on Netlify/GitHub Pages) ---- */
-const LB='fert_battle_lb_v1';
-function loadLB(){try{return JSON.parse(localStorage.getItem(LB))||[];}catch(e){return[];}}
-function saveScore(n,sc,st){try{const l=loadLB();l.push({n,sc,st,t:Date.now()});l.sort((a,b)=>b.sc-a.sc);localStorage.setItem(LB,JSON.stringify(l.slice(0,20)));}catch(e){}}
-function renderLB(){
-  const box=$('lbBox'), l=loadLB();
-  if(!l.length){box.innerHTML='<div class="muted">ยังไม่มีคะแนนบันทึก (เมื่อขึ้นเว็บจริงจะเก็บอันดับอัตโนมัติ)</div>';return;}
-  box.innerHTML=''; let mark=false;
-  l.slice(0,8).forEach((r,i)=>{
-    const d=document.createElement('div'); d.className='lb-row'+(i===0?' top1':'');
-    if(!mark&&r.n===player&&r.sc===totalScore){d.classList.add('me');mark=true;}
-    const medal=['🥇','🥈','🥉'][i]||(i+1);
-    d.innerHTML='<span class="pos">'+medal+'</span><span class="nm">'+esc(r.n)+'</span><span class="sc">'+r.sc+' · '+r.st+'⭐</span>';
-    box.appendChild(d);
+const fertDots=document.getElementById('fertDots');
+fertDots.innerHTML=FERT_STAGES.map((_,i)=>`<div class="step-dot" data-i="${i}"></div>`).join('');
+let fertStep=-1, fertTimer=null;
+function showFert(i){
+  fertStep=i;
+  FERT_STAGES[i].apply();
+  document.getElementById('fertInfo').innerHTML=`<h4>${FERT_STAGES[i].title}</h4><p>${FERT_STAGES[i].desc}</p>`;
+  document.querySelectorAll('#fertDots .step-dot').forEach((d,j)=>{
+    d.classList.toggle('on',j<=i);
   });
 }
-function esc(s){return(s+'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+document.getElementById('fertNext').onclick=()=>{
+  if(fertStep<FERT_STAGES.length-1) showFert(fertStep+1);
+};
+document.getElementById('fertPrev').onclick=()=>{
+  if(fertStep>0) showFert(fertStep-1);
+};
+document.getElementById('fertReset').onclick=()=>{
+  if(fertTimer){clearInterval(fertTimer);fertTimer=null;document.getElementById('fertPlay').textContent='▶ เล่นทั้งหมด';}
+  fertStep=-1;
+  moveHero(110,215,1);
+  resetEgg();
+  setCallout('');
+  document.querySelectorAll('#fertDots .step-dot').forEach(d=>d.classList.remove('on'));
+  document.getElementById('fertInfo').innerHTML='<h4>👆 กดปุ่ม "ขั้นถัดไป" เพื่อเริ่ม</h4><p>ติดตามขั้นตอนการปฏิสนธิตั้งแต่อสุจิว่ายเข้าหาไข่จนกลายเป็นเซลล์ตัวอ่อนเริ่มต้น (zygote)</p>';
+};
+document.getElementById('fertPlay').onclick=function(){
+  if(fertTimer){clearInterval(fertTimer);fertTimer=null;this.textContent='▶ เล่นทั้งหมด';return;}
+  if(fertStep>=FERT_STAGES.length-1){document.getElementById('fertReset').click();}
+  this.textContent='⏸ หยุด';
+  fertTimer=setInterval(()=>{
+    if(fertStep>=FERT_STAGES.length-1){
+      clearInterval(fertTimer);fertTimer=null;
+      document.getElementById('fertPlay').textContent='▶ เล่นทั้งหมด';return;
+    }
+    showFert(fertStep+1);
+  },2400);
+};
 
-/* ---- fx ---- */
-function flash(e){const f=$('flash'),b=$('flashB');b.textContent=e;f.classList.remove('hidden');b.style.animation='none';void b.offsetWidth;b.style.animation='';setTimeout(()=>f.classList.add('hidden'),460);}
-let actx=null;
-function beep(freq,dur){if(muted)return;try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=freq;o.connect(g);g.connect(actx.destination);g.gain.setValueAtTime(.12,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+dur);o.start();o.stop(actx.currentTime+dur);}catch(e){}}
-
-/* ---- mute toggle (persisted) ---- */
-try{ muted = localStorage.getItem('fert_muted')==='1'; }catch(e){}
-function refreshMute(){ $('muteBtn').textContent = muted ? '🔇' : '🔊'; }
-$('muteBtn').onclick=()=>{ muted=!muted; try{localStorage.setItem('fert_muted',muted?'1':'0');}catch(e){} refreshMute(); };
-refreshMute();
+/* ---------- TAB 7: quiz ---------- */
+const QUIZ=[
+ {q:'1. โอโอไซต์ระยะแรก (primary oocyte) ในรังไข่ของทารกหญิงหยุดอยู่ที่ระยะใดของไมโอซิส?',
+  o:['Prophase I','Metaphase I','Metaphase II','Anaphase II'],ans:0,
+  ex:'ถูกต้อง! Primary oocyte หยุดอยู่ที่ prophase I ตั้งแต่ก่อนคลอด รอจนถึงวัยเจริญพันธุ์จึงจะแบ่งต่อ'},
+ {q:'2. การสร้างเซลล์ไข่จากโอโอไซต์ระยะแรก 1 เซลล์ จะได้ไข่ที่ใช้งานได้กี่ใบ?',
+  o:['1 ใบ + 3 polar bodies','2 ใบ + 2 polar bodies','4 ใบ','1 ใบเท่านั้น'],ans:0,
+  ex:'ถูกต้อง! การแบ่งไซโตพลาซึมไม่เท่ากันทำให้ได้ ovum 1 ใบ และ polar body 3 ตัวที่จะสลายไป'},
+ {q:'3. ขณะตกไข่ เซลล์ที่ออกจากรังไข่อยู่ในระยะใดของไมโอซิส?',
+  o:['Primary oocyte (Prophase I)','Secondary oocyte (Metaphase II)','Ovum (เสร็จสิ้นไมโอซิสแล้ว)','Oogonium'],ans:1,
+  ex:'ถูกต้อง! ที่ตกไข่คือ secondary oocyte ที่หยุดอยู่ที่ metaphase II • จะแบ่งไมโอซิส II ต่อเมื่อมีอสุจิมาผสม'},
+ {q:'4. ฮอร์โมนใดที่หลั่งพุ่งสูง (surge) แล้วกระตุ้นให้เกิดการตกไข่?',
+  o:['FSH','LH','Estrogen','Progesterone'],ans:1,
+  ex:'ถูกต้อง! LH surge ที่ราววันที่ 13–14 ของรอบเดือน เป็นตัวกระตุ้นให้ฟอลลิเคิลแตกและปล่อยไข่ออกมา'},
+ {q:'5. หลังการตกไข่ ส่วนที่เหลือของฟอลลิเคิลกลายเป็นอะไร และสร้างฮอร์โมนใดเป็นหลัก?',
+  o:['Corpus albicans • เอสโทรเจน','Corpus luteum • โพรเจสเทอโรน','ฟอลลิเคิลใหม่ • FSH','Theca cell • LH'],ans:1,
+  ex:'ถูกต้อง! Corpus luteum สร้างโพรเจสเทอโรนเป็นหลัก ทำให้เยื่อบุมดลูกพร้อมรับการฝังตัวของตัวอ่อน'},
+ {q:'6. โครงสร้างใดของเซลล์ไข่ช่วยป้องกันการผสมพันธุ์โดยอสุจิหลายตัว (polyspermy)?',
+  o:['Corona radiata','Zona pellucida (ที่แข็งขึ้นหลังเจาะ)','Polar body','Antrum'],ans:1,
+  ex:'ถูกต้อง! เมื่ออสุจิตัวแรกเจาะเข้าได้ cortical granules ใต้เยื่อหุ้มจะปล่อยเอนไซม์ทำให้ zona pellucida แข็งขึ้น'},
+ {q:'7. ถ้าไม่มีการตั้งครรภ์ในรอบนั้น สิ่งใดเกิดขึ้นที่ทำให้ประจำเดือนมา?',
+  o:['FSH เพิ่มขึ้นอย่างเฉียบพลัน','Corpus luteum ฝ่อ → โพรเจสเทอโรนลดลง','LH surge ครั้งที่สอง','เอสโทรเจนสูงต่อเนื่อง'],ans:1,
+  ex:'ถูกต้อง! เมื่อ corpus luteum ฝ่อ โพรเจสเทอโรนและเอสโทรเจนลดลง → เยื่อบุมดลูกขาดเลือดเลี้ยงและหลุดลอก'},
+ {q:'8. ข้อใดเปรียบเทียบ spermatogenesis vs oogenesis ได้ถูกต้อง?',
+  o:['ทั้งคู่ได้เซลล์สืบพันธุ์ 4 เซลล์ที่ใช้งานได้','spermatogenesis ได้ 4 ตัว / oogenesis ได้ 1 ใบ (ที่ใช้งานได้)','oogenesis เกิดต่อเนื่องตลอดชีวิต','spermatogenesis ไม่ผ่านไมโอซิส'],ans:1,
+  ex:'ถูกต้อง! spermatogenesis ได้อสุจิ 4 ตัวจาก 1 primary spermatocyte แต่ oogenesis ได้ ovum เพียง 1 ใบ + polar body 3 ตัว (สลายไป)'}
+];
+const qa=document.getElementById('quizArea');
+qa.innerHTML=QUIZ.map((item,i)=>`
+  <div class="q" data-i="${i}">
+    <b>${item.q}</b>
+    <div class="opts">${item.o.map((o,j)=>`<div class="opt" data-j="${j}">${String.fromCharCode(97+j)}) ${o}</div>`).join('')}</div>
+    <div class="explain">${item.ex}</div>
+  </div>`).join('');
+let picks={};
+qa.querySelectorAll('.q').forEach(qd=>{
+  qd.querySelectorAll('.opt').forEach(op=>{
+    op.onclick=()=>{
+      qd.querySelectorAll('.opt').forEach(x=>x.style.outline='');
+      op.style.outline='2px solid var(--accent)';
+      picks[qd.dataset.i]=+op.dataset.j;
+    };
+  });
+});
+document.getElementById('checkQuiz').onclick=()=>{
+  let score=0;
+  QUIZ.forEach((item,i)=>{
+    const qd=qa.querySelector(`.q[data-i="${i}"]`);
+    qd.querySelectorAll('.opt').forEach(x=>x.classList.remove('correct','wrong'));
+    qd.querySelectorAll('.opt')[item.ans].classList.add('correct');
+    if(picks[i]!==undefined && picks[i]!==item.ans)
+      qd.querySelectorAll('.opt')[picks[i]].classList.add('wrong');
+    if(picks[i]===item.ans)score++;
+    qd.querySelector('.explain').classList.add('show');
+  });
+  document.getElementById('score').textContent=`คะแนน: ${score}/${QUIZ.length}`;
+};
 </script>
 </body>
 </html>
